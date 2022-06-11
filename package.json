@@ -1,0 +1,49 @@
+{
+  "name": "banjeeRedux",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "android": "react-native run-android && react-native start",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
+    "test": "jest",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "^1.17.6",
+    "@react-native-community/masked-view": "^0.1.11",
+    "@react-navigation/native": "^6.0.10",
+    "@react-navigation/stack": "^6.2.1",
+    "@types/react-native-push-notification": "^8.1.0",
+    "axios": "^0.27.2",
+    "expo": "^45.0.5",
+    "expo-av": "^11.2.3",
+    "expo-file-system": "^14.0.0",
+    "expo-image-picker": "^13.1.1",
+    "expo-linear-gradient": "^11.3.0",
+    "expo-location": "^14.2.2",
+    "formik": "^2.2.9",
+    "jwt-decode": "^3.1.2",
+    "native-base": "^3.4.6",
+    "react": "17.0.2",
+    "react-native": "0.68.2",
+    "react-native-maps": "^0.31.1",
+    "react-native-masonry-list": "^2.16.1",
+    "react-native-pager-view": "^5.4.24",
+    "react-native-reanimated": "^2.8.0",
+    "socket.io-client": "^2.1.1"
+  },
+  "devDependencies": {
+    "@babel/core": "7.18.2",
+    "@babel/runtime": "7.18.3",
+    "@react-native-community/eslint-config": "2.0.0",
+    "babel-jest": "26.6.3",
+    "eslint": "7.32.0",
+    "jest": "26.6.3",
+    "metro-react-native-babel-preset": "0.67.0",
+    "react-test-renderer": "17.0.2"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}
