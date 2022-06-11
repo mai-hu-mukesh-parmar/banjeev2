@@ -31,6 +31,7 @@
     "react-native-masonry-list": "^2.16.1",
     "react-native-pager-view": "^5.4.24",
     "react-native-reanimated": "^2.8.0",
+    "react-native-splash-screen": "^3.3.0",
     "socket.io-client": "^2.1.1"
   },
   "devDependencies": {

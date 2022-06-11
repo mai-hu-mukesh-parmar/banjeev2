@@ -6,19 +6,15 @@
  * @flow strict-local
  */
 
-import React from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-  Dimensions,
-} from 'react-native';
+import React, {useEffect} from 'react';
+import {StyleSheet, Text, Dimensions} from 'react-native';
+import SplashScreen from 'react-native-splash-screen';
 
 const App = () => {
+  useEffect(() => {
+    SplashScreen.hide();
+  }, []);
+
   console.log(Dimensions.get('screen').width);
 
   return (
