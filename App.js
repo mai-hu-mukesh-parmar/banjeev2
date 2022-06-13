@@ -1,14 +1,22 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-
+import {NavigationContainer} from '@react-navigation/native';
+import {NativeBaseProvider} from 'native-base';
 import React, {useEffect} from 'react';
-import {StyleSheet, Text, Dimensions} from 'react-native';
+import {StyleSheet, Text, Dimensions, AppRegistry} from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
+import Sign_In from './app/src/views/Authurization/Sign_In';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
+import AuthNavigationView from './app/src/routes/AuthNavigation/AuthNavigationView';
+import {combineReducers, createStore} from 'redux';
+import {Provider} from 'react-redux';
+import userProfileReducer from './app/src/redux/store/reducer/userProfileReducer';
+import userRegisteryReducer from './app/src/redux/store/reducer/userRegisteryReducer';
+
+const rootReducer = combineReducers({
+  profile: userProfileReducer,
+  regestry: userRegisteryReducer,
+});
+
+const store = createStore(rootReducer);
 
 const App = () => {
   useEffect(() => {
@@ -18,35 +26,15 @@ const App = () => {
   console.log(Dimensions.get('screen').width);
 
   return (
-    <Text
-      style={styles.sectionContainer}
-      onPress={() =>
-        console.trace(
-          'fhdsg......................................................................................usid',
-        )
-      }>
-      ghd
-    </Text>
+    <Provider store={store}>
+      <NavigationContainer>
+        <NativeBaseProvider>
+          <AuthNavigationView />
+        </NativeBaseProvider>
+      </NavigationContainer>
+    </Provider>
   );
 };
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
-
 export default App;
+// AppRegistry.registerComponent(App, () => App);
