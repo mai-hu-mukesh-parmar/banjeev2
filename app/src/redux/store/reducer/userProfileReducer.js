@@ -11,6 +11,6 @@ export default function userProfileReducer(state = initialState, action) {
     case 'UPDTATE_USER_PROFILE':
       break;
     default:
-      break;
+      return state;
   }
 }

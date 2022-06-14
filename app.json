@@ -1,4 +1,10 @@
 {
-  "name": "banjeeRedux",
-  "displayName": "banjeeRedux"
+  "expo": {
+    "name": "banjeeV2",
+    "slug": "banjeeV2",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
 }

@@ -7,7 +7,6 @@ export default function userRegisteryReducer(state = initialState, action) {
       return {...state, ...action.payload};
 
     default:
-      initialState;
-      break;
+      return state;
   }
 }

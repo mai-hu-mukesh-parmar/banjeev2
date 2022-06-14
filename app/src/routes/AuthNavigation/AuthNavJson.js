@@ -1,17 +1,16 @@
 import color from '../../constants/env/color';
-import LoginWithOtp from '../../Screens/Auth/LoginWithOtp';
-import OtpScreen from '../../Screens/Auth/OtpScreen';
-import PasswordForReisterUser from '../../Screens/Auth/PasswordForRegisterUser';
-import Login from '../../Screens/Auth/Login';
-import Sign_In from '../../Screens/Auth/Sign_In';
+import LoginWithOtp from '../../views/Authurization/LoginWithOtp';
+// import OtpScreen from '../../Screens/Auth/OtpScreen';
+// import TermsNConditions from '../../Screens/Auth/TermsAndConditions/TermsNConditions';
+// import PasswordForReisterUser from '../../Screens/Auth/PasswordForRegisterUser';
+// import Login from '../../Screens/Auth/Login';
+import Sign_In from '../../views/Authurization/Sign_In';
 
 import {
   gradientColor,
   headerBackground,
   headerStyle,
-} from '../NavigationConstants/NavigationConstants';
-import TermsNConditions from '../../Screens/Auth/TermsAndConditions/TermsNConditions';
-
+} from '../../constants/navigation/navigation';
 export const AuthNavJson = [
   {
     options: {
@@ -24,38 +23,38 @@ export const AuthNavJson = [
     name: 'Sign-In',
     component: Sign_In,
   },
-  {
-    options: {
-      headerTitle: 'Password',
-      headerTintColor: color.white,
-      headerTransparent: true,
-      headerStyle: headerStyle,
-    },
-    name: 'Login',
-    component: Login,
-  },
-  {
-    options: {
-      headerTitle: 'Password',
-      headerTintColor: color.white,
-      headerTransparent: true,
-      // headerBackground: () => headerBackground(gradientColor),
-      headerStyle: headerStyle,
-    },
-    name: 'PasswordForReisterUser',
-    component: PasswordForReisterUser,
-  },
-  {
-    options: {
-      headerTitle: 'Password',
-      headerTintColor: color.white,
-      headerTransparent: true,
-      // headerBackground: () => headerBackground(gradientColor),
-      headerStyle: headerStyle,
-    },
-    name: 'OtpScreen',
-    component: OtpScreen,
-  },
+  // {
+  //   options: {
+  //     headerTitle: 'Password',
+  //     headerTintColor: color.white,
+  //     headerTransparent: true,
+  //     headerStyle: headerStyle,
+  //   },
+  //   name: 'Login',
+  //   component: Login,
+  // },
+  // {
+  //   options: {
+  //     headerTitle: 'Password',
+  //     headerTintColor: color.white,
+  //     headerTransparent: true,
+  //     // headerBackground: () => headerBackground(gradientColor),
+  //     headerStyle: headerStyle,
+  //   },
+  //   name: 'PasswordForReisterUser',
+  //   component: PasswordForReisterUser,
+  // },
+  // {
+  //   options: {
+  //     headerTitle: 'Password',
+  //     headerTintColor: color.white,
+  //     headerTransparent: true,
+  //     // headerBackground: () => headerBackground(gradientColor),
+  //     headerStyle: headerStyle,
+  //   },
+  //   name: 'OtpScreen',
+  //   component: OtpScreen,
+  // },
 
   {
     options: {
@@ -68,16 +67,16 @@ export const AuthNavJson = [
     name: 'LoginWithOtp',
     component: LoginWithOtp,
   },
-  {
-    options: {
-      headerShown: false,
-      headerTitle: '',
-      headerTintColor: color.white,
+  // {
+  //   options: {
+  //     headerShown: false,
+  //     headerTitle: '',
+  //     headerTintColor: color.white,
 
-      // headerBackground: () => headerBackground(gradientColor),
-      headerStyle: headerStyle,
-    },
-    name: 'termsAndConditions',
-    component: TermsNConditions,
-  },
+  //     // headerBackground: () => headerBackground(gradientColor),
+  //     headerStyle: headerStyle,
+  //   },
+  //   name: 'termsAndConditions',
+  //   component: TermsNConditions,
+  // },
 ];
