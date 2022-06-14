@@ -2,7 +2,6 @@ import { NavigationContainer } from "@react-navigation/native";
 import { NativeBaseProvider } from "native-base";
 import React, { useEffect } from "react";
 import { StyleSheet, Text, Dimensions, AppRegistry } from "react-native";
-import SplashScreen from "react-native-splash-screen";
 import Sign_In from "./app/src/views/Authurization/Sign_In";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import AuthNavigationView from "./app/src/routes/AuthNavigation/AuthNavigationView";
@@ -19,10 +18,6 @@ const rootReducer = combineReducers({
 const store = createStore(rootReducer);
 
 const App = () => {
-	useEffect(() => {
-		SplashScreen.hide();
-	}, []);
-
 	console.log(Dimensions.get("screen").width);
 
 	return (
