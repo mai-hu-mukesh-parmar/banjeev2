@@ -1,10 +1,8 @@
 {
-  "expo": {
-    "name": "banjeeV2",
-    "slug": "banjeeV2",
-    "version": "1.0.0",
-    "assetBundlePatterns": [
-      "**/*"
-    ]
-  }
+	"expo": {
+		"name": "banjeev2",
+		"slug": "banjeev2",
+		"version": "1.0.0",
+		"assetBundlePatterns": ["**/*"]
+	}
 }

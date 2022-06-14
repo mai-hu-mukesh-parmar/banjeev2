@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "banjeeV2.app"
-               BlueprintName = "banjeeV2"
-               ReferencedContainer = "container:banjeeV2.xcodeproj">
+               BuildableName = "banjeev2.app"
+               BlueprintName = "banjeev2"
+               ReferencedContainer = "container:banjeev2.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "banjeeV2Tests.xctest"
-               BlueprintName = "banjeeV2Tests"
-               ReferencedContainer = "container:banjeeV2.xcodeproj">
+               BuildableName = "banjeev2Tests.xctest"
+               BlueprintName = "banjeev2Tests"
+               ReferencedContainer = "container:banjeev2.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "banjeeV2.app"
-            BlueprintName = "banjeeV2"
-            ReferencedContainer = "container:banjeeV2.xcodeproj">
+            BuildableName = "banjeev2.app"
+            BlueprintName = "banjeev2"
+            ReferencedContainer = "container:banjeev2.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "banjeeV2.app"
-            BlueprintName = "banjeeV2"
-            ReferencedContainer = "container:banjeeV2.xcodeproj">
+            BuildableName = "banjeev2.app"
+            BlueprintName = "banjeev2"
+            ReferencedContainer = "container:banjeev2.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
