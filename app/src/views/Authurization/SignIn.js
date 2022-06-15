@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, Image, View } from "react-native";
 import { Formik } from "formik";
+import { Box } from "native-base";
+
 // import {
 // 	getCountryCode,
 // 	validateUser,
@@ -10,24 +12,29 @@ import { validateUser, getCountryCode } from "../../helper/services/Auth";
 import BackGroundImg from "../../constants/components/BackGroundImg";
 import Card from "../../constants/components/Card";
 
-import { Text, useToast, Input, Button } from "native-base";
+import { Text } from "native-base";
 // import Text from '../../Components/AppComponents/Text';
 
 // import AppButton from '../../Components/AppComponents/AppButton';
 import color from "../../constants/env/color";
 
-// import AppTextInput from '../../Components/AppComponents/AppTextInput';
-// import DropDownPicker from 'react-native-dropdown-picker';
+// import TextInput from '../../Components/AppComponents/TextInput';
+import DropDownPicker from "react-native-dropdown-picker";
+import AppButton from "../../constants/components/ui-component/AppButton";
+import AppInput from "../../constants/components/ui-component/AppInput";
 // import ToastMessage from '../../Components/ToastMessage';
 
-function Sign_In({ navigation }) {
-	const buttonPress = ({ number }, resetForm) => {
+function SignIn({ navigation }) {
+	const [open, setOpen] = useState(false);
+	const [mccData, setMccData] = React.useState([]);
+
+	const buttonPress = ({ mcc, number }, resetForm) => {
 		if (mcc) {
 			validateUser({ domain: "banjee", mobile: number, userType: 0 })
 				.then((res) => {
 					resetForm();
 					if (!res) {
-						navigation.navigate("OtpScreen", { mcc, number });
+						navigation.navigate("Otp", { mcc, number, type: "OTP" });
 					} else {
 						navigation.navigate("Login", { mcc, number });
 					}
@@ -36,16 +43,15 @@ function Sign_In({ navigation }) {
 					console.warn(err);
 				});
 		} else {
-			useToast("Plese select your country code");
+			console.log("Plese select your country code");
 		}
 	};
 
-	const [mccData, setMccData] = React.useState([]);
-	const [mcc, setMcc] = React.useState();
-
 	React.useEffect(() => {
 		getCountryCode()
-			.then((res) => setMccData(res))
+			.then((res) => {
+				setMccData(res);
+			})
 			.catch((err) => console.log(err));
 		return () => {};
 	}, []);
@@ -53,7 +59,7 @@ function Sign_In({ navigation }) {
 	return (
 		<BackGroundImg>
 			<Formik
-				initialValues={{ number: "" }}
+				initialValues={{ number: "", mcc: "" }}
 				validate={(values) => {
 					const errors = {};
 					const { number } = values;
@@ -87,7 +93,9 @@ function Sign_In({ navigation }) {
 						<Card>
 							{/* `````````````````````` LOGO */}
 							<View style={{ alignItems: "center" }}>
-								<Text style={{ fontSize: 24, marginBottom: 24, marginTop: 23 }}>
+								<Text
+									style={{ fontSize: 24, marginBottom: 24, paddingTop: 23 }}
+								>
 									Sign Up
 								</Text>
 								<Image
@@ -102,41 +110,68 @@ function Sign_In({ navigation }) {
 
 								{/* `````````````````````````` COUNTRY CODE ````````````````````` */}
 
-								<View
-									style={{
-										position: "relative",
-										flexDirection: "row",
-										alignItems: "center",
-										alignSelf: "center",
-										width: "100%",
-									}}
+								<Box
+									position={"relative"}
+									display="flex"
+									flexDirection="row"
+									flexWrap={"wrap"}
+									w="100%"
 								>
-									{/* <DropDownPicker
-                    items={mccData.map(ele => {
-                      return {
-                        label: [ele.emoji, ' ', ' ', ele.mcc],
-                        value: [ele.emoji, ' ', ' ', ele.mcc],
-                      };
-                    })}
-                    // showArrow={false}
-                    defaultIndex={0}
-                    defaultValue={0}
-                    zIndex={99999}
-                    containerStyle={{
-                      height: 40,
-                      width: 80,
-                      marginTop: 20,
-                      borderWidth: 0,
-                    }}
-                    dropDownStyle={{borderWidth: 0, zIndex: 99999}}
-                    onChangeItem={item => {
-                      setMcc(item.label[3]);
-                    }}
-                  /> */}
+									<DropDownPicker
+										open={open}
+										value={values.mcc}
+										items={mccData.map((ele) => {
+											return {
+												label: `${ele.emoji}  ${ele.mcc}`,
+												value: ele.mcc,
+											};
+										})}
+										setOpen={setOpen}
+										containerStyle={{
+											height: 40,
+											width: 80,
+											padding: 0,
+											margin: 0,
+										}}
+										dropDownContainerStyle={{
+											position: "absolute",
+											right: -8,
+											top: 4,
+										}}
+										placeholderStyle={{
+											color: "grey",
+										}}
+										showTickIcon={false}
+										showArrowIcon={false}
+										setValue={(data) => {
+											let val = data();
+											setFieldValue("mcc", val);
+										}}
+										style={{
+											padding: 0,
+											marginTop: 4,
+											margin: 0,
+											width: 80,
+											height: 40,
+											position: "absolute",
+											right: -8,
+											borderLeftWidth: 1,
+											borderRightWidth: 0,
+											borderTopWidth: 1,
+											borderBottomWidth: 1,
+											borderRadius: 6,
+										}}
+										placeholder="MCC"
+									/>
 
-									<Input
-										mx="3"
-										w="100%"
+									<AppInput
+										my="1"
+										borderLeftColor={"transparent"}
+										borderLeftWidth="0"
+										style={{
+											height: 48,
+										}}
+										w="180"
 										onBlur={() => setTouched()}
 										// style={{width: '70%', paddingLeft: 10, borderWidth: 0}}
 										onChangeText={(num) => setFieldValue("number", num)}
@@ -144,7 +179,7 @@ function Sign_In({ navigation }) {
 										placeholder="Mobile Number"
 										keyboardType="phone-pad"
 									/>
-								</View>
+								</Box>
 
 								{errors?.number && touched?.number && (
 									<Text
@@ -199,7 +234,7 @@ function Sign_In({ navigation }) {
 							</Text>
 
 							<View style={{ zIndex: 0 }}>
-								<Button
+								<AppButton
 									style={{ marginTop: 20, width: "100%" }}
 									onPress={submitForm}
 									title={"Next"}
@@ -240,4 +275,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default Sign_In;
+export default SignIn;
