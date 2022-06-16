@@ -5,11 +5,16 @@ import jwtDecode from "jwt-decode";
 import React, { useCallback } from "react";
 import { useDispatch } from "react-redux";
 import {
-	getUserProfile,
 	saveUserData,
 	saveUserProfile,
 	saveUserRegistry,
 } from "../../redux/store/action/useActions";
+import { getUserRegistryData } from "../../helper/services/SplashService";
+import {
+	getUserProfile,
+	mapService,
+	updateUser,
+} from "../../helper/services/SettingService";
 
 export const useUserUpdate = (token, screen) => {
 	const dispatch = useDispatch();
@@ -21,7 +26,7 @@ export const useUserUpdate = (token, screen) => {
 				.then((res) => {
 					console.log("get profile data", JSON.stringify(res));
 					dispatch(saveUserProfile(res));
-
+					console.log("kjgfdghdgh");
 					navigate(screen);
 				})
 				.catch((err) => {
@@ -90,6 +95,17 @@ export const useUserUpdate = (token, screen) => {
 		[userHandler]
 	);
 
+	const handleApi = useCallback(
+		async (jwtToken) => {
+			console.log("hello");
+			let locationAsync = await Location.getCurrentPositionAsync({});
+			const { longitude, latitude } = locationAsync.coords;
+			console.log("dhsjkfhjfkhjkfdhj");
+			getUser({ longitude, latitude }, jwtToken.user_name);
+		},
+		[getUser]
+	);
+
 	const manageLoc = useCallback(async () => {
 		if (token) {
 			const jwtToken = jwtDecode(token);
@@ -97,30 +113,26 @@ export const useUserUpdate = (token, screen) => {
 			const granted = await PermissionsAndroid.check(
 				"android.permission.ACCESS_FINE_LOCATION"
 			);
-			console.warn(granted);
-
-			if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-				console.log("You can use the camera");
-				let locationAsync = await Location.getCurrentPositionAsync({});
-				const { longitude, latitude } = locationAsync.coords;
-
-				getUser({ longitude, latitude }, jwtToken.user_name);
+			if (granted) {
+				await handleApi(jwtToken);
 			} else {
 				await PermissionsAndroid.request(
 					"android.permission.ACCESS_FINE_LOCATION"
 				)
-					.then((res) => {
+					.then(async (res) => {
 						console.warn("response", res);
 						if (res === "denied") {
 							console.warn("condition", res);
 							BackHandler.exitApp();
+						} else {
+							await handleApi(jwtToken);
 						}
 					})
 
 					.catch((err) => console.warn(err));
 			}
 		}
-	}, [getUser, token]);
+	}, [handleApi, token]);
 
 	React.useEffect(() => {
 		console.log("hey");

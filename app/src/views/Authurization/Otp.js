@@ -28,14 +28,7 @@ function Otp({ route, navigation }) {
 		switch (type) {
 			case "LOGIN":
 				console.log(number, transactionCode, otp);
-				// let formData = new FormData();
-				// formData.append("password", otp);
-				// formData.append("grant_type", "password");
-				// formData.append("domain", "banjee");
-				// formData.append("accountType", 0);
-				// formData.append("passwordType", "otp");
-				// formData.append("transactionCode", transactionCode);
-				// formData.append("username", number);
+
 				axios
 					.post(
 						"https://gateway.banjee.org/services/system-service/oauth/token",
@@ -49,17 +42,13 @@ function Otp({ route, navigation }) {
 					)
 					.then((res) => {
 						console.log(res.data);
-						// login(formData).then((res) => {
 						setToken(res.data.access_token);
 						setLocalStorage("token", res.data.access_token);
 						const jwtToken = jwtDecode(res.data.access_token);
 						setUser(jwtToken);
 						if (res) {
-							navigation.navigate("CompleteProfile");
+							navigation.navigate("Feed");
 						}
-						// else {
-						// 	navigation.navigate("CompleteProfile");
-						// }
 					})
 					.catch((err) => {
 						console.log("-------------", JSON.stringify(err, null, 2));
@@ -67,7 +56,7 @@ function Otp({ route, navigation }) {
 				break;
 			case "OTP":
 				if (directLogin) {
-					navigation.navigate("CompleteProfile");
+					navigation.navigate("Feed");
 				} else {
 					navigation.navigate("Detail", {
 						number,

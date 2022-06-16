@@ -1,19 +1,19 @@
-import {executeGet} from '../../helper/apis/getORdelete';
-import urls from '../../url';
+import urls from "../../constants/env/urls";
+import { executeGet } from "../../helper/apis/getORdelete";
 
-export const acceptRequest = id => {
-  const url = urls.USER.ACCEPT_FRIEND_REQUEST + id;
-  const actionCode = '';
-  const payload = '';
-  const method = 'GET';
+export const acceptRequest = (id) => {
+	const url = urls.USER.ACCEPT_FRIEND_REQUEST + id;
+	const actionCode = "";
+	const payload = "";
+	const method = "GET";
 
-  return executeGet(url, actionCode, payload, method, {});
+	return executeGet(url, actionCode, payload, method, {});
 };
-export const rejectRequest = id => {
-  const url = urls.USER.REJECT_FRIEND_REQUEST + id;
-  const actionCode = '';
-  const payload = '';
-  const method = 'GET';
+export const rejectRequest = (id) => {
+	const url = urls.USER.REJECT_FRIEND_REQUEST + id;
+	const actionCode = "";
+	const payload = "";
+	const method = "GET";
 
-  return executeGet(url, actionCode, payload, method, {});
+	return executeGet(url, actionCode, payload, method, {});
 };

@@ -1,11 +1,11 @@
-import urls from '../../url';
-import {executeGet} from '../../helper/apis/getORdelete';
+import urls from "../../constants/env/urls";
+import { executeGet } from "../apis/getORdelete";
 
-export const searchFeed = id => {
-  const url = urls.FIND_POST + id;
-  const actionCode = '';
-  const payload = '';
-  const method = 'GET';
+export const searchFeed = (id) => {
+	const url = urls.FIND_POST + id;
+	const actionCode = "";
+	const payload = "";
+	const method = "GET";
 
-  return executeGet(url, actionCode, payload, method, {});
+	return executeGet(url, actionCode, payload, method, {});
 };

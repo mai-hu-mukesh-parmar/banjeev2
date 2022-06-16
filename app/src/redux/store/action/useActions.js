@@ -14,21 +14,21 @@ export const saveUserProfile = (data) => {
 
 export const getUserProfile = () => {
 	return {
-		type: SAVE_USER_PROFILE,
+		type: GET_USER_PROFILE,
 		payload: null,
 	};
 };
 
 export const saveUserRegistry = (data) => {
 	return {
-		type: SAVE_USER_PROFILE,
+		type: SAVE_USER_REGISTRY,
 		payload: data,
 	};
 };
 
 export const getUserRegistry = () => {
 	return {
-		type: SAVE_USER_PROFILE,
+		type: GET_USER_REGISTRY,
 		payload: null,
 	};
 };
