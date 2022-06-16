@@ -15,13 +15,11 @@ export default function OtpInput({
 	...rest
 }) {
 	const [otp, setOpt] = React.useState({});
-	const inputs =
-		new Array(numberOfInputs).fill(1).map((ele, index) => {
-			return {
-				refs: React.useRef(),
-			};
-		})
-	
+	const inputs = new Array(numberOfInputs).fill(1).map((ele, index) => {
+		return {
+			refs: React.useRef(),
+		};
+	});
 
 	const handleDoneOtp = React.useCallback(() => {
 		let doneOtp = Object.values(otp).join("");
@@ -37,7 +35,7 @@ export default function OtpInput({
 		if (!rest.otp) {
 			setOpt({});
 		}
-		() => {
+		return () => {
 			setOpt({});
 		};
 	}, [rest]);

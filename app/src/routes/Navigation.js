@@ -1,5 +1,6 @@
 import Splash from "../views/Splash/Splash";
-import { AuthNavJson } from "./AuthNavigation/AuthNavJson";
+import { AuthNavJson } from "./Navigation/AuthNavJson";
+import BottomNavigation from "./Navigation/BottomNavigation";
 
 export const NavigationJson = [
 	{
@@ -8,4 +9,9 @@ export const NavigationJson = [
 		component: Splash,
 	},
 	...AuthNavJson,
+	{
+		options: { headerShown: false },
+		name: "Bottom",
+		component: BottomNavigation,
+	},
 ];

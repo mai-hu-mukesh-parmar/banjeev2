@@ -134,10 +134,12 @@ function Otp({ route, navigation }) {
 
 	useEffect(() => {
 		sendOtpToUser();
+		return () => {};
 	}, [sendOtpToUser]);
 
 	useEffect(() => {
 		callTimer();
+		return () => {};
 	}, [callTimer]);
 
 	const inputs = new Array(4).fill(1).map((ele, index) => {

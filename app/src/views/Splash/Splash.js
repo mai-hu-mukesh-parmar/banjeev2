@@ -4,16 +4,21 @@ import * as SplashScreen from "expo-splash-screen";
 import { getLocalStorage } from "../../utils/Cache/TempStorage";
 import { useNavigation } from "@react-navigation/native";
 import BackGroundImg from "../../constants/components/BackGroundImg";
+import { useUserUpdate } from "../../utils/hooks/useUserUpdate";
 
 export default function Splash() {
+	const [token, setToken] = useState(null);
 	const [appIsReady, setAppIsReady] = useState(false);
 	const { navigate } = useNavigation();
+
+	useUserUpdate(token, "Bottom");
+
 	useEffect(() => {
 		async function prepare() {
 			try {
 				let token = await getLocalStorage("token");
 				if (token) {
-					console.log("token", token);
+					setToken(token);
 				} else {
 					navigate("SignIn");
 				}

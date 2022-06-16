@@ -10,19 +10,17 @@ import AppButton from "../../constants/components/ui-component/AppButton";
 import { MaterialIcons } from "@expo/vector-icons";
 import AppInput from "../../constants/components/ui-component/AppInput";
 import { setLocalStorage } from "../../utils/Cache/TempStorage";
-import { useDispatch } from "react-redux";
-import {
-	saveUserData,
-	SAVE_USER_DATA,
-} from "../../redux/store/action/useActions";
-import jwtDecode from "jwt-decode";
+import { useUserUpdate } from "../../utils/hooks/useUserUpdate";
 
 function Login({ route, navigation }) {
-	const disatch = useDispatch();
 	const [show, setShow] = React.useState(false);
 	const [visible, setVisible] = useState(false);
+	const [token, setToken] = useState(null);
 	const [passMsg, setPassMsg] = useState(false);
+
 	const { number, countryCode } = route.params;
+
+	useUserUpdate(token, "Bottom");
 
 	const buttonPress = ({ password }, resetForm) => {
 		if (password) {
@@ -45,10 +43,10 @@ function Login({ route, navigation }) {
 					setVisible(true);
 					resetForm();
 					setLocalStorage("token", res.data.access_token);
-					const jwtToken = jwtDecode(res.data.access_token);
-					disatch(saveUserData(jwtToken));
+					setToken(res.data.access_token);
 				})
 				.catch((err) => {
+					setVisible(false);
 					setPassMsg(true && "Enter correct password*");
 					console.warn("Login Error", err);
 				});

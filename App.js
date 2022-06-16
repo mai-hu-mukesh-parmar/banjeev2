@@ -7,10 +7,12 @@ import { Provider } from "react-redux";
 import userProfileReducer from "./app/src/redux/store/reducer/userProfileReducer";
 import userRegisteryReducer from "./app/src/redux/store/reducer/userRegisteryReducer";
 import NavigationView from "./app/src/routes/NavigationView";
+import userDataReducer from "./app/src/redux/store/reducer/userDataReducer";
 
 const rootReducer = combineReducers({
 	profile: userProfileReducer,
-	regestry: userRegisteryReducer,
+	registry: userRegisteryReducer,
+	user: userDataReducer,
 });
 
 const store = createStore(rootReducer);
