@@ -24,9 +24,7 @@ export const useUserUpdate = (token, screen) => {
 		(id) => {
 			getUserProfile(id, {})
 				.then((res) => {
-					console.log("get profile data", JSON.stringify(res));
 					dispatch(saveUserProfile(res));
-					console.log("kjgfdghdgh");
 					navigate(screen);
 				})
 				.catch((err) => {
@@ -54,9 +52,8 @@ export const useUserUpdate = (token, screen) => {
 		(data) => {
 			updateUser(data, "PUT")
 				.then((res) => {
-					console.log("update user", JSON.stringify(res));
 					dispatch(saveUserRegistry(res));
-					getUserProfileData(res.systemUserId);
+					getUserProfileData(res.currentUser.externalReferenceId);
 
 					getLocation(res);
 				})
@@ -72,7 +69,6 @@ export const useUserUpdate = (token, screen) => {
 			const { longitude, latitude } = origin;
 			getUserRegistryData(id)
 				.then((res) => {
-					console.log("get user", JSON.stringify(res));
 					if (res) {
 						userHandler({
 							...res,
@@ -97,10 +93,8 @@ export const useUserUpdate = (token, screen) => {
 
 	const handleApi = useCallback(
 		async (jwtToken) => {
-			console.log("hello");
 			let locationAsync = await Location.getCurrentPositionAsync({});
 			const { longitude, latitude } = locationAsync.coords;
-			console.log("dhsjkfhjfkhjkfdhj");
 			getUser({ longitude, latitude }, jwtToken.user_name);
 		},
 		[getUser]
@@ -120,9 +114,7 @@ export const useUserUpdate = (token, screen) => {
 					"android.permission.ACCESS_FINE_LOCATION"
 				)
 					.then(async (res) => {
-						console.warn("response", res);
 						if (res === "denied") {
-							console.warn("condition", res);
 							BackHandler.exitApp();
 						} else {
 							await handleApi(jwtToken);
@@ -135,7 +127,6 @@ export const useUserUpdate = (token, screen) => {
 	}, [handleApi, token]);
 
 	React.useEffect(() => {
-		console.log("hey");
 		manageLoc();
 	}, [manageLoc]);
 };
