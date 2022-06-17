@@ -1,11 +1,23 @@
 import { Animated } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationJson } from "./Navigation";
+import { useToast } from "native-base";
+import { useSelector } from "react-redux";
 
 const Stack = createStackNavigator();
 
 export default function NavigationView() {
+	const toast = useToast();
+	const { open, description } = useSelector((state) => state.toast);
+	useEffect(() => {
+		if (open) {
+			toast.show({
+				description,
+			});
+		}
+	}, [open, description]);
+
 	const forSlide = ({ current, next, inverted, layouts: { screen } }) => {
 		const progress = Animated.add(
 			current.progress.interpolate({
