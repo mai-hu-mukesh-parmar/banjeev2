@@ -1,92 +1,89 @@
+import React, { useEffect, useState, useCallback } from "react";
+import { StyleSheet, Image, View, Platform } from "react-native";
+import { HStack, Text } from "native-base";
+import color from "../../constants/env/color";
+import BackGroundImg from "../../constants/components/BackGroundImg";
+import Card from "../../constants/components/Card";
+import AppButton from "../../constants/components/ui-component/AppButton";
+import { sendOtp, validateOtp } from "../../helper/services/Auth";
+
 import axios from "axios";
 import jwtDecode from "jwt-decode";
-import React from "react";
-import { StyleSheet, Image, View, Platform } from "react-native";
-import { Text, Button } from "native-base";
-import BackGroundImg from "../../constants/components/BackGroundImg";
-
-import OtpInput from "../../constants/components/OtpInput";
-
 import { setLocalStorage } from "../../utils/Cache/TempStorage";
-import Card from "../../constants/components/Card";
+import AppInput from "../../constants/components/ui-component/AppInput";
 
-import color from "../../constants/env/color";
-import { validateOtp } from "../../helper/services/Auth";
-// import {useContextUpdate} from '../../hooks/useContextUpdate';
-
-// import {
-//   login,
-//   sendOtp,
-//   validateOtp,
-// }
-
-function LoginWithOtp({ route, navigation }) {
-	const [showView, setShowView] = React.useState("auto");
-	const [seconds, setSeconds] = React.useState(30);
-	const [otp, setOtp] = React.useState("");
-	const [transactionCode, setTransactionCode] = React.useState(null);
-	const [otpError, setOtpError] = React.useState("");
-	const { countryCode, number, directLogin } = route.params;
-	// const [token, setToken] = React.useState(null);
-
-	// useContextUpdate(token, 'HomeNavigation');
+function Otp({ route, navigation }) {
+	const [showView, setShowView] = useState("auto");
+	const [seconds, setSeconds] = useState(30);
+	const [otp, setOtp] = useState("");
+	const [transactionCode, setTransactionCode] = useState(null);
+	const [otpError, setOtpError] = useState("");
+	const { countryCode, number, directLogin, type } = route.params;
 
 	let str = number.split("");
 	str.splice(2, 5, "XXXX");
 	str = str.join("");
 
+	const renderDecision = () => {
+		switch (type) {
+			case "LOGIN":
+				console.log(number, transactionCode, otp);
+
+				axios
+					.post(
+						"https://gateway.banjee.org/services/system-service/oauth/token",
+						`password=${otp}&grant_type=password&domain=banjee&accountType=0&passwordType=otp&transactionCode=${transactionCode}&username=${number}`,
+						{
+							headers: {
+								"Content-Type": "application/x-www-form-urlencoded",
+								Authorization: "Basic aXRwbDppd2FudHVubGltaXRlZA==",
+							},
+						}
+					)
+					.then((res) => {
+						console.log(res.data);
+						setToken(res.data.access_token);
+						setLocalStorage("token", res.data.access_token);
+						const jwtToken = jwtDecode(res.data.access_token);
+						setUser(jwtToken);
+						if (res) {
+							navigation.navigate("Feed");
+						}
+					})
+					.catch((err) => {
+						console.log("-------------", JSON.stringify(err, null, 2));
+					});
+				break;
+			case "OTP":
+				if (directLogin) {
+					navigation.navigate("Feed");
+				} else {
+					navigation.navigate("Detail", {
+						number,
+						mcc,
+						transactionCode,
+					});
+				}
+				break;
+			default:
+				break;
+		}
+	};
+
 	const getOTP = () => {
+		console.log("OTP", otp);
 		if (otp) {
 			validateOtp({
 				domain: "banjee",
 				mobile: number,
 				osName: Platform.OS,
-				otp: otp,
+				otp: Object.values(otp).join(""),
 				source: "mobile",
 				transactionCode: transactionCode,
 			})
 				.then((res) => {
 					if (res.valid) {
-						// let formData = new FormData();
-						// formData.append("password", otp);
-						// formData.append("grant_type", "password");
-						// formData.append("domain", "banjee");
-						// formData.append("accountType", 0);
-						// formData.append("passwordType", "otp");
-						// formData.append("transactionCode", transactionCode);
-						// formData.append("username", number);
-
-						console.log(number, transactionCode, otp);
-
-						axios
-							.post(
-								"https://gateway.banjee.org/services/system-service/oauth/token",
-								`password=${otp}&grant_type=password&domain=banjee&accountType=0&passwordType=otp&transactionCode=${transactionCode}&username=${number}`,
-								{
-									headers: {
-										"Content-Type": "application/x-www-form-urlencoded",
-										Authorization: "Basic aXRwbDppd2FudHVubGltaXRlZA==",
-									},
-								}
-							)
-							.then((res) => {
-								console.log(res.data);
-								// login(formData).then((res) => {
-								setToken(res.data.access_token);
-								setLocalStorage("token", res.data.access_token);
-								const jwtToken = jwtDecode(res.data.access_token);
-								setUser(jwtToken);
-								if (res) {
-									navigation.navigate("CompleteProfile");
-								}
-								// else {
-								// 	navigation.navigate("CompleteProfile");
-								// }
-							})
-							.catch((err) => {
-								console.log("-------------", JSON.stringify(err, null, 2));
-							});
-
+						renderDecision();
 						setOtp("");
 						setSeconds(0);
 						setOtpError("");
@@ -101,7 +98,7 @@ function LoginWithOtp({ route, navigation }) {
 		}
 	};
 
-	const sendOtpToUser = React.useCallback(() => {
+	const sendOtpToUser = useCallback(() => {
 		sendOtp({
 			mcc: countryCode,
 			mobile: number,
@@ -115,20 +112,30 @@ function LoginWithOtp({ route, navigation }) {
 			});
 	}, [countryCode, number]);
 
-	React.useEffect(() => {
-		sendOtpToUser();
+	const callTimer = React.useCallback(() => {
 		if (seconds > 0) {
 			setShowView("none");
 			setTimeout(() => setSeconds(seconds - 1), 1000);
 		} else {
 			setShowView("auto");
 		}
-		return () => {
-			setSeconds(null);
-			setTransactionCode(null);
-			setOtp("");
+	}, [seconds]);
+
+	useEffect(() => {
+		sendOtpToUser();
+		return () => {};
+	}, [sendOtpToUser]);
+
+	useEffect(() => {
+		callTimer();
+		return () => {};
+	}, [callTimer]);
+
+	const inputs = new Array(4).fill(1).map((ele, index) => {
+		return {
+			refs: React.useRef(),
 		};
-	}, [seconds, sendOtpToUser]);
+	});
 
 	return (
 		<BackGroundImg>
@@ -164,36 +171,51 @@ function LoginWithOtp({ route, navigation }) {
 						width: "100%",
 					}}
 				>
-					<OtpInput
-						inputContainerStyles={{ marginTop: -10 }}
-						numberOfInputs={4}
-						onChangeInput={(e) => {
-							console.log(e);
-						}}
-						otp={otp}
-						onDone={(e) => {
-							console.log(e);
-							setOtp(e);
-						}}
-					/>
+					<HStack justifyContent={"space-between"}>
+						{inputs.map((ele, index) => (
+							<AppInput
+								w="20%"
+								px="5"
+								key={index}
+								keyboardType="numeric"
+								ref={inputs[index].refs}
+								onKeyPress={({ nativeEvent: { key: keyValue } }) => {
+									if (
+										keyValue === "Backspace" &&
+										inputs[index - 1] &&
+										otp[index]
+									) {
+										inputs[index - 1].refs.current.focus();
+									}
+								}}
+								value={
+									Object.values(otp)[index] ? Object.values(otp)[index] : ""
+								}
+								maxLength={1}
+								onChange={({ nativeEvent: { text } }) => {
+									setOtp((prev) => ({ ...prev, [index]: text }));
+									if (inputs[index + 1] && !otp[index]) {
+										inputs[index + 1].refs.current.focus();
+									}
+								}}
+							/>
+						))}
+					</HStack>
 				</View>
 
 				<View style={{ marginTop: 20 }}>
 					{seconds > 0 && (
-						<Text style={{ paddingVertical: 10 }}>
+						<Text textAlign={"center"} style={{ paddingVertical: 10 }}>
 							{seconds + " Seconds remaining"}
 						</Text>
 					)}
 				</View>
 
-				<Text
-					style={styles.link}
-					onPress={() => navigation.navigate("Sign-In")}
-				>
+				<Text style={styles.link} onPress={() => navigation.navigate("SignIn")}>
 					Change phone number
 				</Text>
 
-				<Button
+				<AppButton
 					style={{ marginTop: 20, width: "100%" }}
 					onPress={getOTP}
 					title={"Proceed"}
@@ -201,7 +223,7 @@ function LoginWithOtp({ route, navigation }) {
 
 				{showView !== "none" ? (
 					<View style={{ width: "100%" }} pointerEvents={showView}>
-						<Button
+						<AppButton
 							style={{
 								marginTop: 10,
 								width: "100%",
@@ -216,7 +238,7 @@ function LoginWithOtp({ route, navigation }) {
 					</View>
 				) : (
 					<View style={{ width: "100%" }} pointerEvents={showView}>
-						<Button
+						<AppButton
 							disabled={true}
 							style={{
 								marginTop: 10,
@@ -286,4 +308,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default LoginWithOtp;
+export default Otp;

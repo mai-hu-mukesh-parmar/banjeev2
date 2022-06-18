@@ -1,11 +1,11 @@
-import {executePost} from '../../helper/apis/postORput';
-import urls from '../../url';
+import urls from "../../constants/env/urls";
+import { executePost } from "../apis/postORput";
 
-export const OtherFeedService = reqload => {
-  const url = urls.OTHER_POST;
-  const actionCode = null;
-  const payload = reqload;
-  const method = 'POST';
+export const OtherFeedService = (reqload) => {
+	const url = urls.OTHER_POST;
+	const actionCode = null;
+	const payload = reqload;
+	const method = "POST";
 
-  return executePost(url, actionCode, payload, method, {});
+	return executePost(url, actionCode, payload, method, {});
 };

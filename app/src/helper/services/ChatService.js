@@ -1,7 +1,6 @@
-import { getLocalStorage } from "../../../Cache/TempStorage";
-import { executeGet } from "../../getORdelete";
-import { executePost } from "../../postORput";
-import urls from "../../url";
+import urls from "../../constants/env/urls";
+import { executeGet } from "../apis/getORdelete";
+import { executePost } from "../apis/postORput";
 
 export const chatHistory = (payload) => {
 	let method = "POST";

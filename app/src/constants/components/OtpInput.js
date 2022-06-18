@@ -1,12 +1,13 @@
-import React from "react";
+import { View } from "native-base";
+import React, { useState } from "react";
 import {
 	Platform,
 	SafeAreaView,
 	StatusBar,
 	StyleSheet,
-	TextInput,
 	Keyboard,
 } from "react-native";
+import AppInput from "./ui-component/AppInput";
 export default function OtpInput({
 	numberOfInputs,
 	onChangeInput,
@@ -34,42 +35,19 @@ export default function OtpInput({
 		if (!rest.otp) {
 			setOpt({});
 		}
-		() => {
+		return () => {
 			setOpt({});
 		};
 	}, [rest]);
 
-	const styles = StyleSheet.create({
-		container: {
-			marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-			flex: 1,
-			zIndex: 1,
-			height: 50,
-			flexDirection: "row",
-			justifyContent: "center",
-			...rest.inputContainerStyles,
-		},
-		input: {
-			height: 40,
-			zIndex: 1,
-			margin: 12,
-			borderWidth: 1,
-			padding: 10,
-			width: 40,
-			borderRadius: 5,
-			backgroundColor: "white",
-			...rest.inputStyles,
-		},
-	});
-
 	return (
-		<SafeAreaView style={styles.container}>
+		<View>
 			{inputs.map((ele, index) => (
-				<TextInput
+				<AppInput
+					w="25%"
 					key={index}
 					keyboardType="numeric"
 					ref={inputs[index].refs}
-					style={styles.input}
 					onKeyPress={({ nativeEvent: { key: keyValue } }) => {
 						if (keyValue === "Backspace" && inputs[index - 1] && otp[index]) {
 							inputs[index - 1].refs.current.focus();
@@ -86,6 +64,6 @@ export default function OtpInput({
 					}}
 				/>
 			))}
-		</SafeAreaView>
+		</View>
 	);
 }

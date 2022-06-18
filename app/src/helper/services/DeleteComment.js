@@ -1,11 +1,11 @@
-import { executeGet } from "../../getORdelete";
-import urls from "../../url";
+import urls from "../../constants/env/urls";
+import { executeGet } from "../apis/getORdelete";
 
 export const deleteComment = (id) => {
-  const url = urls.DELETE_POST + id;
-  const actionCode = "";
-  const payload = "";
-  const method = "DELETE";
+	const url = urls.DELETE_POST + id;
+	const actionCode = "";
+	const payload = "";
+	const method = "DELETE";
 
-  return executeGet(url, actionCode, payload, method, {});
+	return executeGet(url, actionCode, payload, method, {});
 };
