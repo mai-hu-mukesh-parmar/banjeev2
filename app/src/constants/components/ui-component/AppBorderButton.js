@@ -1,7 +1,7 @@
+import { Text } from "native-base";
 import React from "react";
 import { View, StyleSheet, TouchableWithoutFeedback } from "react-native";
-import color from "../../Config/color";
-import AppText from "./AppText";
+import color from "../../env/color";
 
 function AppBorderButton({ onPress, width, title }) {
 	const styles = StyleSheet.create({
@@ -20,9 +20,9 @@ function AppBorderButton({ onPress, width, title }) {
 	return (
 		<TouchableWithoutFeedback onPress={() => onPress()}>
 			<View style={styles.container}>
-				<AppText onPress={() => onPress()} style={{ color: color.primary }}>
+				<Text onPress={() => onPress()} style={{ color: color.primary }}>
 					{title}
-				</AppText>
+				</Text>
 			</View>
 		</TouchableWithoutFeedback>
 	);
