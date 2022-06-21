@@ -2,12 +2,12 @@ import React from "react";
 import { View, Image, ImageBackground } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { LinearGradient } from "expo-linear-gradient";
-import Feed from "../../views/Main/Feed/Feed";
 import Contacts from "../../views/Main/Contacts/Contacts";
 import Rooms from "../../views/Main/Room/Rooms";
 import Profile from "../../views/Main/Profile/Profile";
 import Map from "../../views/Main/Map/Map";
 import color from "../../constants/env/color";
+import FeedScreen from "../../views/Main/Feed/FeedScreen";
 
 function BottomNavigation(props) {
 	const Tab = createBottomTabNavigator();
@@ -86,7 +86,7 @@ function BottomNavigation(props) {
 					),
 				}}
 				name="Feed"
-				component={Feed}
+				component={FeedScreen}
 			/>
 
 			<Tab.Screen
