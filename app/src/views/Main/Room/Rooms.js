@@ -14,6 +14,7 @@ import {
 	deleteRoom,
 	listOurRoom,
 } from "../../../helper/services/CreateRoomService";
+import RoomElement from "./RoomComponents/RoomElement";
 
 function Room(props) {
 	const { navigate } = useNavigation();

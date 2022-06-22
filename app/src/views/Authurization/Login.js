@@ -39,11 +39,12 @@ function Login({ route, navigation }) {
 					}
 				)
 				.then((res) => {
-					console.log(res.data);
+					console.log("data", res.data);
 					setVisible(true);
 					resetForm();
 					setLocalStorage("token", res.data.access_token);
 					setToken(res.data.access_token);
+					navigation.navigate("Bottom");
 				})
 				.catch((err) => {
 					setVisible(false);
