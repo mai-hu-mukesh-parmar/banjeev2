@@ -13,10 +13,13 @@ import { Text } from "native-base";
 import AppFabButton from "../../../../../constants/components/ui-component/AppFabButton";
 import AppButton from "../../../../../constants/components/ui-component/AppButton";
 import color from "../../../../../constants/env/color";
+import usePermission from "../../../../../utils/hooks/usePermission";
 
 function RecordVoice(props) {
 	const height = Platform.OS === "android" ? StatusBar.currentHeight : 30;
 	const { goBack, navigate } = useNavigation();
+
+	usePermission("AUDIO");
 
 	const userData = useSelector((state) => state.register);
 	console.warn(userData);
@@ -91,7 +94,6 @@ function RecordVoice(props) {
 	};
 
 	// `````````````````````````````` STOP RECORDING
-
 	const stopRecording = async () => {
 		clearInterval(countRef.current); // pause timer
 
