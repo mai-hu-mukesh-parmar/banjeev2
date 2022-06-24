@@ -8,6 +8,7 @@ import {
 	Image,
 } from "react-native";
 import AppBorderButton from "../../constants/components/ui-component/AppBorderButton";
+import AppButton from "../../constants/components/ui-component/AppButton";
 
 function ConfirmModal({ setModalVisible, btnLabel, message, onPress, title }) {
 	return (

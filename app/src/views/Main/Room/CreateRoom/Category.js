@@ -8,7 +8,7 @@ import {
 	Image,
 	ScrollView,
 } from "react-native";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import AppButton from "../../../../constants/components/ui-component/AppButton";
 import AppLoading from "../../../../constants/components/ui-component/AppLoading";
 import color from "../../../../constants/env/color";
@@ -16,6 +16,7 @@ import {
 	categoryService,
 	subCategoryService,
 } from "../../../../helper/services/CategoryService";
+import { setRoomData } from "../../../../redux/store/action/roomData";
 import {
 	checkGender,
 	listProfileUrl,
@@ -43,6 +44,7 @@ function Category(props) {
 	const { setOptions, navigate } = useNavigation();
 
 	const [imageError, setImageError] = React.useState();
+	const dispatch = useDispatch();
 
 	React.useEffect(() => {
 		categoryService({
@@ -191,6 +193,14 @@ function Category(props) {
 											key={i}
 											onPress={() => {
 												// console.log(item.id);
+
+												dispatch(
+													setRoomData({
+														categoryId: categoryId,
+														subCategoryId: item.id,
+														categoryName: item.name,
+													})
+												);
 												return navigate("CreateRoom", {
 													categoryData: {
 														categoryId: categoryId,

@@ -13,7 +13,7 @@ export default function AppMenu({ menuContent, menuColor }) {
 				w="190"
 				trigger={(triggerProps) => {
 					return (
-						<Pressable accessibilityLabel="More options menu" {...triggerProps}>
+						<Pressable accessiilityLabel="More options menu" {...triggerProps}>
 							<MaterialCommunityIcons
 								style={{
 									marginRight: 10,
