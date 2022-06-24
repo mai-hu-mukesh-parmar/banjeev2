@@ -21,6 +21,7 @@ import AppFabButton from "../../../../../constants/components/ui-component/AppFa
 import AppButton from "../../../../../constants/components/ui-component/AppButton";
 import color from "../../../../../constants/env/color";
 import usePermission from "../../../../../utils/hooks/usePermission";
+
 import { PERMISSIONS, request, check } from "react-native-permissions";
 import { showToast } from "../../../../../redux/store/reducer/toastAction";
 
@@ -28,8 +29,11 @@ function RecordVoice(props) {
 	const height = Platform.OS === "android" ? StatusBar.currentHeight : 30;
 	const { goBack, navigate } = useNavigation();
 
+	usePermission("AUDIO");
+
 	const dispatch = useDispatch();
-	const userData = useSelector((state) => state.register);
+
+	const userData = useSelector((state) => state.registry);
 	console.warn(userData);
 
 	const per = usePermission("AUDIO");
@@ -105,7 +109,6 @@ function RecordVoice(props) {
 	};
 
 	// `````````````````````````````` STOP RECORDING
-
 	const stopRecording = async () => {
 		clearInterval(countRef.current); // pause timer
 
