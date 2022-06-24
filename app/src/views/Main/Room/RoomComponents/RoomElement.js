@@ -1,14 +1,15 @@
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Image, StyleSheet } from "react-native";
 import React from "react";
-import { profileUrl } from "../../../../Services/constantExport";
-import AppText from "../../../../Components/AppComponents/AppText";
-import AppButton from "../../../../Components/AppComponents/AppButton";
-import AppBorderButton from "../../../../Components/AppComponents/AppBorderButton";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import usePlayPauseAudio from "../../../../Components/UsePlayPauseAudio";
-import AppMenu from "../../../../Components/AppMenu";
-import { Box } from "native-base";
+import { Box, Text } from "native-base";
+import { profileUrl } from "../../../../utils/util-func/constantExport";
+import AppBorderButton from "../../../../constants/components/ui-component/AppBorderButton";
+import AppButton from "../../../../constants/components/ui-component/AppButton";
+import usePlayPauseAudio from "../../../../utils/hooks/usePlayPauseAudio";
+import AppMenu from "../../../../constants/components/ui-component/AppMenu";
+import { useDispatch } from "react-redux";
+import { setRoomData } from "../../../../redux/store/action/roomData";
 
 export default function RoomElement({
 	item,
@@ -25,6 +26,7 @@ export default function RoomElement({
 
 	const { icons, playAudio } = usePlayPauseAudio();
 	// const { icons, playAudio } = usePlayPauseAudio(item?.content?.src);
+	const dispatch = useDispatch();
 
 	return (
 		<React.Fragment>
@@ -39,7 +41,7 @@ export default function RoomElement({
 				<View style={styles.subContainer}>
 					{item?.live && (
 						<Image
-							source={require("../../../../assets/EditDrawerIcon/live.png")}
+							source={require("../../../../../assets/EditDrawerIcon/live.png")}
 							style={[
 								styles.img,
 								{ position: "absolute", zIndex: 9, top: 8, left: 8 },
@@ -50,7 +52,7 @@ export default function RoomElement({
 						source={
 							item?.imageContent?.src
 								? { uri: profileUrl(item?.imageContent?.src) }
-								: require("../../../../assets/EditDrawerIcon/ic_group.png")
+								: require("../../../../../assets/EditDrawerIcon/ic_group.png")
 						}
 						style={styles.img}
 					/>
@@ -90,12 +92,9 @@ export default function RoomElement({
 								marginTop: 24,
 							}}
 						>
-							<AppText
-								numberOfLines={2}
-								style={{ fontSize: 18, width: "100%" }}
-							>
+							<Text numberOfLines={2} style={{ fontSize: 18, width: "100%" }}>
 								{item?.groupName}
-							</AppText>
+							</Text>
 						</View>
 
 						{/* buttons */}
@@ -107,7 +106,7 @@ export default function RoomElement({
 							}}
 						>
 							<Image
-								source={require("../../../../assets/EditDrawerIcon/category.png")}
+								source={require("../../../../../assets/EditDrawerIcon/category.png")}
 								style={{
 									width: 24,
 									height: 24,
@@ -116,12 +115,12 @@ export default function RoomElement({
 								}}
 							/>
 
-							<AppText
+							<Text
 								style={{ color: "#656565", fontWeight: "bold" }}
 								numberOfLines={1}
 							>
 								{item.categoryName},{item?.subCategoryName}
-							</AppText>
+							</Text>
 						</View>
 
 						<View style={styles.subIconView}>
@@ -156,7 +155,7 @@ export default function RoomElement({
 											onPress={() => playAudio()}
 										/>
 									</View>
-									<AppText
+									<Text
 										style={{
 											color: "#656565",
 											marginLeft: 5,
@@ -164,11 +163,11 @@ export default function RoomElement({
 										}}
 									>
 										Intro
-									</AppText>
+									</Text>
 								</View>
 
 								<Image
-									source={require("../../../../assets/EditDrawerIcon/ic_community_group.png")}
+									source={require("../../../../../assets/EditDrawerIcon/ic_community_group.png")}
 									style={{
 										width: 20,
 										height: 20,
@@ -177,9 +176,9 @@ export default function RoomElement({
 									}}
 								/>
 
-								<AppText style={{ color: "#656565" }}>
+								<Text style={{ color: "#656565" }}>
 									{item?.connectedUsers?.length} Members
-								</AppText>
+								</Text>
 							</View>
 						</View>
 					</View>
@@ -217,6 +216,7 @@ export default function RoomElement({
 							title="Edit"
 							width={80}
 							onPress={() => {
+								dispatch(setRoomData(item));
 								navigate("CreateRoom", { editRoomItem: item });
 							}}
 						/>

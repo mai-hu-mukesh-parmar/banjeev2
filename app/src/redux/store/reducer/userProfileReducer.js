@@ -1,4 +1,8 @@
-import { GET_USER_PROFILE, SAVE_USER_PROFILE } from "../action/useActions";
+import {
+	GET_USER_PROFILE,
+	SAVE_USER_PROFILE,
+	REMOVE_USER_PROFILE,
+} from "../action/useActions";
 
 const initialState = {};
 
@@ -8,6 +12,9 @@ export default function userProfileReducer(state = initialState, action) {
 			return state;
 		case SAVE_USER_PROFILE:
 			return { ...state, ...action.payload };
+
+		case REMOVE_USER_PROFILE:
+			return { ...action.payload };
 		default:
 			return state;
 	}

@@ -1,39 +1,21 @@
 import React from "react";
-import {
-	View,
-	StyleSheet,
-	Image,
-	Platform,
-	StatusBar,
-	Linking,
-} from "react-native";
+import { View, StyleSheet, Image, Platform } from "react-native";
 
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { Audio } from "expo-av";
 import { useNavigation } from "@react-navigation/native";
-// import RNFetchBlob from 'rn-fetch-blob';
-
-import * as FileSystem from "expo-file-system";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
+import AppFabButton from "../../../../constants/components/ui-component/AppFabButton";
 import { Text } from "native-base";
-import AppFabButton from "../../../../../constants/components/ui-component/AppFabButton";
-import AppButton from "../../../../../constants/components/ui-component/AppButton";
-import color from "../../../../../constants/env/color";
-import usePermission from "../../../../../utils/hooks/usePermission";
-import { PERMISSIONS, request, check } from "react-native-permissions";
-import { showToast } from "../../../../../redux/store/reducer/toastAction";
+import color from "../../../../constants/env/color";
+import { profileUrl } from "../../../../utils/util-func/constantExport";
 
-function RecordVoice(props) {
-	const height = Platform.OS === "android" ? StatusBar.currentHeight : 30;
-	const { goBack, navigate } = useNavigation();
+function PlayVoice(props) {
+	const { voiceIntroSrc, id, systemUserId } = useSelector(
+		(state) => state.registry
+	);
 
-	const dispatch = useDispatch();
-	const userData = useSelector((state) => state.register);
-	console.warn(userData);
-
-	const per = usePermission("AUDIO");
-	// console.warn(per);
 	const [recorder, setRecorder] = React.useState();
 
 	const [recorderingState, setRecordingState] = React.useState(false);
@@ -50,8 +32,9 @@ function RecordVoice(props) {
 
 	const countRef = React.useRef(null);
 
-	const [audio, setAudio] = React.useState("");
-	const [view, setView] = React.useState(false);
+	const [audio, setAudio] = React.useState(
+		voiceIntroSrc ? profileUrl(voiceIntroSrc) : null
+	);
 
 	const formatTime = () => {
 		const getSeconds = `0${timer % 60}`.slice(-2);
@@ -62,21 +45,10 @@ function RecordVoice(props) {
 		return `${getHours} : ${getMinutes} : ${getSeconds}`;
 	};
 
-	const saveIntro = async () => {
-		const options = { encoding: FileSystem.EncodingType.Base64 };
-		const audioBase64 = await FileSystem.readAsStringAsync(audio, options);
-		navigate("CreateRoom", {
-			audio: {
-				audioBase64: audioBase64,
-				url: audio.split("/")[audio.split("/").length - 1],
-			},
-		});
-	};
 	// `````````````````````````````` START RECORDING
 
 	const startRecording = async () => {
 		try {
-			setAudio(undefined);
 			const localRecorder = new Audio.Recording();
 			setRecorder(localRecorder);
 			const result = await localRecorder.getStatusAsync();
@@ -115,7 +87,7 @@ function RecordVoice(props) {
 			recorder
 				.stopAndUnloadAsync()
 				.then(async (e) => {
-					if (e.durationMillis > 10) {
+					if (e.durationMillis > 5000) {
 						const uri = recorder.getURI();
 						console.log("Recording stopped and stored at", uri);
 						setAudio(uri);
@@ -136,24 +108,6 @@ function RecordVoice(props) {
 	};
 
 	React.useEffect(() => {
-		if (per === "granted") {
-			console.warn(per);
-
-			// request("ios.permission.MICROPHONE")
-			// .then(() =>
-			setView(true);
-			// ).catch((err) => console.warn(err));
-		} else {
-			Linking.openSettings();
-
-			dispatch(
-				showToast({
-					open: true,
-					description: "give audio permission to access audio...! ",
-				})
-			);
-		}
-
 		() => {
 			setTimer(0);
 			setTimerError("");
@@ -165,7 +119,7 @@ function RecordVoice(props) {
 			setVisible(false);
 			stopRecording();
 		};
-	}, [per]);
+	}, []);
 
 	//``````````````````````````` Load Sound
 
@@ -174,11 +128,22 @@ function RecordVoice(props) {
 			allowsRecordingIOS: false,
 			playsInSilentModeIOS: false,
 		});
+		let localUri = "";
+		if (audio?.split("/").includes("iwantcdn")) {
+			const downloadResumable = FileSystem.createDownloadResumable(
+				audio,
+				FileSystem.documentDirectory + "sample.mp4"
+			);
+			const { uri } = await downloadResumable.downloadAsync();
+			localUri = uri;
+		} else {
+			localUri = audio;
+		}
 
 		player
 			.loadAsync(
 				{
-					uri: audio,
+					uri: localUri,
 				},
 				Platform.OS === "ios" ? true : false
 			)
@@ -228,32 +193,23 @@ function RecordVoice(props) {
 
 	const navigation = useNavigation();
 
-	const player1 = () =>
-		React.useCallback(async () => {
-			if (visible && icons === "play") {
-				await stopPlayer();
-			}
-			const unsubscribe = navigation.addListener("blur", async () => {
-				await stopPlayer();
-			});
+	const player1 = React.useCallback(async () => {
+		if (visible && icons === "play") {
+			await stopPlayer();
+		}
+		const unsubscribe = navigation.addListener("blur", async () => {
+			await stopPlayer();
+		});
 
-			return unsubscribe;
-		}, [navigation, visible, icons]);
+		return unsubscribe;
+	}, [navigation, visible, icons]);
+
 	React.useEffect(() => {
-		player1;
+		player1();
 	}, [player1]);
 
 	const recordingStateView = (
-		<View
-			style={{
-				alignItems: "center",
-				marginTop: 36,
-				height: "100%",
-				width: "100%",
-				flex: 1,
-				justifyContent: "space-evenly",
-			}}
-		>
+		<View style={{ alignItems: "center", marginTop: 36 }}>
 			{countRef && (
 				<Text
 					style={{
@@ -267,32 +223,120 @@ function RecordVoice(props) {
 
 			<Text style={styles.Err}>{timeErr}</Text>
 
-			{/* ````````````````````````````RE-RECORDING  */}
+			{/* ```````````````````````````` START/STOP RECORDING  */}
 
+			<View style={{ alignItems: "center" }}>
+				<AppFabButton
+					onPress={() => {
+						recorderingState ? stopRecording() : startRecording();
+					}}
+					style={styles.icon}
+					icon={
+						<MaterialCommunityIcons
+							name={recorderingState ? "stop" : "microphone-outline"}
+							size={25}
+							color={color.black}
+						/>
+					}
+				/>
+
+				<Text style={styles.txt}>{recorderingState ? "STOP" : "START"}</Text>
+			</View>
+		</View>
+	);
+
+	async function uploadRecording() {
+		await stopPlayer();
+		const mimeType = audio?.split(".")[audio?.split(".").length - 1];
+		let data = await FileSystem.readAsStringAsync(audio, {
+			encoding: FileSystem.EncodingType.Base64,
+		});
+
+		const payload = {
+			content: {
+				aspectRatio: null,
+				base64Content: data,
+				caption: null,
+				description: null,
+				height: 0,
+				length: 0,
+				mediaDesignType: 0,
+				mediaSource: null,
+				mimeType: `audio/${mimeType}`,
+				sequenceNumber: 0,
+				sizeInBytes: 0,
+				src: null,
+				subTitle: null,
+				tags: null,
+				title: "MediaIntro",
+				type: null,
+				width: 0,
+			},
+			id,
+			systemUserId,
+		};
+
+		if (voiceIntroSrc) {
+			// console.log("Present ", voiceIntroSrc);
+			voiceIntro(payload, true)
+				.then((res) => {
+					console.log("Present Response ", res);
+					const audioUrl = profileUrl(res.content.src);
+					// console.log("-------> ", audioUrl);
+					setAudio(audioUrl);
+				})
+				.catch((err) => {
+					console.warn(JSON.stringify(err, null, 2));
+				});
+		} else {
+			console.log("Not Present ", voiceIntroSrc);
+
+			voiceIntro(payload, false)
+				.then((res) => {
+					console.log("Not Present Response ", res);
+					const audioUrl = profileUrl(res.content.src);
+					// console.log("-------> ", audioUrl);
+					setAudio(audioUrl);
+				})
+				.catch((err) => {
+					console.warn(JSON.stringify(err, null, 2));
+				});
+		}
+	}
+
+	const playerStateView = (
+		<React.Fragment>
 			<View
 				style={{
-					alignItems: "center",
-					width: "60%",
-					justifyContent: "space-evenly",
-					flexDirection: "row",
+					height: 150,
 				}}
 			>
+				<Image
+					source={require("../../../../../assets/Animations/wave.gif")}
+					style={[styles.wave, { opacity: icons === "pause" ? 1 : 0 }]}
+				/>
+			</View>
+			<View style={styles.iconView}>
 				<View style={{ alignItems: "center" }}>
 					<AppFabButton
 						onPress={() => {
-							recorderingState ? stopRecording() : startRecording();
+							setVisible(true);
+							setIcons("play");
 						}}
-						style={styles.icon}
+						style={styles.icons}
 						icon={
 							<MaterialCommunityIcons
-								name={"replay"}
+								name="replay"
 								size={25}
-								color={color.black}
+								color={color.white}
 							/>
 						}
 					/>
-					<Text style={styles.txt}>RE-RECORD</Text>
+
+					<Text style={styles.reRecord}>RE-RECORD</Text>
 				</View>
+
+				{/* `````````````````````````````` PLAY PAUSE BUTTON `````````````````````  */}
 
 				<View style={{ alignItems: "center" }}>
 					<AppFabButton
@@ -300,136 +344,40 @@ function RecordVoice(props) {
 							setIcons(icons === "play" ? "pause" : "play");
 							playAudio();
 						}}
-						style={styles.icon}
+						style={[styles.icons, { backgroundColor: color.white }]}
 						icon={
 							<MaterialCommunityIcons
 								name={icons}
-								size={25}
+								size={28}
 								color={color.black}
 							/>
 						}
 					/>
-					<Text style={styles.txt}>{icons === "play" ? "PLAY" : "PAUSE"}</Text>
+
+					<Text style={{ color: color.white, fontSize: 12, marginTop: 17 }}>
+						{icons === "play" ? "PLAY" : "PAUSE"}
+					</Text>
 				</View>
 			</View>
-
-			{!visible && audio && (
-				<View
-					style={{
-						flexDirection: "row",
-						justifyContent: "space-evenly",
-						width: "80%",
-						position: "absolute",
-						bottom: 40,
-					}}
-				>
-					<AppButton
-						style={styles.saveBtn}
-						onPress={() => goBack()}
-						title={"Cancel"}
-					/>
-					<AppButton
-						style={styles.saveBtn}
-						onPress={() => saveIntro()}
-						title={"Save Intro"}
-					/>
-				</View>
+			{!visible && !audio.split("/").includes("iwantcdn") && (
+				<AppButton
+					style={styles.saveBtn}
+					onPress={uploadRecording}
+					title={"Save My Recording"}
+				/>
 			)}
-		</View>
-	);
-
-	const playerStateView = (
-		<React.Fragment>
-			<View style={styles.container}>
-				{!recorderingState && (
-					<Text
-						style={{ color: color.white, width: "80%", textAlign: "center" }}
-					>
-						Add Intro Voice about your topic, which describes about your Room
-						and activity
-					</Text>
-				)}
-
-				{countRef && (
-					<Text
-						style={{
-							color: color.white,
-							fontSize: 30,
-						}}
-					>
-						{timer ? formatTime() : "00 : 00 : 00"}
-					</Text>
-				)}
-
-				<View style={{ flexDirection: "column", alignItems: "center" }}>
-					<AppFabButton
-						onPress={() =>
-							recorderingState ? stopRecording() : startRecording()
-						}
-						size={25}
-						style={{ backgroundColor: "white", borderRadius: 50 }}
-						icon={
-							<MaterialCommunityIcons
-								name={recorderingState ? "stop" : "microphone-outline"}
-								color={color.black}
-								size={22}
-							/>
-						}
-					/>
-
-					<Text style={{ color: color.white, fontSize: 12, marginTop: 10 }}>
-						{recorderingState ? "STOP" : "START"}
-					</Text>
-				</View>
-			</View>
 		</React.Fragment>
 	);
 	const isAudioPresent = (
 		<React.Fragment>
-			{audio && !visible ? recordingStateView : playerStateView}
+			{audio && !visible ? playerStateView : recordingStateView}
 		</React.Fragment>
 	);
 
-	return (
-		<React.Fragment>
-			{view && (
-				<View style={{ backgroundColor: color.drawerGrey, flex: 1 }}>
-					<AppFabButton
-						style={{
-							position: "absolute",
-							top: height,
-							right: 0,
-							borderWidth: 1,
-						}}
-						onPress={() => {
-							console.warn("first");
-							goBack();
-						}}
-						size={20}
-						icon={
-							<MaterialCommunityIcons
-								name="close"
-								color={color.white}
-								size={20}
-								onPress={() => goBack()}
-							/>
-						}
-					/>
-
-					{isAudioPresent}
-				</View>
-			)}
-		</React.Fragment>
-	);
+	return <View>{isAudioPresent}</View>;
 }
 
 const styles = StyleSheet.create({
-	container: {
-		height: "100%",
-		width: "100%",
-		alignItems: "center",
-		justifyContent: "space-evenly",
-	},
 	icons: {
 		borderWidth: 1,
 		borderColor: color.white,
@@ -468,8 +416,12 @@ const styles = StyleSheet.create({
 		width: "50%",
 		alignSelf: "center",
 	},
-	saveBtn: { width: 110 },
+	saveBtn: {
+		marginTop: 20,
+		width: "50%",
+		alignSelf: "center",
+	},
 	reRecord: { color: color.white, fontSize: 12, marginTop: 17 },
 });
 
-export default RecordVoice;
+export default PlayVoice;

@@ -1,16 +1,24 @@
 import { Text } from "native-base";
 import React from "react";
 import { View, StyleSheet, Keyboard } from "react-native";
+import { useDispatch } from "react-redux";
 import AppBorderButton from "../../../../constants/components/ui-component/AppBorderButton";
 import AppButton from "../../../../constants/components/ui-component/AppButton";
 import AppInput from "../../../../constants/components/ui-component/AppInput";
 import OverlayDrawer from "../../../../constants/components/ui-component/OverlayDrawer";
+import { setRoomData } from "../../../../redux/store/action/roomData";
 
 function RoomTitle({ roomTitle, setRoomTitle, txt, setTxt }) {
+	const dispatch = useDispatch();
 	const getText = (e) => {
 		if (e === "" || e === null) {
 			console.warn("Empty Title");
 		} else {
+			dispatch(
+				setRoomData({
+					groupName: txt,
+				})
+			);
 			setTxt(e);
 		}
 	};
@@ -18,6 +26,11 @@ function RoomTitle({ roomTitle, setRoomTitle, txt, setTxt }) {
 		Keyboard.dismiss();
 		hideModal();
 		setRoomTitle(txt);
+		dispatch(
+			setRoomData({
+				groupName: txt,
+			})
+		);
 	};
 
 	//   const inputRef = React.createRef(null);

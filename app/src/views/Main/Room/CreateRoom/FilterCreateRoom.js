@@ -1,16 +1,12 @@
 import React from "react";
 import { View, StyleSheet, Switch, Image } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import AppText from "../../../../Components/AppComponents/AppText";
-import AppButton from "../../../../Components/AppComponents/AppButton";
-import MainContext from "../../../../Context/MainContext";
-import { profileUrl } from "../../../../Services/constantExport";
-import {
-	createRoom,
-	updateRoom,
-} from "../../../../Services/Room/CreateRoomService";
-import color from "../../../../Config/color";
-import { ToastMessage } from "../../../../Components/ToastMessage";
+import { Text } from "native-base";
+import AppButton from "../../../../constants/components/ui-component/AppButton";
+import color from "../../../../constants/env/color";
+import { useSelector } from "react-redux";
+import { profileUrl } from "../../../../utils/util-func/constantExport";
+import { updateRoom } from "../../../../helper/services/CreateRoomService";
 
 function FilterCreateRoom(props) {
 	const {
@@ -33,13 +29,15 @@ function FilterCreateRoom(props) {
 			},
 		},
 	} = useRoute();
+
 	const { setOptions, navigate } = useNavigation();
 	const [disable, setDisable] = React.useState(false);
 
-	// console.warn("previousRoomDetail", data?.editRoom);
+	const {
+		userObject: { id, avtarUrl },
+	} = useSelector((state) => state.registry);
 
-	const { userData } = React.useContext(MainContext);
-
+	const user = useSelector((state) => state.user);
 	const btnClick = React.useCallback(() => {
 		setDisable(true);
 		if (editRoom) {
@@ -160,9 +158,9 @@ function FilterCreateRoom(props) {
 				subCategoryId: data.subCategoryId,
 				subCategoryName: data.txt,
 				unreadMessages: 0,
-				user: userData?.user,
-				userId: userData?.currentUser?.id,
-				userIds: [userData?.currentUser?.id],
+				user: user,
+				userId: id,
+				userIds: [id],
 			})
 				.then((res) => {
 					navigate("Room");
@@ -240,8 +238,8 @@ function FilterCreateRoom(props) {
 				subCategoryName: data.txt,
 				unreadMessages: 0,
 				user: null,
-				userId: userData?.currentUser?.id,
-				userIds: [userData?.currentUser?.id],
+				userId: id,
+				userIds: [id],
 			})
 				// .then((res) => console.log(res))
 				.then((res) => {
@@ -260,13 +258,13 @@ function FilterCreateRoom(props) {
 						<Image
 							source={
 								// userData.avatarUrl
-								{ uri: profileUrl(userData.avtarUrl) }
+								{ uri: profileUrl(avtarUrl) }
 								// : require("../../assets/EditDrawerIcon/neutral_placeholder.png")
 							}
 							style={styles.profile}
 						/>
 					</View>
-					<AppText>{editRoom ? "Update Room" : "Create Room"}</AppText>
+					<Text>{editRoom ? "Update Room" : "Create Room"}</Text>
 				</View>
 			),
 		});
@@ -366,11 +364,11 @@ function FilterCreateRoom(props) {
 		<React.Fragment>
 			<View style={styles.container}>
 				<View style={{ alignItems: "center" }}>
-					<AppText style={{ textAlign: "center", marginBottom: 24 }}>
+					<Text style={{ textAlign: "center", marginBottom: 24 }}>
 						You have selected {userCount?.length} members for your {data?.txt}
 						Room
-					</AppText>
-					<AppText>Set appropriate permissions for others</AppText>
+					</Text>
+					<Text>Set appropriate permissions for others</Text>
 				</View>
 
 				<View
@@ -394,11 +392,15 @@ function FilterCreateRoom(props) {
 								position: "relative",
 							}}
 						>
-							<AppText style={{ fontSize: 14, position: "absolute" }}>
-								{item.title}
-							</AppText>
+							<Text style={{ fontSize: 14 }}>{item.title}</Text>
 
 							<Switch
+								style={{
+									width: 50,
+
+									alignSelf: "flex-end",
+									position: "absolute",
+								}}
 								trackColor={{ false: "#7b7b7b", true: "#608582" }}
 								thumbColor={item.isEnabled ? "#80cbc4" : "#bdbdbd"}
 								ios_backgroundColor="#3e3e3e"

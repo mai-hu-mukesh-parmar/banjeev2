@@ -9,6 +9,7 @@ import {
 	// headerBackground,
 	headerStyle,
 } from "../../constants/navigation/navigation";
+import Details from "../../views/Authurization/Details";
 
 export const AuthNavJson = [
 	{
@@ -55,5 +56,17 @@ export const AuthNavJson = [
 		},
 		name: "termsAndConditions",
 		component: TermsNConditions,
+	},
+	{
+		name: "Detail",
+		component: Details,
+		options: {
+			headerTitleAlign: "center",
+			headerTitle: "Personal Details",
+			headerTintColor: color.white,
+			headerStyle: headerStyle,
+			headerTransparent: true,
+			// headerBackground: () => headerBackground(gradientColor),
+		},
 	},
 ];

@@ -94,7 +94,7 @@ export default function usePermission(permission) {
 				break;
 			case "LOCATION":
 				console.log("Waiting for permission");
-				await getRequest(getOS.LOCATION_ALWAYS);
+				// await getRequest(getOS.LOCATION_ALWAYS);
 				await getRequest(getOS.LOCATION_WHEN_IN_USE);
 
 				break;

@@ -149,8 +149,11 @@ function BottomNavigation(props) {
 				component={Profile}
 				options={{
 					headerTitle: "",
-					headerShown: false,
-					// headerTransparent: true,
+
+					headerTransparent: true,
+					headerBackgroundContainerStyle: {
+						backgroundColor: "rgba(0,0,0,0.5)",
+					},
 					headerTintColor: "white",
 					headerShadowVisible: true,
 					tabBarIcon: () => (
