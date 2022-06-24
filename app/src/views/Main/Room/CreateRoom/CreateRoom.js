@@ -30,59 +30,42 @@ function CreateRoom(props) {
 		...rest
 	} = useSelector((state) => state.registry);
 
+	const { categoryName, categoryId, subCategoryId, ...room } = useSelector(
+		(state) => state.room
+	);
+	console.warn(categoryId, categoryName, subCategoryId, "-------------");
 	const { setOptions, navigate } = useNavigation();
 	const { params } = useRoute();
 	const [imageError, setImageError] = React.useState();
-	const [editRoom] = React.useState(
-		params?.editRoomItem ? params?.editRoomItem : false
-	);
+	const [editRoom] = React.useState(room?.categoryId ?? false);
 
 	const [imageModal, setImageModal] = React.useState(false); //Select Image
 	const [roomUri, setRoomUri] = React.useState(
-		params?.editRoomItem?.imageContent?.src
-			? params?.editRoomItem?.imageContent?.src
-			: false
+		room?.imageContent?.src ?? false
 	); //Select Image
 
-	const [roomTitle, setRoomTitle] = React.useState(
-		params?.editRoomItem?.groupName
-	);
-	const [txt, setTxt] = React.useState(
-		params?.editRoomItem?.groupName ? params?.editRoomItem?.groupName : ""
-	);
+	const [roomTitle, setRoomTitle] = React.useState(room?.groupName);
+	const [txt, setTxt] = React.useState(room?.groupName ?? "");
 
 	const [userCount, setUserCount] = React.useState([]);
 
 	const [communityType, setCommunityType] = React.useState(
-		params?.editRoomItem
-			? params?.editRoomItem?.communityType === "public" ||
-			  params?.editRoomItem?.communityType === "Public"
-				? "public"
-				: "close"
-			: false
+		room?.communityType ?? ""
 	);
 
 	const [activeBtn, setActiveBtn] = React.useState(true);
 
-	const [categaoryItemName, setCategoryItemName] = React.useState(
-		params?.editRoomItem?.categoryName
-	);
+	// const [categaoryItemName, setCategoryItemName] = React.useState(
+	// 	room?.categoryName
+	// );
 
-	const [categoryId, setCategoryId] = React.useState(
-		params?.editRoomItem?.categoryId
-	);
+	// const [categoryId, setCategoryId] = React.useState(room?.categoryId);
 
-	const [subCategoryId, setSubCategoryId] = React.useState(
-		params?.editRoomItem?.subCategoryId
-	);
+	// const [subCategoryId, setSubCategoryId] = React.useState(room?.subCategoryId);
 
-	const [audioUri, setAudioUri] = React.useState(
-		params?.editRoomItem?.content?.src
-			? params?.editRoomItem?.content?.src
-			: null
-	);
+	const [audioUri, setAudioUri] = React.useState(room?.content?.src ?? null);
+
 	// console.warn("audio=====", audioUri, "==============");
-
 	React.useEffect(() => {
 		return setOptions({
 			headerTitle: () => (
@@ -106,16 +89,16 @@ function CreateRoom(props) {
 		if (params?.audio) {
 			setAudioUri(params?.audio);
 		}
-		if (params?.categoryData?.subCategoryItem) {
-			setCategoryItemName(params?.categoryData?.subCategoryItem);
-		}
+		// if (params?.categoryData?.subCategoryItem) {
+		// 	setCategoryItemName(params?.categoryData?.subCategoryItem);
+		// }
 
-		if (params?.categoryData?.subCategoryId) {
-			setSubCategoryId(params?.categoryData?.subCategoryId);
-		}
-		if (params?.categoryData?.categoryId) {
-			setCategoryId(params?.categoryData?.categoryId);
-		}
+		// if (params?.categoryData?.subCategoryId) {
+		// 	setSubCategoryId(params?.categoryData?.subCategoryId);
+		// }
+		// if (params?.categoryData?.categoryId) {
+		// 	setCategoryId(params?.categoryData?.categoryId);
+		// }
 
 		if (params?.checkUser) {
 			setUserCount(params?.checkUser);
@@ -130,11 +113,10 @@ function CreateRoom(props) {
 		);
 	}, [
 		txt,
-		categaoryItemName,
+		categoryName,
 		roomUri,
 		communityType,
 		params,
-
 		subCategoryId,
 		categoryId,
 		audioUri,
@@ -142,8 +124,8 @@ function CreateRoom(props) {
 
 	const xData = [
 		{
-			title: categaoryItemName ? categaoryItemName : "Category",
-			subTitle: categaoryItemName ? "Change Category" : "Select Category",
+			title: categoryName ? categoryName : "Category",
+			subTitle: categoryName ? "Change Category" : "Select Category",
 			img: require("../../../../../assets/EditDrawerIcon/ic_category.png"),
 			onPress: () => navigate("Category"),
 		},
@@ -161,8 +143,6 @@ function CreateRoom(props) {
 		},
 	];
 
-	//   console.warn(editRoom);
-	// console.warn("edit room", editRoom);
 	return (
 		<ScrollView showsVerticalScrollIndicator={false}>
 			<View style={styles.container}>
@@ -196,7 +176,7 @@ function CreateRoom(props) {
 
 										{
 											color:
-												i === 0 && categaoryItemName
+												i === 0 && categoryName
 													? color.gradient
 													: "grey" && i === 1 && txt
 													? color.gradient
@@ -212,7 +192,7 @@ function CreateRoom(props) {
 								<MaterialCommunityIcons
 									name="greater-than"
 									color={
-										i === 0 && categaoryItemName
+										i === 0 && categoryName
 											? color.gradient
 											: "grey" && i === 1 && txt
 											? color.gradient
@@ -236,7 +216,7 @@ function CreateRoom(props) {
 					setImageModal={setImageModal}
 					roomUri={roomUri}
 					setRoomUri={setRoomUri}
-					editRoomUri={editRoom?.imageContent?.src}
+					editRoomUri={room?.imageContent?.src}
 				/>
 
 				<Image
@@ -337,10 +317,10 @@ function CreateRoom(props) {
 					onPress={() =>
 						userCount.length > 0
 							? navigate("FilterCreateRoom", {
-									update: params?.editRoomItem ? true : false,
+									update: room ? true : false,
 									data: {
-										editRoom,
-										categaoryItemName,
+										room,
+										categoryName,
 										categoryId,
 										subCategoryId,
 										txt,
@@ -352,8 +332,8 @@ function CreateRoom(props) {
 									},
 							  })
 							: navigate("SelectBanjee", {
-									subCategoryItem: categaoryItemName,
-									previousData: editRoom,
+									subCategoryItem: categoryName,
+									previousData: room,
 							  })
 					}
 				/>

@@ -38,23 +38,25 @@ import { PERMISSIONS, request } from "react-native-permissions";
 
 export default function usePermission(permission) {
 	const [result, setResult] = useState(null);
+
 	const checkOS = useCallback(() => {
+		console.log(Platform.OS);
+
 		if (Platform.OS === "android") {
-			return PERMISSIONS.ANDROID;
+			checkAndroidFunc();
 		} else {
-			return PERMISSIONS.IOS;
+			checkIosFunc();
 		}
 	}, []);
 
 	const getRequest = useCallback(async (per) => {
 		const data = await request(per);
-		console.log(data);
+		console.log("PERMISSIONS", data);
 		setResult(data);
 	}, []);
 
-	const checkPermission = useCallback(async () => {
-		const getOS = checkOS();
-
+	const checkAndroidFunc = useCallback(async () => {
+		const getOS = PERMISSIONS.ANDROID;
 		switch (permission) {
 			case "STORAGE":
 				await getRequest(getOS.WRITE_EXTERNAL_STORAGE);
@@ -76,15 +78,48 @@ export default function usePermission(permission) {
 				break;
 			case "AUDIO":
 				await getRequest(getOS.RECORD_AUDIO);
+
 				break;
 			default:
 				break;
 		}
-	}, [permission, checkOS, getRequest]);
+	}, [permission, getRequest]);
+
+	const checkIosFunc = useCallback(async () => {
+		const getOS = PERMISSIONS.IOS;
+		switch (permission) {
+			case "STORAGE":
+				await getRequest(getOS.MEDIA_LIBRARY);
+
+				break;
+			case "LOCATION":
+				console.log("Waiting for permission");
+				// await getRequest(getOS.LOCATION_ALWAYS);
+				await getRequest(getOS.LOCATION_WHEN_IN_USE);
+
+				break;
+			case "MEDIA":
+				await getRequest(getOS.MEDIA_LIBRARY);
+				await getRequest(getOS.PHOTO_LIBRARY);
+				break;
+			// case "BLUETOOTH":
+			// 	await getRequest(getOS.);
+			// 	break;
+			case "CAMERA":
+				await getRequest(getOS.CAMERA);
+				break;
+			case "AUDIO":
+				await getRequest(getOS.MICROPHONE);
+
+				break;
+			default:
+				break;
+		}
+	}, [permission, getRequest]);
 
 	useEffect(() => {
-		checkPermission();
-	}, [checkPermission]);
+		checkOS();
+	}, [checkOS]);
 
 	return result;
 }

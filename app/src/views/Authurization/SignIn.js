@@ -132,6 +132,7 @@ function SignIn({ navigation }) {
 											width: 80,
 											padding: 0,
 											margin: 0,
+											zIndex: 99,
 										}}
 										dropDownContainerStyle={{
 											position: "absolute",
@@ -235,7 +236,7 @@ function SignIn({ navigation }) {
 
 							<View style={{ zIndex: 0 }}>
 								<AppButton
-									style={{ marginTop: 20, width: "100%" }}
+									style={{ marginTop: 20, width: "100%", zIndex: 0 }}
 									onPress={submitForm}
 									title={"Next"}
 								/>

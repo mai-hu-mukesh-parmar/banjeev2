@@ -19,6 +19,7 @@ export default function Splash() {
 				let token = await getLocalStorage("token");
 				if (token) {
 					setToken(token);
+					console.log("hey", token);
 				} else {
 					navigate("SignIn");
 				}
