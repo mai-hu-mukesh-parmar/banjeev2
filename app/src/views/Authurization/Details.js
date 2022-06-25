@@ -1,5 +1,5 @@
 import { StyleSheet, View, ScrollView, Platform } from "react-native";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Formik } from "formik";
 import { useRoute } from "@react-navigation/native";
 import axios from "axios";
@@ -30,7 +30,6 @@ import { showToast } from "../../redux/store/reducer/toastAction";
 import { getUserRegistryData } from "../../helper/services/SplashService";
 export default function Details({ navigation }) {
 	const dispatch = useDispatch();
-	useUserUpdate(token, "Bottom");
 	const [visible, setVisible] = React.useState(false);
 	const [user, setUser] = React.useState(null);
 	const currentDate = new Date();
@@ -39,39 +38,15 @@ export default function Details({ navigation }) {
 	const limitDate = currentDate.getDate();
 	const limit = new Date(parseInt(limitYear) - 13, limitMonth, limitDate);
 	const [date, setDate] = React.useState(limit);
-	const [token, setToken] = useState(null);
 
 	const {
 		params: { number, mcc, transactionCode },
 	} = useRoute();
 
-	React.useEffect(() => {
-		if (user) {
-			setDate(
-				user?.birthDate
-					? new Date(
-							user?.birthDate
-								?.split("-" || "/")
-								.map((ele) => {
-									if (ele.length < 2) {
-										return `0${ele}`;
-									} else {
-										return ele;
-									}
-								})
-								.join("-")
-					  )
-					: null
-			);
-		}
-		return () => {
-			setUser(null);
-		};
-	}, []);
-
 	const updateMe = (data) => {
+		setVisible(true);
 		signup({
-			birthDate: new Date(date).toISOString().split("T")[0],
+			birthDate: date,
 			city: null,
 			course: null,
 			domain: "banjee",
@@ -97,22 +72,22 @@ export default function Details({ navigation }) {
 		})
 			.then((res) => {
 				if (res) {
-					handleLogin(data.password, res.id);
+					handleLogin(data, res.id);
 				}
 			})
 			.catch((err) => {
+				setVisible(false);
 				console.log(err);
 				if (err.statusCode === -101) {
 					dispatch(showToast({ open: true, description: err.message }));
 				}
 			});
 	};
-
-	const handleLogin = (password, id) => {
+	const handleLogin = (data, id) => {
 		axios
 			.post(
 				"https://gateway.banjee.org/services/system-service/oauth/token",
-				`username=${number}&password=${password}&domain=208991&accountType=0&grant_type=password&passwordType=password+`,
+				`username=${number}&password=${data.password}&domain=208991&accountType=0&grant_type=password&passwordType=password+`,
 				{
 					headers: {
 						"Content-Type": "application/x-www-form-urlencoded",
@@ -122,30 +97,32 @@ export default function Details({ navigation }) {
 			)
 			.then(async (res) => {
 				await setLocalStorage("token", res.data.access_token);
-				// const jwtToken = jwtDecode(res.data.access_token);
-				setToken(res.data.access_token);
+				const jwtToken = jwtDecode(res.data.access_token);
 				dispatch(saveUserData({ ...res, user: jwtToken }));
-				getUserProfileData(id, {
+				getUserProfileData(id, data, {
 					Authorization: "Bearer " + res.data.access_token,
 				});
 			})
 			.catch((err) => {
+				setVisible(false);
 				console.warn("Login Error", err);
 			});
 	};
 
-	const getUserProfileData = React.useCallback((id, header) => {
-		getUserProfile(id, header)
+	const getUserProfileData = (id, data, header) => {
+		getUserProfile(id, data, header)
 			.then(async (res) => {
+				console.warn(JSON.stringify(res));
 				dispatch(saveUserProfile(res));
-				await getUser(res.systemUserId);
+				await getUser(res.systemUserId, data);
 			})
 			.catch((err) => {
+				setVisible(false);
 				console.warn(err);
 			});
-	}, []);
+	};
 
-	const getUser = React.useCallback(async (id) => {
+	const getUser = async (id, data) => {
 		let locationAsync = await Location.getCurrentPositionAsync({});
 
 		const { longitude, latitude } = locationAsync.coords;
@@ -156,13 +133,22 @@ export default function Details({ navigation }) {
 					userHandler(
 						{
 							...res,
+							name: data.username,
+							email: data.email,
+							age: new Date().getFullYear() - parseInt(date.split("-")[0]),
+							gender: data.gender,
 							currentLocation: { lat: latitude, lon: longitude },
 						},
 						"PUT"
 					);
 				} else {
+					console.warn("Profile", JSON.stringify(user));
 					userHandler(
 						{
+							email: data.email,
+							gender: data.gender,
+							name: data.username,
+							age: new Date().getFullYear() - parseInt(date.split("-")[0]),
 							systemUserId: id,
 							connections: [],
 							pendingConnections: [],
@@ -174,38 +160,45 @@ export default function Details({ navigation }) {
 				}
 			})
 			.catch((err) => {
+				setVisible(false);
 				console.warn(err);
 			});
-	}, []);
-
-	const userHandler = React.useCallback((data, method) => {
+	};
+	const userHandler = (data, method) => {
 		updateUser(data, method)
 			.then((res) => {
+				console.log("----------", JSON.stringify(res));
 				dispatch(saveUserData(res));
+				setVisible(false);
+
 				navigation.navigate("UpdateAvatar");
 			})
 			.catch((err) => {
+				setVisible(false);
 				console.warn(err);
 			});
-	}, []);
+	};
 	return (
 		<BackGroundImg>
 			{visible && <AppLoading visible={visible} />}
 			<ScrollView showsVerticalScrollIndicator={false}>
 				<Formik
 					initialValues={{
-						firstName: user?.firstName,
-						lastName: user?.lastName,
-						username: user?.username,
-						email: user?.email,
-						mobile: user?.mobile,
-						gender: user?.gender,
+						firstName: user?.firstName | "",
+						lastName: user?.lastName | "",
+						username: user?.username | "",
+						email: user?.email | "",
+						mobile: user?.mobile | number.toString() | "",
+						gender: user?.gender | "",
 						password: "",
 					}}
 					enableReinitialize={true}
-					onSubmit={(values) => updateMe(values)}
+					onSubmit={(values) => {
+						console.log(values);
+						updateMe(values);
+					}}
 				>
-					{({ submitForm, resetForm }) => {
+					{({ submitForm }) => {
 						return (
 							<Card>
 								{/*``````````````````````` PROFILE PIC */}
