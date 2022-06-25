@@ -4,7 +4,7 @@ import { useFormikContext } from "formik";
 import { Text, Radio } from "native-base";
 
 export default function Gender() {
-	const { values, setFieldValue } = useFormikContext();
+	const { setFieldValue } = useFormikContext();
 
 	return (
 		<React.Fragment>
@@ -19,19 +19,20 @@ export default function Gender() {
 			</Text>
 
 			<Radio.Group
-				name="myRadioGroup"
-				value={values.gender}
+				name="gender"
+				// value={values.gender}
 				onChange={(nextValue) => {
-					setFieldValue(nextValue);
+					console.log(nextValue);
+					setFieldValue("gender", nextValue);
 				}}
 			>
-				<Radio value="Male" my={1}>
+				<Radio value="Male" my={2}>
 					Male
 				</Radio>
-				<Radio value="Female" my={1}>
+				<Radio value="Female" my={2}>
 					Female
 				</Radio>
-				<Radio value="Rather not to say" my={1}>
+				<Radio value="Rather not to say" my={2}>
 					Rather not to say
 				</Radio>
 			</Radio.Group>

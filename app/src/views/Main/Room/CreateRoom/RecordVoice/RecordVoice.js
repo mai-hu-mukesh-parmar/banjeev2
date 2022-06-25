@@ -27,8 +27,11 @@ function RecordVoice(props) {
 	const height = Platform.OS === "android" ? StatusBar.currentHeight : 30;
 	const { goBack, navigate } = useNavigation();
 
+	usePermission("AUDIO");
+
 	const dispatch = useDispatch();
-	const userData = useSelector((state) => state.register);
+
+	const userData = useSelector((state) => state.registry);
 	console.warn(userData);
 
 	const per = usePermission("AUDIO");
@@ -104,7 +107,6 @@ function RecordVoice(props) {
 	};
 
 	// `````````````````````````````` STOP RECORDING
-
 	const stopRecording = async () => {
 		clearInterval(countRef.current); // pause timer
 
