@@ -23,6 +23,14 @@ export default function AppDatePicker({ onChange, value }) {
 	const limitDate = currentDate.getDate();
 	const limit = new Date(parseInt(limitYear) - 13, limitMonth, limitDate);
 
+	getFormatedDate = () => {
+		let accDate = new Date(value.toDateString());
+		const year = accDate.getFullYear();
+		const month = accDate.getMonth();
+		const date = accDate.getDate();
+		return `${year}-${month + 1}-${date}`;
+	};
+
 	return (
 		<React.Fragment>
 			<View
@@ -49,9 +57,7 @@ export default function AppDatePicker({ onChange, value }) {
 						backgroundColor: "white",
 					}}
 				>
-					<Text>
-						{typeof value === "string" ? value : value.toDateString()}
-					</Text>
+					<Text>{typeof value === "string" ? value : getFormatedDate()}</Text>
 				</TouchableOpacity>
 
 				<TouchableOpacity onPress={() => setOpen(true)}>
