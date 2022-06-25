@@ -1,8 +1,6 @@
 import { View, StyleSheet, Image } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import * as ImagePicker from "expo-image-picker";
-import axios from "axios";
-
 import AppLoading from "../../../../constants/components/ui-component/AppLoading";
 import AppButton from "../../../../constants/components/ui-component/AppButton";
 import { profileUrl } from "../../../../utils/util-func/constantExport";
@@ -12,6 +10,7 @@ import { saveUserRegistry } from "../../../../redux/store/action/useActions";
 import { Text } from "native-base";
 import color from "../../../../constants/env/color";
 import { getLocalStorage } from "../../../../utils/Cache/TempStorage";
+import { returnSource } from "../../../../utils/util-func/uploadToImage";
 
 export default function UpdateAvatar({ navigation, route }) {
 	const userData = useSelector((state) => state.registry);
@@ -38,76 +37,66 @@ export default function UpdateAvatar({ navigation, route }) {
 		}
 	};
 
-	const getBlobFroUri = async (uri) => {
-		console.log(uri);
-		const blob = await new Promise((resolve, reject) => {
-			const xhr = new XMLHttpRequest();
-			xhr.onload = function () {
-				resolve(xhr.response);
-			};
-			xhr.onerror = function (e) {
-				reject(new TypeError("Network request failed"));
-			};
-			xhr.responseType = "blob";
-			xhr.open("GET", uri, true);
-			xhr.send(null);
-		});
-
-		return blob;
-	};
-	function updateGalleryImage() {
+	async function updateGalleryImage() {
+		setVisible(true);
 		console.log(galleryImg?.uri);
-		getBlobFroUri(galleryImg?.uri)
-			.then(async (res) => {
-				delete res._data.__collector;
-				delete res._data.blobId;
-				console.log(JSON.stringify(res._data));
+		const token = await getLocalStorage("token");
+		console.log(token);
+		var myHeaders = new Headers();
+		myHeaders.append("Authorization", "Bearer " + JSON.parse(token));
+		myHeaders.append("Content-Type", "multipart/form-data");
 
-				const url =
-					"https://gateway.banjee.org/services/media-service/api/resources/bulk";
-				let formData = new FormData();
-				formData.append("directoryId", "root");
-				formData.append("domain", "banjee");
-				formData.append("actionCode", "ACTION_UPLOAD_RESOURCE");
-				formData.append("files", res._data);
-				const token = await getLocalStorage("token");
-				console.log(JSON.stringify(formData));
-				console.log(token);
-				axios
-					.post(url, formData, {
-						headers: {
-							"Content-Type": "multipart/form-data",
-							Authorization: "Bearer " + token,
-						},
-					})
-					.then((res) => {
-						console.log(res.data);
-					})
-					.catch((err) => {
-						console.log(err);
-					});
+		var formdata = new FormData();
+		formdata.append("directoryId", "root");
+		formdata.append("domain", "banjee");
+		formdata.append("actionCode", "ACTION_UPLOAD_RESOURCE");
+		formdata.append("files", returnSource(galleryImg), "[PROXY]");
+
+		var requestOptions = {
+			method: "POST",
+			headers: myHeaders,
+			body: formdata,
+			redirect: "follow",
+		};
+
+		fetch(
+			"https://gateway.banjee.org/services/media-service/api/resources/bulk",
+			requestOptions
+		)
+			.then((response) => response.json())
+			.then((result) => {
+				console.log(JSON.stringify(result.data[0].data.id));
+				updateUserImage(result.data[0].data.id);
 			})
-			.catch((err) => {
-				console.log(err);
+			.catch((error) => {
+				setVisible(false);
+				console.log("error", error);
 			});
 	}
 
+	useEffect(() => {
+		return () => {
+			setVisible(false);
+		};
+	}, []);
+
 	const updateUserImage = (data) => {
-		updateUser({ ...userData, avtarUrl: data })
+		console.log(userData);
+		updateUser({ ...userData, avtarUrl: data }, "PUT")
 			.then((res) => {
 				setVisible(true);
 				console.warn(res);
 				dispatch(saveUserRegistry(res));
-				setUserData(res);
+				console.log(userData);
 				setVisible(false);
 				setDone(true);
+				navigation.navigate("Bottom");
 			})
 			.catch((err) => {
+				setVisible(false);
 				console.warn(err);
 			});
 	};
-
-	console.log(galleryImg);
 
 	return (
 		<React.Fragment>
