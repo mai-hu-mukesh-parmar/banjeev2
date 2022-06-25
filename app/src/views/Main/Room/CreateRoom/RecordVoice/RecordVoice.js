@@ -21,7 +21,6 @@ import AppFabButton from "../../../../../constants/components/ui-component/AppFa
 import AppButton from "../../../../../constants/components/ui-component/AppButton";
 import color from "../../../../../constants/env/color";
 import usePermission from "../../../../../utils/hooks/usePermission";
-import { PERMISSIONS, request, check } from "react-native-permissions";
 import { showToast } from "../../../../../redux/store/reducer/toastAction";
 
 function RecordVoice(props) {
@@ -135,25 +134,33 @@ function RecordVoice(props) {
 		}
 	};
 
-	React.useEffect(() => {
-		if (per === "granted") {
-			console.warn(per);
-
-			// request("ios.permission.MICROPHONE")
-			// .then(() =>
+	const askUserPermission = React.useCallback(async () => {
+		let { granted } = await Audio.getPermissionsAsync();
+		console.warn("permission already given", granted);
+		if (granted) {
 			setView(true);
-			// ).catch((err) => console.warn(err));
 		} else {
-			Linking.openSettings();
+			let { granted } = await Audio.requestPermissionsAsync();
+			if (granted) {
+				console.warn("model opn and iits permission was given ", granted);
 
-			dispatch(
-				showToast({
-					open: true,
-					description: "give audio permission to access audio...! ",
-				})
-			);
+				setView(true);
+			} else {
+				console.warn("model open and iits permission was denied ", granted);
+
+				goBack();
+				dispatch(
+					showToast({
+						open: true,
+						description: "give permission to access microphone",
+					})
+				);
+			}
 		}
+	}, [Audio]);
 
+	React.useEffect(() => {
+		askUserPermission();
 		() => {
 			setTimer(0);
 			setTimerError("");
@@ -165,7 +172,7 @@ function RecordVoice(props) {
 			setVisible(false);
 			stopRecording();
 		};
-	}, [per]);
+	}, [askUserPermission]);
 
 	//``````````````````````````` Load Sound
 
@@ -239,6 +246,7 @@ function RecordVoice(props) {
 
 			return unsubscribe;
 		}, [navigation, visible, icons]);
+
 	React.useEffect(() => {
 		player1;
 	}, [player1]);
@@ -351,12 +359,7 @@ function RecordVoice(props) {
 				)}
 
 				{countRef && (
-					<Text
-						style={{
-							color: color.white,
-							fontSize: 30,
-						}}
-					>
+					<Text fontSize={30} color={color.white}>
 						{timer ? formatTime() : "00 : 00 : 00"}
 					</Text>
 				)}
@@ -384,11 +387,13 @@ function RecordVoice(props) {
 			</View>
 		</React.Fragment>
 	);
-	const isAudioPresent = (
-		<React.Fragment>
-			{audio && !visible ? recordingStateView : playerStateView}
-		</React.Fragment>
-	);
+	const isAudioPresent =
+		(console.warn(audio, !visible, ".........."),
+		(
+			<React.Fragment>
+				{audio && !visible ? recordingStateView : playerStateView}
+			</React.Fragment>
+		));
 
 	return (
 		<React.Fragment>

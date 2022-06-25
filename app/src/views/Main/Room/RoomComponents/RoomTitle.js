@@ -8,24 +8,19 @@ import AppInput from "../../../../constants/components/ui-component/AppInput";
 import OverlayDrawer from "../../../../constants/components/ui-component/OverlayDrawer";
 import { setRoomData } from "../../../../redux/store/action/roomData";
 
-function RoomTitle({ roomTitle, setRoomTitle, txt, setTxt }) {
+function RoomTitle({ openGroupModal, setOpenGroupModal }) {
+	const [txt, setTxt] = React.useState("");
 	const dispatch = useDispatch();
 	const getText = (e) => {
 		if (e === "" || e === null) {
 			console.warn("Empty Title");
 		} else {
-			dispatch(
-				setRoomData({
-					groupName: txt,
-				})
-			);
 			setTxt(e);
 		}
 	};
 	const setTitle = (hideModal) => {
 		Keyboard.dismiss();
 		hideModal();
-		setRoomTitle(txt);
 		dispatch(
 			setRoomData({
 				groupName: txt,
@@ -40,8 +35,8 @@ function RoomTitle({ roomTitle, setRoomTitle, txt, setTxt }) {
 		<React.Fragment>
 			<OverlayDrawer
 				transparent
-				visible={roomTitle}
-				onClose={() => setRoomTitle(!roomTitle)}
+				visible={openGroupModal}
+				onClose={() => setOpenGroupModal(!openGroupModal)}
 				closeOnTouchOutside
 				animationType="fadeIn"
 				containerStyle={{

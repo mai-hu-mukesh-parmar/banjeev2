@@ -9,6 +9,7 @@ import {
 	TouchableOpacity,
 } from "react-native";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
+import { useDispatch, useSelector } from "react-redux";
 import color from "../../../../constants/env/color";
 import { profileUrl } from "../../../../utils/util-func/constantExport";
 import checkUserStatus from "../../../Other/checkUserStatus";
@@ -20,20 +21,22 @@ function SelectBanjeeContact({
 	setSingleUser,
 	singleUser,
 	isRoom,
-	editBanjeeContact,
 }) {
+	const { connectedUsers } = useSelector((state) => state.room);
+
 	const [load, setLoad] = React.useState(false);
+	const dispatch = useDispatch();
 
 	React.useEffect(() => {
-		if (editBanjeeContact && editBanjeeContact.length > 0) {
+		if (connectedUsers && connectedUsers.length > 0) {
 			setContact(() =>
-				editBanjeeContact.map((ele) => {
+				connectedUsers.map((ele) => {
 					return { name: ele?.firstName, id: ele?.id };
 				})
 			);
 		}
 		setLoad(true);
-	}, [item, editBanjeeContact]);
+	}, [item, connectedUsers]);
 
 	if (load) {
 		return (
@@ -124,9 +127,22 @@ function SelectBanjeeContact({
 
 								<View style={{}}>
 									<Checkbox
+										accessibilityLabel={item.firstName}
 										// colorScheme={"black"}
+										onChange={(isChecked) => {
+											isChecked
+												? setContact((prev) => {
+														return [
+															...prev,
+															{ name: item.firstName, id: item.id },
+														];
+												  })
+												: setContact((prev) =>
+														prev.filter((ele) => ele.id !== item.id)
+												  );
+										}}
 										isChecked={
-											contact.filter((ele) => ele?.id === item.id).length > 0
+											contact?.filter((ele) => ele?.id === item.id).length > 0
 										}
 									/>
 								</View>
