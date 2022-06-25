@@ -7,36 +7,26 @@ import {
 	Image,
 	TouchableWithoutFeedback,
 } from "react-native";
+import { useSelector } from "react-redux";
 import { profileUrl } from "../../../../utils/util-func/constantExport";
 import ImageModal from "../../../Others/ImageModal";
 
-function SelectImage({
-	imageModal,
-	setImageModal,
-	roomUri,
-	setRoomUri,
-	editRoomUri,
-}) {
-	console.warn("editRoomUri", editRoomUri);
+function SelectImage({ imageModal, setImageModal }) {
+	const { imageContent } = useSelector((state) => state.room); //src from api and url for selected image
 	return (
 		<View style={{ position: "relative", marginTop: 24 }}>
 			<Image
 				style={{ height: 120, width: 120, borderRadius: 60 }}
 				source={
-					roomUri
-						? roomUri?.name
-							? { uri: roomUri.name }
-							: editRoomUri
-							? { uri: profileUrl(editRoomUri) }
+					imageContent
+						? imageContent.url
+							? { uri: imageContent.url }
+							: imageContent.src
+							? { uri: profileUrl(imageContent.src) }
 							: require("../../../../../assets/EditDrawerIcon/dummy_image_group.png")
-						: editRoomUri
-						? { uri: profileUrl(editRoomUri) }
+						: imageContent?.src
+						? { uri: profileUrl(imageContent.src) }
 						: require("../../../../../assets/EditDrawerIcon/dummy_image_group.png")
-					//   roomUri
-					//     ? editRoomUri
-					//       ? { uri: profileUrl(editRoomUri) }
-					//       : { uri: roomUri.name }
-					//     : require("../../../../assets/EditDrawerIcon/dummy_image_group.png")
 				}
 			/>
 
@@ -58,7 +48,6 @@ function SelectImage({
 				imageModal={imageModal}
 				imageModalHandler={setImageModal}
 				roomImage={true}
-				setRoomUri={setRoomUri}
 			/>
 		</View>
 	);

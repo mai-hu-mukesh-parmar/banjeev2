@@ -1,9 +1,4 @@
-import {
-	SET_ROOM_DATA,
-	RESET_ROOM_DATA,
-	SET_ROOM_IDS,
-	RESET_ROOM_IDS,
-} from "../action/roomData";
+import { SET_ROOM_DATA, RESET_ROOM_DATA } from "../action/roomData";
 
 const initialState = {
 	roomUri: false,
@@ -12,6 +7,7 @@ const initialState = {
 	categoryId: undefined,
 	subCategoryId: undefined,
 	subCategoryItem: undefined,
+	imageContent: { src: null },
 };
 
 export default function roomReducer(state = initialState, action) {
@@ -21,12 +17,7 @@ export default function roomReducer(state = initialState, action) {
 		case RESET_ROOM_DATA: {
 			return { ...action.payload };
 		}
-		case SET_ROOM_IDS: {
-			return { ...state, ...action.payload };
-		}
-		case RESET_ROOM_IDS: {
-			return { ...action.payload };
-		}
+
 		default:
 			return state;
 	}

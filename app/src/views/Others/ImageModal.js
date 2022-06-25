@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 import {
 	View,
 	StyleSheet,
@@ -10,14 +10,29 @@ import * as ImagePicker from "expo-image-picker";
 import AppButton from "../../constants/components/ui-component/AppButton";
 import { Text } from "native-base";
 import OverlayDrawer from "../../constants/components/ui-component/OverlayDrawer";
+import { PERMISSION, check, request } from "react-native-permissions";
+import usePermission from "../../utils/hooks/usePermission";
+import { setRoomData } from "../../redux/store/action/roomData";
+import { useDispatch } from "react-redux";
 
 function ImageModal({
 	imageModal,
 	imageModalHandler,
 	imageUriHandler,
 	roomImage,
-	setRoomUri,
 }) {
+	const dispatch = useDispatch();
+
+	const per = usePermission();
+	const permissionRequest = async () => {
+		if (per !== "granted") {
+			let { granted } = await ImagePicker.requestCameraPermissionsAsync();
+			if (granted) {
+				getCameraPermission();
+			}
+		}
+	};
+
 	const getCameraPermission = async () => {
 		let result = await ImagePicker.launchCameraAsync({
 			base64: true,
@@ -25,11 +40,15 @@ function ImageModal({
 
 		if (!result.cancelled) {
 			if (roomImage) {
-				setRoomUri({
-					imageBase64: result.base64,
-					url: result.uri.split("/")[result.uri.split("/").length - 1],
-					name: result.uri,
-				});
+				dispatch(
+					setRoomData({
+						imageContent: {
+							imageBase64: result.base64,
+							name: result.uri.split("/")[result.uri.split("/").length - 1],
+							url: result.uri,
+						},
+					})
+				);
 			} else {
 				imageUriHandler(result.uri);
 			}
@@ -48,11 +67,15 @@ function ImageModal({
 
 		if (!result.cancelled) {
 			if (roomImage) {
-				setRoomUri({
-					imageBase64: result.base64,
-					url: result.uri.split("/")[result.uri.split("/").length - 1],
-					name: result.uri,
-				});
+				dispatch(
+					setRoomData({
+						imageContent: {
+							imageBase64: result.base64,
+							name: result.uri.split("/")[result.uri.split("/").length - 1],
+							url: result.uri,
+						},
+					})
+				);
 			} else {
 				imageUriHandler(result.uri);
 			}
@@ -105,7 +128,8 @@ function ImageModal({
 							<TouchableWithoutFeedback
 								onPress={() => {
 									// imageModalHandler(false);
-									getCameraPermission();
+									// getCameraPermission();
+									permissionRequest();
 								}}
 							>
 								<View style={styles.subImgView}>

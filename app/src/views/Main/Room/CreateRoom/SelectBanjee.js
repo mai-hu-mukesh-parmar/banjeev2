@@ -28,9 +28,6 @@ function SelectBanjee() {
 
 	const { systemUserId } = useSelector((state) => state.registry);
 
-	const [editRoomContact] = React.useState(
-		params?.previousData?.connectedUsers
-	);
 	// console.warn("------------------------->", editRoomContact);
 
 	const listUser = React.useCallback(() => {
@@ -90,7 +87,6 @@ function SelectBanjee() {
 	function renderItem({ item }) {
 		return (
 			<SelectBanjeeContact
-				editBanjeeContact={editRoomContact}
 				contact={checkUser}
 				setContact={setCheckUser}
 				setSingleUser={setSingleUser}
@@ -100,6 +96,7 @@ function SelectBanjee() {
 			/>
 		);
 	}
+
 	function onRefresh() {
 		return setRefresh(true), listUser();
 	}

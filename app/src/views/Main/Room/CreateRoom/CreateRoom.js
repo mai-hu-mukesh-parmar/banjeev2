@@ -12,7 +12,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import color from "../../../../constants/env/color";
 import AppButton from "../../../../constants/components/ui-component/AppButton";
 import { Text } from "native-base";
@@ -21,8 +21,8 @@ import RoomTitle from "../RoomComponents/RoomTitle";
 import {
 	checkGender,
 	listProfileUrl,
-	profileUrl,
 } from "../../../../utils/util-func/constantExport";
+import { setRoomData } from "../../../../redux/store/action/roomData";
 
 function CreateRoom(props) {
 	const {
@@ -30,28 +30,39 @@ function CreateRoom(props) {
 		...rest
 	} = useSelector((state) => state.registry);
 
-	const { categoryName, categoryId, subCategoryId, ...room } = useSelector(
-		(state) => state.room
-	);
-	console.warn(categoryId, categoryName, subCategoryId, "-------------");
+	const {
+		categoryName,
+		categoryId,
+		subCategoryId,
+		groupName,
+		communityType,
+		imageContent,
+		...room
+	} = useSelector((state) => state.room);
+
+	const dispatch = useDispatch();
 	const { setOptions, navigate } = useNavigation();
 	const { params } = useRoute();
+
 	const [imageError, setImageError] = React.useState();
+
+	const [openGroupModal, setOpenGroupModal] = React.useState(false);
+
 	const [editRoom] = React.useState(room?.categoryId ?? false);
 
 	const [imageModal, setImageModal] = React.useState(false); //Select Image
+
 	const [roomUri, setRoomUri] = React.useState(
 		room?.imageContent?.src ?? false
 	); //Select Image
 
-	const [roomTitle, setRoomTitle] = React.useState(room?.groupName);
-	const [txt, setTxt] = React.useState(room?.groupName ?? "");
+	// const [groupName, setGroupName] = React.useState(room?.groupName ?? "");
 
 	const [userCount, setUserCount] = React.useState([]);
 
-	const [communityType, setCommunityType] = React.useState(
-		room?.communityType ?? ""
-	);
+	// const [communityType, setCommunityType] = React.useState(
+	// 	room?.communityType ?? ""
+	// );
 
 	const [activeBtn, setActiveBtn] = React.useState(true);
 
@@ -84,6 +95,7 @@ function CreateRoom(props) {
 			),
 		});
 	}, [editRoom]);
+	console.warn(groupName, communityType);
 
 	React.useEffect(() => {
 		if (params?.audio) {
@@ -104,15 +116,12 @@ function CreateRoom(props) {
 			setUserCount(params?.checkUser);
 		}
 		setActiveBtn(
-			txt.length > 0 &&
+			groupName?.length > 0 &&
 				// categaoryItemName &&
-				Object.keys(roomUri).length > 0 &&
 				communityType
-				? false
-				: true
 		);
 	}, [
-		txt,
+		groupName,
 		categoryName,
 		roomUri,
 		communityType,
@@ -130,10 +139,10 @@ function CreateRoom(props) {
 			onPress: () => navigate("Category"),
 		},
 		{
-			title: txt ? txt : "Casual Chanting",
-			subTitle: txt ? "Change Title" : "Select Title",
+			title: groupName ? groupName : "Casual Chanting",
+			subTitle: groupName ? "Change Title" : "Select Title",
 			img: require("../../../../../assets/EditDrawerIcon/ic_add_plus.png"),
-			onPress: () => setRoomTitle(true),
+			onPress: () => setOpenGroupModal(true),
 		},
 		{
 			title: "Add Voice Intro about the topic",
@@ -146,12 +155,10 @@ function CreateRoom(props) {
 	return (
 		<ScrollView showsVerticalScrollIndicator={false}>
 			<View style={styles.container}>
-				{roomTitle && (
+				{openGroupModal && (
 					<RoomTitle
-						roomTitle={roomTitle}
-						setRoomTitle={setRoomTitle}
-						txt={txt}
-						setTxt={setTxt}
+						openGroupModal={openGroupModal}
+						setOpenGroupModal={setOpenGroupModal}
 					/>
 				)}
 
@@ -178,7 +185,7 @@ function CreateRoom(props) {
 											color:
 												i === 0 && categoryName
 													? color.gradient
-													: "grey" && i === 1 && txt
+													: "grey" && i === 1 && groupName
 													? color.gradient
 													: i === 2 && audioUri
 													? color.gradient
@@ -194,7 +201,7 @@ function CreateRoom(props) {
 									color={
 										i === 0 && categoryName
 											? color.gradient
-											: "grey" && i === 1 && txt
+											: "grey" && i === 1 && groupName
 											? color.gradient
 											: i === 2 && audioUri
 											? color.gradient
@@ -211,13 +218,7 @@ function CreateRoom(props) {
 					Add an Image, which can be a face of your Room
 				</Text>
 
-				<SelectImage
-					imageModal={imageModal}
-					setImageModal={setImageModal}
-					roomUri={roomUri}
-					setRoomUri={setRoomUri}
-					editRoomUri={room?.imageContent?.src}
-				/>
+				<SelectImage imageModal={imageModal} setImageModal={setImageModal} />
 
 				<Image
 					source={require("../../../../../assets/EditDrawerIcon/shadow.png")}
@@ -231,7 +232,7 @@ function CreateRoom(props) {
 				<View style={styles.roomView}>
 					<TouchableWithoutFeedback
 						onPress={() => {
-							setCommunityType("close");
+							dispatch(setRoomData({ communityType: "close" }));
 						}}
 					>
 						<View
@@ -264,7 +265,7 @@ function CreateRoom(props) {
 
 					<TouchableWithoutFeedback
 						onPress={() => {
-							setCommunityType("public");
+							dispatch(setRoomData({ communityType: "public" }));
 						}}
 					>
 						<View
@@ -303,7 +304,7 @@ function CreateRoom(props) {
 				)}
 
 				<AppButton
-					disabled={activeBtn}
+					disabled={!activeBtn}
 					style={{ marginTop: 24, marginBottom: 34, width: 230 }}
 					title={
 						editRoom
@@ -319,11 +320,11 @@ function CreateRoom(props) {
 							? navigate("FilterCreateRoom", {
 									update: room ? true : false,
 									data: {
-										room,
+										editRoom: room,
 										categoryName,
 										categoryId,
 										subCategoryId,
-										txt,
+										groupName,
 										roomUri,
 										communityType,
 										params,

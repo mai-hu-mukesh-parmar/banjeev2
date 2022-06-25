@@ -241,7 +241,6 @@ const styles = StyleSheet.create({
 	},
 	img: {
 		// borderColor: color.primary,
-		borderWidth: 1,
 		height: 95,
 		width: 95,
 		borderRadius: 50,

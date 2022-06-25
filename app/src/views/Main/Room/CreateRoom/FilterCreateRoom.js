@@ -10,23 +10,21 @@ import { updateRoom } from "../../../../helper/services/CreateRoomService";
 
 function FilterCreateRoom(props) {
 	const {
+		allCanSwitchVideo,
+		allCanReact,
+		allCanSpeak,
+		allCanAddBanjees,
+		recordSession,
+		seekPermission,
+		allUseVoiceFilters,
+		onlyAudioRoom,
+	} = -useSelector((state) => state.room);
+
+	const {
 		params: {
 			update,
 			data,
-			data: {
-				editRoom,
-				editRoom: {
-					allCanAddBanjees,
-					allCanReact,
-					allCanSpeak,
-					allCanSwitchVideo,
-					allUseVoiceFilters,
-					seekPermission,
-					recordSession,
-					onlyAudioRoom,
-				},
-				userCount,
-			},
+			data: { editRoom, userCount },
 		},
 	} = useRoute();
 
