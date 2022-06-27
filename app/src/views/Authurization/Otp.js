@@ -60,7 +60,7 @@ function Otp({ route, navigation }) {
 				} else {
 					navigation.navigate("Detail", {
 						number,
-						mcc,
+						countryCode,
 						transactionCode,
 					});
 				}
@@ -100,7 +100,7 @@ function Otp({ route, navigation }) {
 
 	const sendOtpToUser = useCallback(() => {
 		sendOtp({
-			mcc: countryCode,
+			countryCode: countryCode,
 			mobile: number,
 			domain: "banjee",
 		})

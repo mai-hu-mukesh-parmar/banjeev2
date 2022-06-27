@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Image, View } from "react-native";
 import { Formik } from "formik";
 import { Icon, Text } from "native-base";
@@ -11,16 +11,29 @@ import { MaterialIcons } from "@expo/vector-icons";
 import AppInput from "../../constants/components/ui-component/AppInput";
 import { setLocalStorage } from "../../utils/Cache/TempStorage";
 import { useUserUpdate } from "../../utils/hooks/useUserUpdate";
+import { useDispatch } from "react-redux";
+import {
+	removeUserData,
+	removeUserProfile,
+	removeUserRegistry,
+} from "../../redux/store/action/useActions";
 
 function Login({ route, navigation }) {
 	const [show, setShow] = React.useState(false);
 	const [visible, setVisible] = useState(false);
 	const [token, setToken] = useState(null);
 	const [passMsg, setPassMsg] = useState(false);
+	const dispatch = useDispatch();
 
 	const { number, countryCode } = route.params;
 
 	useUserUpdate(token, "Bottom");
+
+	useEffect(() => {
+		dispatch(removeUserData({}));
+		dispatch(removeUserProfile({}));
+		dispatch(removeUserRegistry({}));
+	}, []);
 
 	const buttonPress = ({ password }, resetForm) => {
 		if (password) {
@@ -39,11 +52,12 @@ function Login({ route, navigation }) {
 					}
 				)
 				.then((res) => {
-					console.log(res.data);
+					console.log("data", res.data);
 					setVisible(true);
 					resetForm();
 					setLocalStorage("token", res.data.access_token);
 					setToken(res.data.access_token);
+					navigation.navigate("Bottom");
 				})
 				.catch((err) => {
 					setVisible(false);

@@ -15,8 +15,10 @@ import {
 	mapService,
 	updateUser,
 } from "../../helper/services/SettingService";
+import usePermission from "./usePermission";
 
 export const useUserUpdate = (token, screen) => {
+	const { checkPermission } = usePermission();
 	const dispatch = useDispatch();
 	const { navigate } = useNavigation();
 
@@ -25,6 +27,7 @@ export const useUserUpdate = (token, screen) => {
 			getUserProfile(id, {})
 				.then((res) => {
 					dispatch(saveUserProfile(res));
+
 					navigate(screen);
 				})
 				.catch((err) => {
@@ -104,24 +107,15 @@ export const useUserUpdate = (token, screen) => {
 		if (token) {
 			const jwtToken = jwtDecode(token);
 			dispatch(saveUserData({ ...jwtToken, token: token }));
-			const granted = await PermissionsAndroid.check(
-				"android.permission.ACCESS_FINE_LOCATION"
-			);
-			if (granted) {
+			// const granted = await PermissionsAndroid.check(
+			//   "android.permission.ACCESS_FINE_LOCATION"
+			// );
+			let result = await checkPermission("LOCATION");
+			console.log("result", result);
+			if (result === "granted") {
 				await handleApi(jwtToken);
 			} else {
-				await PermissionsAndroid.request(
-					"android.permission.ACCESS_FINE_LOCATION"
-				)
-					.then(async (res) => {
-						if (res === "denied") {
-							BackHandler.exitApp();
-						} else {
-							await handleApi(jwtToken);
-						}
-					})
-
-					.catch((err) => console.warn(err));
+				BackHandler.exitApp();
 			}
 		}
 	}, [handleApi, token]);

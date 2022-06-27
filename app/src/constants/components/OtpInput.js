@@ -1,12 +1,6 @@
 import { View } from "native-base";
 import React, { useState } from "react";
-import {
-	Platform,
-	SafeAreaView,
-	StatusBar,
-	StyleSheet,
-	Keyboard,
-} from "react-native";
+import { Platform, SafeAreaView, StatusBar, Keyboard } from "react-native";
 import AppInput from "./ui-component/AppInput";
 export default function OtpInput({
 	numberOfInputs,
