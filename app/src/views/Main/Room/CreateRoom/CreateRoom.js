@@ -54,29 +54,14 @@ function CreateRoom(props) {
 
 	const [roomUri, setRoomUri] = React.useState(
 		room?.imageContent?.src ?? false
-	); //Select Image
-
-	// const [groupName, setGroupName] = React.useState(room?.groupName ?? "");
+	);
 
 	const [userCount, setUserCount] = React.useState([]);
 
-	// const [communityType, setCommunityType] = React.useState(
-	// 	room?.communityType ?? ""
-	// );
-
 	const [activeBtn, setActiveBtn] = React.useState(true);
-
-	// const [categaoryItemName, setCategoryItemName] = React.useState(
-	// 	room?.categoryName
-	// );
-
-	// const [categoryId, setCategoryId] = React.useState(room?.categoryId);
-
-	// const [subCategoryId, setSubCategoryId] = React.useState(room?.subCategoryId);
 
 	const [audioUri, setAudioUri] = React.useState(room?.content?.src ?? null);
 
-	// console.warn("audio=====", audioUri, "==============");
 	React.useEffect(() => {
 		return setOptions({
 			headerTitle: () => (
@@ -101,16 +86,6 @@ function CreateRoom(props) {
 		if (params?.audio) {
 			setAudioUri(params?.audio);
 		}
-		// if (params?.categoryData?.subCategoryItem) {
-		// 	setCategoryItemName(params?.categoryData?.subCategoryItem);
-		// }
-
-		// if (params?.categoryData?.subCategoryId) {
-		// 	setSubCategoryId(params?.categoryData?.subCategoryId);
-		// }
-		// if (params?.categoryData?.categoryId) {
-		// 	setCategoryId(params?.categoryData?.categoryId);
-		// }
 
 		if (params?.checkUser) {
 			setUserCount(params?.checkUser);

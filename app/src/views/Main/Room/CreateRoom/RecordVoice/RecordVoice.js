@@ -24,18 +24,14 @@ import usePermission from "../../../../../utils/hooks/usePermission";
 import { showToast } from "../../../../../redux/store/reducer/toastAction";
 
 function RecordVoice(props) {
+	const { checkPermission } = usePermission();
 	const height = Platform.OS === "android" ? StatusBar.currentHeight : 30;
 	const { goBack, navigate } = useNavigation();
-
-	usePermission("AUDIO");
 
 	const dispatch = useDispatch();
 
 	const userData = useSelector((state) => state.registry);
-	console.warn(userData);
 
-	const per = usePermission("AUDIO");
-	// console.warn(per);
 	const [recorder, setRecorder] = React.useState();
 
 	const [recorderingState, setRecordingState] = React.useState(false);
@@ -137,27 +133,12 @@ function RecordVoice(props) {
 	};
 
 	const askUserPermission = React.useCallback(async () => {
-		let { granted } = await Audio.getPermissionsAsync();
-		console.warn("permission already given", granted);
-		if (granted) {
+		const result = await checkPermission("AUDIO");
+		console.log(result);
+		if (result === "granted") {
 			setView(true);
 		} else {
-			let { granted } = await Audio.requestPermissionsAsync();
-			if (granted) {
-				console.warn("model opn and iits permission was given ", granted);
-
-				setView(true);
-			} else {
-				console.warn("model open and iits permission was denied ", granted);
-
-				goBack();
-				dispatch(
-					showToast({
-						open: true,
-						description: "give permission to access microphone",
-					})
-				);
-			}
+			Linking.openSettings();
 		}
 	}, [Audio]);
 

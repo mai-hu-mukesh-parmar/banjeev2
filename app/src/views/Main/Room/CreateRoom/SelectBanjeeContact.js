@@ -11,6 +11,7 @@ import {
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { useDispatch, useSelector } from "react-redux";
 import color from "../../../../constants/env/color";
+import { setRoomData } from "../../../../redux/store/action/roomData";
 import { profileUrl } from "../../../../utils/util-func/constantExport";
 import checkUserStatus from "../../../Other/checkUserStatus";
 
@@ -22,21 +23,23 @@ function SelectBanjeeContact({
 	singleUser,
 	isRoom,
 }) {
-	const { connectedUsers } = useSelector((state) => state.room);
-
+	const { connectedUsers, selectedUser } = useSelector((state) => state.room);
+	console.log("selectedUser", selectedUser);
 	const [load, setLoad] = React.useState(false);
 	const dispatch = useDispatch();
 
-	React.useEffect(() => {
-		if (connectedUsers && connectedUsers.length > 0) {
-			setContact(() =>
-				connectedUsers.map((ele) => {
-					return { name: ele?.firstName, id: ele?.id };
-				})
-			);
-		}
-		setLoad(true);
-	}, [item, connectedUsers]);
+	// React.useEffect(() => {
+	// 	if (connectedUsers && connectedUsers.length > 0) {
+	// 		dispatch(
+	// 			setRoomData({
+	// 				connectedUsers: connectedUsers.map((ele) => {
+	// 					return { name: ele?.firstName, id: ele?.id };
+	// 				}),
+	// 			})
+	// 		);
+	// 	}
+	// 	setLoad(true);
+	// }, [item, connectedUsers]);
 
 	if (load) {
 		return (
@@ -131,18 +134,35 @@ function SelectBanjeeContact({
 										// colorScheme={"black"}
 										onChange={(isChecked) => {
 											isChecked
-												? setContact((prev) => {
-														return [
-															...prev,
-															{ name: item.firstName, id: item.id },
-														];
-												  })
-												: setContact((prev) =>
-														prev.filter((ele) => ele.id !== item.id)
+												? // 	setContact((prev) => {
+												  // 		return [
+												  // 			...prev,
+												  // 			{ name: item.firstName, id: item.id },
+												  // 		];
+												  //   })
+												  dispatch(
+														setRoomData({
+															selectedUser: [
+																...selectedUser,
+																{ name: item.firstName, id: item.id },
+															],
+														})
+												  )
+												: // setContact((prev) =>
+												  // 		prev.filter((ele) => ele.id !== item.id)
+												  //   );
+
+												  dispatch(
+														setRoomData({
+															selectedUser: selectedUser.filter(
+																(ele) => ele.id !== item.id
+															),
+														})
 												  );
 										}}
 										isChecked={
-											contact?.filter((ele) => ele?.id === item.id).length > 0
+											selectedUser?.filter((ele) => ele?.id === item.id)
+												.length > 0
 										}
 									/>
 								</View>

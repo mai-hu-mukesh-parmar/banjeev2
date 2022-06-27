@@ -3,6 +3,7 @@ import {
 	View,
 	StyleSheet,
 	Image,
+	Linking,
 	TouchableWithoutFeedback,
 } from "react-native";
 
@@ -10,7 +11,7 @@ import * as ImagePicker from "expo-image-picker";
 import AppButton from "../../constants/components/ui-component/AppButton";
 import { Text } from "native-base";
 import OverlayDrawer from "../../constants/components/ui-component/OverlayDrawer";
-import { PERMISSION, check, request } from "react-native-permissions";
+import { PERMISSIONS, check, request } from "react-native-permissions";
 import usePermission from "../../utils/hooks/usePermission";
 import { setRoomData } from "../../redux/store/action/roomData";
 import { useDispatch } from "react-redux";
@@ -23,13 +24,17 @@ function ImageModal({
 }) {
 	const dispatch = useDispatch();
 
-	const per = usePermission();
+	const { checkPermission } = usePermission();
 	const permissionRequest = async () => {
-		if (per !== "granted") {
-			let { granted } = await ImagePicker.requestCameraPermissionsAsync();
-			if (granted) {
-				getCameraPermission();
-			}
+		const per = await checkPermission("CAMERA");
+
+		console.log(per);
+
+		if (per === "granted") {
+			getCameraPermission();
+		} else {
+			Linking.openSettings();
+			// await checkPermission("CAMERA");
 		}
 	};
 

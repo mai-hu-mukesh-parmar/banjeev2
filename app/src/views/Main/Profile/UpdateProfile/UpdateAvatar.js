@@ -65,7 +65,7 @@ export default function UpdateAvatar({ navigation, route }) {
 		)
 			.then((response) => response.json())
 			.then((result) => {
-				console.log(JSON.stringify(result.data[0].data.id));
+				console.warn(JSON.stringify(result.data[0].data.id));
 				updateUserImage(result.data[0].data.id);
 			})
 			.catch((error) => {
@@ -87,7 +87,7 @@ export default function UpdateAvatar({ navigation, route }) {
 				setVisible(true);
 				console.warn(res);
 				dispatch(saveUserRegistry(res));
-				console.log(userData);
+				console.warn(userData);
 				setVisible(false);
 				setDone(true);
 				navigation.navigate("Bottom");

@@ -13,9 +13,10 @@ import AppLoading from "../../../../constants/components/ui-component/AppLoading
 import { Text } from "native-base";
 import color from "../../../../constants/env/color";
 import { useSelector } from "react-redux";
+import { setRoomData } from "../../../../redux/store/action/roomData";
 
 function SelectBanjee() {
-	const [data, setData] = React.useState([]);
+	const { connectedUser } = useSelector((state) => state.room);
 	const [visible, setVisible] = React.useState(false);
 	const [refresh, setRefresh] = React.useState(false);
 
@@ -62,7 +63,7 @@ function SelectBanjee() {
 								chatroomId: item.chatroomId,
 						  }
 				);
-				setData(x);
+				dispatch(setRoomData({ connectedUser: x }));
 			})
 			.catch((err) => console.warn(err));
 	}, []);
@@ -109,7 +110,7 @@ function SelectBanjee() {
 					getItemCount={(data) => data.length}
 					getItem={(data, index) => data[index]}
 					showsVerticalScrollIndicator={false}
-					data={data}
+					data={connectedUser}
 					keyExtractor={(item) => item.id}
 					renderItem={renderItem}
 					refreshing={refresh}

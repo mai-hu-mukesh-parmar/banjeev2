@@ -25,9 +25,7 @@ export default function FeedScreen() {
 	const dispatch = useDispatch();
 	const { setOptions, navigate } = useNavigation();
 
-	const result = usePermission("STORAGE");
-
-	console.log("result", result);
+	const { checkPermission } = usePermission();
 
 	const {
 		feed: { otherPostId, feed: data, screen },
@@ -43,8 +41,9 @@ export default function FeedScreen() {
 		inputRange: [0, 70],
 		outputRange: [0, 70],
 	});
-	const allFeed = useCallback(() => {
+	const allFeed = useCallback(async () => {
 		setLoadingData(true);
+		await checkPermission("STORAGE");
 		getFeed({
 			author: null,
 			authorId: null,

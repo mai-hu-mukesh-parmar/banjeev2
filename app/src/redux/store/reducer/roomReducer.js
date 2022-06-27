@@ -8,6 +8,8 @@ const initialState = {
 	subCategoryId: undefined,
 	subCategoryItem: undefined,
 	imageContent: { src: null },
+	selectedUser: [],
+	connectedUser: [],
 };
 
 export default function roomReducer(state = initialState, action) {

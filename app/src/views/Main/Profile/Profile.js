@@ -21,13 +21,14 @@ import { MyPostFeed } from "../../../helper/services/MyPostService";
 import {
 	checkGender,
 	listProfileUrl,
+	profileUrl,
 } from "../../../utils/util-func/constantExport";
 import ConfirmModal from "../../Others/ConfirmModal";
 import Feed from "../Feed/Feed";
 import SettingBottomSheet from "./SettingBottomSheet";
 
 function Profile(props) {
-	const { systemUserId, gender, name } = useSelector((state) => state.registry);
+	const { avtarUrl, gender, name } = useSelector((state) => state.registry);
 
 	const { navigate, setOptions } = useNavigation();
 	const [open, setOpen] = React.useState(false); //for setting bottom sheet
@@ -127,7 +128,7 @@ function Profile(props) {
 		});
 
 		myFeed();
-	}, [myFeed]);
+	}, [myFeed, name]);
 
 	function deletePostFx() {
 		deletePost(postId);
@@ -176,9 +177,7 @@ function Profile(props) {
 					setImageError(error);
 				}}
 				source={
-					imageError
-						? checkGender(gender)
-						: { uri: listProfileUrl(systemUserId) }
+					imageError ? checkGender(gender) : { uri: profileUrl(avtarUrl) }
 				}
 				style={{ width: "100%", height: 360, marginBottom: 65 }}
 			/>

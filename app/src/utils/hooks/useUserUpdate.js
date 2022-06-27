@@ -15,11 +15,10 @@ import {
 	mapService,
 	updateUser,
 } from "../../helper/services/SettingService";
-import { requestMultiple, PERMISSIONS } from "react-native-permissions";
 import usePermission from "./usePermission";
 
 export const useUserUpdate = (token, screen) => {
-	const result = usePermission("LOCATION");
+	const { checkPermission } = usePermission();
 	const dispatch = useDispatch();
 	const { navigate } = useNavigation();
 
@@ -111,6 +110,8 @@ export const useUserUpdate = (token, screen) => {
 			// const granted = await PermissionsAndroid.check(
 			//   "android.permission.ACCESS_FINE_LOCATION"
 			// );
+			let result = await checkPermission("LOCATION");
+			console.log("result", result);
 			if (result === "granted") {
 				await handleApi(jwtToken);
 			} else {
