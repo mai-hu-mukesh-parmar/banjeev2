@@ -20,20 +20,23 @@ import color from "../../../constants/env/color";
 import FeedSkeleton from "../../../constants/components/ui-skeleton/FeedSkeleton";
 import Feed from "./Feed";
 import usePermission from "../../../utils/hooks/usePermission";
+import { useIsFocused } from "@react-navigation/native";
 
 export default function FeedScreen() {
+	const isFocused = useIsFocused();
+
 	const dispatch = useDispatch();
 	const { setOptions, navigate } = useNavigation();
 
 	const { checkPermission } = usePermission();
 
 	const {
-		feed: { otherPostId, feed: data, screen },
+		feed: { otherPostId, screen },
 	} = useSelector((state) => state);
 	const [loadingData, setLoadingData] = useState(false);
 	const [page, setPage] = useState(0);
 	const [refresh, setRefresh] = useState(false);
-
+	const [data, setData] = useState([]);
 	const scrollY = new Animated.Value(100);
 
 	const diffClamp = Animated.diffClamp(scrollY, 0, 70);
@@ -42,7 +45,6 @@ export default function FeedScreen() {
 		outputRange: [0, 70],
 	});
 	const allFeed = useCallback(async () => {
-		setLoadingData(true);
 		await checkPermission("STORAGE");
 		getFeed({
 			author: null,
@@ -55,10 +57,10 @@ export default function FeedScreen() {
 			mediaContent: null,
 			mediaRootDirectoryId: null,
 			otherUserId: null,
-			page: page,
+			page,
 			pageId: null,
 			pageName: null,
-			pageSize: 15,
+			pageSize: 10,
 			percentage: 0,
 			reactions: null,
 			reactionsCount: null,
@@ -69,12 +71,14 @@ export default function FeedScreen() {
 			visibility: null,
 		})
 			.then((res) => {
-				setRefresh(false);
 				console.log("Feeds page", page);
 				setLoadingData(false);
 
 				if (res?.length > 0) {
-					dispatch(saveFeed(res));
+					setData((pre) => [
+						...pre,
+						...res.map((ele) => ({ ...ele, key: Math.random() })),
+					]);
 				} else {
 					dispatch(
 						showToast({
@@ -139,9 +143,12 @@ export default function FeedScreen() {
 
 	useEffect(() => {
 		setHeader();
-		dispatch(showToast({ open: true, description: "Hey! welcome" }));
-		allFeed();
-	}, [allFeed, setHeader]);
+		if (isFocused) {
+			allFeed();
+		} else {
+			setData([]);
+		}
+	}, [allFeed, setHeader, isFocused]);
 
 	function renderItem({ item }) {
 		return (
@@ -166,7 +173,7 @@ export default function FeedScreen() {
 							getItemCount={(data) => data.length}
 							getItem={(data, index) => data[index]}
 							data={data}
-							keyExtractor={(data) => data.id}
+							keyExtractor={(data) => data.key}
 							renderItem={renderItem}
 							refreshing={loadingData}
 							onRefresh={() => setPage(0)}

@@ -1,4 +1,4 @@
-import React, { memo, useEffect } from "react";
+import React, { memo } from "react";
 import {
 	View,
 	StyleSheet,
@@ -227,6 +227,7 @@ function Feed({ item, myFeed, allFeed, setDeletePostModal, setPostId }) {
 				<View
 					style={{
 						width: "95%",
+						height: 320,
 						alignSelf: "center",
 						marginTop: item?.text?.length === 0 ? 10 : 0,
 					}}

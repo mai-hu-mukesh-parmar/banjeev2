@@ -1,14 +1,33 @@
-import React, { memo } from "react";
+import React, { memo, useSa, useState } from "react";
 import { View, StyleSheet } from "react-native";
 import GestureRecognizer, {
 	swipeDirections,
 } from "react-native-swipe-gestures";
 import ContentViewer from "./ContentViewer";
+import { Viewport } from "@skele/components";
+
+const ViewportAwareImage = Viewport.Aware(View);
 
 function FeedContent({ item, iData }) {
+	const [data, setData] = useState(false);
+
 	function _renderItem(mimeType, src) {
 		if (mimeType && src) {
-			return <ContentViewer src={src} mimeType={mimeType} />;
+			return (
+				<ViewportAwareImage
+					onViewportEnter={() => {
+						console.log("onViewportEnter");
+						setData(true);
+					}}
+					onViewportLeave={() => {
+						console.log("onViewportLeave");
+						setData(false);
+					}}
+					style={{ flex: 1 }}
+				>
+					{data && <ContentViewer src={src} mimeType={mimeType} />}
+				</ViewportAwareImage>
+			);
 		}
 	}
 

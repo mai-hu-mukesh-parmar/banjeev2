@@ -16,10 +16,10 @@ export default function Splash() {
 	useEffect(() => {
 		async function prepare() {
 			try {
-				let token = await getLocalStorage("token");
-				if (token) {
-					setToken(token);
-					console.log("hey", token);
+				let tokenData = await getLocalStorage("token");
+				if (tokenData) {
+					setToken(tokenData);
+					console.log("hey", tokenData);
 				} else {
 					navigate("SignIn");
 				}

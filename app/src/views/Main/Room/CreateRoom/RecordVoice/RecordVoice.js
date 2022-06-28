@@ -316,7 +316,10 @@ function RecordVoice(props) {
 				>
 					<AppButton
 						style={styles.saveBtn}
-						onPress={() => goBack()}
+						onPress={async () => {
+							goBack();
+							await player.stopAsync();
+						}}
 						title={"Cancel"}
 					/>
 					<AppButton
