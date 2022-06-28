@@ -1,12 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { Video, Audio } from "expo-av";
 import { Image, TouchableOpacity, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Viewport } from "@skele/components";
 import { useNavigation } from "@react-navigation/native";
 import usePlayPauseAudio from "../../../utils/hooks/usePlayPauseAudio";
 import FeedZoom from "./FeedZoom";
 import { cloudinaryFeedUrl } from "../../../utils/util-func/constantExport";
+import { Viewport } from "@skele/components";
 
 const ViewportAwareImage = Viewport.Aware(View);
 
@@ -15,14 +15,21 @@ function ContentViewer({ mimeType, src }) {
 	const videoRef = React.useRef(null);
 	const { addListener } = useNavigation();
 
+	const unsubscribe = addListener("blur", async (e) => {
+		// e.preventDefault();
+		await videoRef?.current?.stopAsync();
+		await stopPlayer();
+	});
 	React.useEffect(() => {
-		const unsubscribe = addListener("blur", (e) => {
-			// e.preventDefault();
-			videoRef?.current?.stopAsync();
-			stopPlayer();
-		});
-		return unsubscribe;
-	}, [stopPlayer]);
+		if (mimeType === "video/mp4") {
+			videoRef?.current?.playAsync();
+		} else if (mimeType === "audio/mp3") {
+			playAudio();
+		}
+		return () => {
+			unsubscribe();
+		};
+	}, [stopPlayer, unsubscribe]);
 
 	const renderComp = () => {
 		if (mimeType && src) {
@@ -113,30 +120,10 @@ function ContentViewer({ mimeType, src }) {
 				case "image/jpg":
 					return <FeedZoom imageUri={cloudinaryFeedUrl(src, "image")} />;
 			}
-		} else return null;
+		} else return <View />;
 	};
 
-	return (
-		<ViewportAwareImage
-			onViewportEnter={() => {
-				if (mimeType === "video/mp4") {
-					videoRef?.current?.playAsync();
-				} else {
-					playAudio();
-				}
-			}}
-			onViewportLeave={() => {
-				if (mimeType === "video/mp4") {
-					videoRef?.current?.stopAsync();
-				} else {
-					stopPlayer();
-				}
-			}}
-			style={{ flex: 1 }}
-		>
-			{renderComp()}
-		</ViewportAwareImage>
-	);
+	return <View>{renderComp()}</View>;
 }
 
 export default ContentViewer;

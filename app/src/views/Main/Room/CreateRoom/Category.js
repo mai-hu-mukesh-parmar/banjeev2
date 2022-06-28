@@ -71,7 +71,6 @@ function Category(props) {
 				name: null,
 			})
 				.then((res) => {
-					console.warn("==============", res.content);
 					setCategoryId(id);
 					setSubLoading(false);
 					setSubCategory(res.content);

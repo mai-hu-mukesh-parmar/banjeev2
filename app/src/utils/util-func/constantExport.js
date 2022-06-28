@@ -16,13 +16,13 @@ export const cloudinaryFeedUrl = (src, type) => {
 	if (src && type) {
 		switch (type) {
 			case "image":
-				return `https://res.cloudinary.com/banjee/image/upload/ar_1:1,c_pad,f_auto,q_auto:best/v1/${src}.webp`;
+				return `https://res.cloudinary.com/banjee/image/upload/ar_1:1,c_pad,f_auto,q_auto:low/v1/${src}.webp`;
 			case "video":
-				return `https://res.cloudinary.com/banjee/video/upload/br_128,q_auto/v1/${src}.mp4`;
+				return `https://res.cloudinary.com/banjee/video/upload/br_128,q_auto:low/v1/${src}.mp4`;
 			case "audio":
-				return `https://res.cloudinary.com/banjee/video/upload/br_128,q_auto/v1/${src}.mp3`;
+				return `https://res.cloudinary.com/banjee/video/upload/br_128,q_auto:low/v1/${src}.mp3`;
 			default:
-				return `https://res.cloudinary.com/banjee/image/upload/ar_1:1,c_pad,f_auto,q_auto:best/v1/${src}.webp`;
+				return `https://res.cloudinary.com/banjee/image/upload/ar_1:1,c_pad,f_auto,q_auto:low/v1/${src}.webp`;
 		}
 	}
 };

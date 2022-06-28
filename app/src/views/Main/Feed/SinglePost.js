@@ -433,24 +433,24 @@ function SinglePost() {
 								</TouchableWithoutFeedback>
 								{/* LIKE VIEW */}
 								{/* 
-      <View
-        style={{
-          paddingLeft: "5%",
+									<View
+										style={{
+										paddingLeft: "5%",
 
-          flexDirection: "row",
-          width: "95%",
-          alignItems: "center",
-          marginTop: 8,
-        }}
-      >
-        <Image
-          source={item.profile}
-          style={{ height: 30, width: 30, borderRadius: 15 }}
-        />
-        <Text style={{ fontSize: 14, marginLeft: 8 }}>
-          Liked by Shivaram & 123.234 Others
-        </Text>
-      </View> */}
+										flexDirection: "row",
+										width: "95%",
+										alignItems: "center",
+										marginTop: 8,
+										}}
+									>
+										<Image
+										source={item.profile}
+										style={{ height: 30, width: 30, borderRadius: 15 }}
+										/>
+										<Text style={{ fontSize: 14, marginLeft: 8 }}>
+										Liked by Shivaram & 123.234 Others
+										</Text>
+									</View> */}
 							</View>
 						</SafeAreaView>
 					)}

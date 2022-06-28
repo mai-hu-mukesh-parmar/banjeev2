@@ -1,14 +1,34 @@
-import React, { memo } from "react";
+import React, { memo, useState } from "react";
 import { View, Dimensions } from "react-native";
 
 import ContentViewer from "./ContentViewer";
 import Carousel from "react-native-snap-carousel";
 import color from "../../../constants/env/color";
+import { Viewport } from "@skele/components";
+
+const ViewportAwareImage = Viewport.Aware(View);
 
 function FeedContent({ item }) {
+	const [data, setData] = useState(false);
+	console.warn(Dimensions.get("screen").width, "Dimensions.getwidth");
+
 	function _renderItem({ item: { mimeType, src } }) {
 		if (mimeType && src) {
-			return <ContentViewer src={src} mimeType={mimeType} />;
+			return (
+				<ViewportAwareImage
+					onViewportEnter={() => {
+						console.log("onViewportEnter");
+						setData(true);
+					}}
+					onViewportLeave={() => {
+						console.log("onViewportLeave");
+						setData(false);
+					}}
+					style={{ flex: 1 }}
+				>
+					{data && <ContentViewer src={src} mimeType={mimeType} />}
+				</ViewportAwareImage>
+			);
 		}
 	}
 
