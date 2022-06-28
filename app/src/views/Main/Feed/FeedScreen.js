@@ -10,7 +10,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { getFeed } from "../../../helper/services/PostFeed";
 import { useDispatch, useSelector } from "react-redux";
 import { saveFeed } from "../../../redux/store/action/feedAction";
-import { showToast } from "../../../redux/store/reducer/toastAction";
+import { showToast } from "../../../redux/store/action/toastAction";
 import AppFabButton from "../../../constants/components/ui-component/AppFabButton";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";

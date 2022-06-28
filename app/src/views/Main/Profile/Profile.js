@@ -28,7 +28,9 @@ import Feed from "../Feed/Feed";
 import SettingBottomSheet from "./SettingBottomSheet";
 
 function Profile(props) {
-	const { avtarUrl, gender, name } = useSelector((state) => state.registry);
+	const { avtarUrl, systemUserId, gender, name } = useSelector(
+		(state) => state.registry
+	);
 
 	const { navigate, setOptions } = useNavigation();
 	const [open, setOpen] = React.useState(false); //for setting bottom sheet
@@ -177,7 +179,9 @@ function Profile(props) {
 					setImageError(error);
 				}}
 				source={
-					imageError ? checkGender(gender) : { uri: profileUrl(avtarUrl) }
+					imageError
+						? checkGender(gender)
+						: { uri: listProfileUrl(systemUserId) }
 				}
 				style={{ width: "100%", height: 360, marginBottom: 65 }}
 			/>

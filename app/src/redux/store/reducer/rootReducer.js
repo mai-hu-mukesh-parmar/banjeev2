@@ -1,5 +1,5 @@
 import { combineReducers } from "redux";
-import { toastReducer } from "../action/toastReducer";
+import { toastReducer } from "./toastReducer";
 import feedReducer from "./feedReducer";
 import userDataReducer from "./userDataReducer";
 import userProfileReducer from "./userProfileReducer";

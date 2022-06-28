@@ -9,7 +9,7 @@ import AppButton from "../../../../constants/components/ui-component/AppButton";
 import usePlayPauseAudio from "../../../../utils/hooks/usePlayPauseAudio";
 import AppMenu from "../../../../constants/components/ui-component/AppMenu";
 import { useDispatch } from "react-redux";
-import { setRoomData } from "../../../../redux/store/action/roomData";
+import { setRoomData } from "../../../../redux/store/action/roomAction";
 
 export default function RoomElement({
 	item,

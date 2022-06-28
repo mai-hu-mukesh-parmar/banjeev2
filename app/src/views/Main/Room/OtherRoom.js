@@ -15,7 +15,7 @@ import AppButton from "../../../constants/components/ui-component/AppButton";
 import color from "../../../constants/env/color";
 import { categoryService } from "../../../helper/services/CategoryService";
 import { listOtherRoom } from "../../../helper/services/CreateRoomService";
-import { resetRoomData } from "../../../redux/store/action/roomData";
+import { resetRoomData } from "../../../redux/store/action/roomAction";
 import RoomElement from "./RoomComponents/RoomElement";
 
 function OtherRoom(props) {
@@ -206,7 +206,7 @@ function OtherRoom(props) {
 				>
 					<AppButton
 						onPress={() => {
-							dispatch(resetRoomData({})), navigate("CreateRoom");
+							dispatch(resetRoomData()), navigate("CreateRoom");
 						}}
 						title={"Create My Room"}
 					/>

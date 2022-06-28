@@ -1,4 +1,4 @@
-import { Text, Radio, Checkbox } from "native-base";
+import { Text, Checkbox } from "native-base";
 import React from "react";
 import {
 	View,
@@ -8,10 +8,7 @@ import {
 	TouchableHighlight,
 	TouchableOpacity,
 } from "react-native";
-import BouncyCheckbox from "react-native-bouncy-checkbox";
-import { useDispatch, useSelector } from "react-redux";
 import color from "../../../../constants/env/color";
-import { setRoomData } from "../../../../redux/store/action/roomData";
 import { profileUrl } from "../../../../utils/util-func/constantExport";
 import checkUserStatus from "../../../Other/checkUserStatus";
 
@@ -22,24 +19,21 @@ function SelectBanjeeContact({
 	setSingleUser,
 	singleUser,
 	isRoom,
+	editBanjeeContact,
+	selectedUserArray,
+	setSelectedUserArray,
 }) {
-	const { connectedUsers, selectedUser } = useSelector((state) => state.room);
-	console.log("selectedUser", selectedUser);
 	const [load, setLoad] = React.useState(false);
-	const dispatch = useDispatch();
-
-	// React.useEffect(() => {
-	// 	if (connectedUsers && connectedUsers.length > 0) {
-	// 		dispatch(
-	// 			setRoomData({
-	// 				connectedUsers: connectedUsers.map((ele) => {
-	// 					return { name: ele?.firstName, id: ele?.id };
-	// 				}),
-	// 			})
-	// 		);
-	// 	}
-	// 	setLoad(true);
-	// }, [item, connectedUsers]);
+	React.useEffect(() => {
+		if (editBanjeeContact && editBanjeeContact.length > 0) {
+			setContact(() =>
+				editBanjeeContact.map((ele) => {
+					return { name: ele?.firstName, id: ele?.id };
+				})
+			);
+		}
+		setLoad(true);
+	}, [item, editBanjeeContact]);
 
 	if (load) {
 		return (
@@ -103,65 +97,25 @@ function SelectBanjeeContact({
 											setSingleUser(e);
 										}}
 									/>
-
-									{/* <Radio onpress={()=>setSingleUser({name:item.firstName,id:item.id})}/> */}
 								</View>
 							) : (
-								// <BouncyCheckbox
-								//   style={{ justifyContent: "flex-end", width: "30%" }}
-								//   size={20}
-								//   fillColor="black"
-								//   unfillColor="#FFFFFF"
-								//   iconStyle={{ borderColor: "black", borderRadius: 2 }}
-								//   textStyle={{ color: color.black, textDecorationLine: "none" }}
-								// onPress={(isChecked) => {
-								//   isChecked
-								//     ? setContact((prev) => {
-								//         return [...prev, { name: item.firstName, id: item.id }];
-								//       })
-								//     : setContact((prev) =>
-								//         prev.filter((ele) => ele.id !== item.id)
-								//       );
-								// }}
-								//   isChecked={
-								// contact.filter((ele) => ele?.id === item.id).length > 0
-								//   }
-								// />
-
 								<View style={{}}>
 									<Checkbox
 										accessibilityLabel={item.firstName}
 										// colorScheme={"black"}
+
 										onChange={(isChecked) => {
 											isChecked
-												? // 	setContact((prev) => {
-												  // 		return [
-												  // 			...prev,
-												  // 			{ name: item.firstName, id: item.id },
-												  // 		];
-												  //   })
-												  dispatch(
-														setRoomData({
-															selectedUser: [
-																...selectedUser,
-																{ name: item.firstName, id: item.id },
-															],
-														})
-												  )
-												: // setContact((prev) =>
-												  // 		prev.filter((ele) => ele.id !== item.id)
-												  //   );
-
-												  dispatch(
-														setRoomData({
-															selectedUser: selectedUser.filter(
-																(ele) => ele.id !== item.id
-															),
-														})
+												? setSelectedUserArray((pre) => [
+														...pre,
+														{ name: item.firstName, id: item.id },
+												  ])
+												: setSelectedUserArray((pre) =>
+														pre.filter((ele) => ele.id !== item.id)
 												  );
 										}}
 										isChecked={
-											selectedUser?.filter((ele) => ele?.id === item.id)
+											selectedUserArray?.filter((ele) => ele?.id === item.id)
 												.length > 0
 										}
 									/>

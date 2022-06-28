@@ -13,7 +13,7 @@ import { Text } from "native-base";
 import OverlayDrawer from "../../constants/components/ui-component/OverlayDrawer";
 import { PERMISSIONS, check, request } from "react-native-permissions";
 import usePermission from "../../utils/hooks/usePermission";
-import { setRoomData } from "../../redux/store/action/roomData";
+import { setRoomData } from "../../redux/store/action/roomAction";
 import { useDispatch } from "react-redux";
 
 function ImageModal({

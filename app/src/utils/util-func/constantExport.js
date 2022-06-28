@@ -7,7 +7,6 @@ export const profileUrl = (id) => {
 
 export const listProfileUrl = (id) => {
 	// requires systemUserId
-
 	return (
 		"https://gateway.banjee.org//services/media-service/iwantcdn/user/" + id
 	);

@@ -22,24 +22,26 @@ import {
 	checkGender,
 	listProfileUrl,
 } from "../../../../utils/util-func/constantExport";
-import { setRoomData } from "../../../../redux/store/action/roomData";
+import { setRoomData } from "../../../../redux/store/action/roomAction";
 
 function CreateRoom(props) {
 	const {
-		currentUser: { id },
-		...rest
-	} = useSelector((state) => state.registry);
+		registry: {
+			currentUser: { id },
+			...rest
+		},
+		room: {
+			categoryName,
+			categoryId,
+			subCategoryId,
+			groupName,
+			communityType,
+			imageContent,
+			...room
+		},
+	} = useSelector((state) => state);
 
-	const {
-		categoryName,
-		categoryId,
-		subCategoryId,
-		groupName,
-		communityType,
-		imageContent,
-		...room
-	} = useSelector((state) => state.room);
-
+	console.log("room reducer ---> ", room.selectedUser);
 	const dispatch = useDispatch();
 	const { setOptions, navigate } = useNavigation();
 	const { params } = useRoute();
@@ -80,7 +82,6 @@ function CreateRoom(props) {
 			),
 		});
 	}, [editRoom]);
-	console.warn(groupName, communityType);
 
 	React.useEffect(() => {
 		if (params?.audio) {
@@ -274,8 +275,10 @@ function CreateRoom(props) {
 					Please select either of one to proceed further
 				</Text>
 
-				{userCount.length >= 1 && (
-					<Text style={styles.txt2}>{userCount.length} user selected.</Text>
+				{room.selectedUser.length >= 1 && (
+					<Text style={styles.txt2}>
+						{room.selectedUser.length} user selected.
+					</Text>
 				)}
 
 				<AppButton
@@ -283,29 +286,29 @@ function CreateRoom(props) {
 					style={{ marginTop: 24, marginBottom: 34, width: 230 }}
 					title={
 						editRoom
-							? userCount.length > 0
+							? room.selectedUser.length > 0
 								? "Update Room"
 								: "Update Banjee Contacts"
-							: userCount.length > 0
+							: room.selectedUser.length > 0
 							? "Create Room"
 							: "Select Banjee Contacts"
 					}
 					onPress={() =>
-						userCount.length > 0
+						room.selectedUser.length > 0
 							? navigate("FilterCreateRoom", {
 									update: room ? true : false,
-									data: {
-										editRoom: room,
-										categoryName,
-										categoryId,
-										subCategoryId,
-										groupName,
-										roomUri,
-										communityType,
-										params,
-										audioUri,
-										userCount,
-									},
+									// data: {
+									// 	editRoom: room,
+									// 	categoryName,
+									// 	categoryId,
+									// 	subCategoryId,
+									// 	groupName,
+									// 	roomUri,
+									// 	communityType,
+									// 	params,
+									// 	audioUri,
+									// 	userCount,
+									// },
 							  })
 							: navigate("SelectBanjee", {
 									subCategoryItem: categoryName,

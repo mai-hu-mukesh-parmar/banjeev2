@@ -26,7 +26,7 @@ import {
 import Card from "../../constants/components/Card";
 import { setLocalStorage } from "../../utils/Cache/TempStorage";
 import { useUserUpdate } from "../../utils/hooks/useUserUpdate";
-import { showToast } from "../../redux/store/reducer/toastAction";
+import { showToast } from "../../redux/store/action/toastAction";
 import { getUserRegistryData } from "../../helper/services/SplashService";
 export default function Details({ navigation }) {
 	const dispatch = useDispatch();
