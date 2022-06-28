@@ -6,7 +6,10 @@ import AppButton from "../../../../constants/components/ui-component/AppButton";
 import color from "../../../../constants/env/color";
 import { useSelector } from "react-redux";
 import { profileUrl } from "../../../../utils/util-func/constantExport";
-import { updateRoom } from "../../../../helper/services/CreateRoomService";
+import {
+	createRoom,
+	updateRoom,
+} from "../../../../helper/services/CreateRoomService";
 
 function FilterCreateRoom(props) {
 	const {
@@ -20,12 +23,16 @@ function FilterCreateRoom(props) {
 		onlyAudioRoom,
 	} = useSelector((state) => state.room);
 
+	// const {
+	// 	params: {
+	// 		update,
+	// 		data,
+	// 		data: { editRoom, userCount },
+	// 	},
+	// } = useRoute();
+
 	const {
-		params: {
-			update,
-			data,
-			data: { editRoom, userCount },
-		},
+		params: { update },
 	} = useRoute();
 
 	const { setOptions, navigate } = useNavigation();
@@ -36,11 +43,11 @@ function FilterCreateRoom(props) {
 	} = useSelector((state) => state.registry);
 
 	const user = useSelector((state) => state.user);
+	const roomdata = useSelector((state) => state.room);
 	const btnClick = React.useCallback(() => {
 		setDisable(true);
-		if (editRoom) {
-			// console.warn("----------------------------------", data?.audioUri.url);
-			// console.warn("editRoom?.imageContent", editRoom?.imageContent);
+
+		if (!update) {
 			// console.warn(
 			//   "Imagecontettgfgdfgdfg",
 			//   data?.roomUri?.base64Content === undefined
@@ -76,95 +83,96 @@ function FilterCreateRoom(props) {
 			//   "data.audioUri.url",
 			//   data.audioUri?.url
 			// );
-			// console.log("Update Apicall");
-			updateRoom({
-				allCanAddBanjees: toggle.add_banjee,
-				allCanReact: toggle.feedback,
-				allCanSpeak: toggle.speak,
-				allCanSwitchVideo: toggle.switch_video,
-				allUseVoiceFilters: toggle.voice_filter,
-				category: null, //reamining
-				categoryId: data.categoryId,
-				categoryName: data.params.subCategoryItem,
-				chatroomId: editRoom?.chatroomId, //remaining
-				communityType: data.communityType,
-				connectedUserIds: data.params.checkUser.map((ele) => ele.id.toString()),
-				connectedUsers: data.params.checkUser, //remaining
-				connectionReq: null, //remaining
-				content:
-					data?.audioUri?.audioBase64 === undefined ||
-					data?.audioUri?.audioBase64 === null
-						? editRoom?.content
-						: {
-								aspectRatio: null,
-								base64Content: data?.audioUri?.audioBase64,
-								caption: null,
-								description: null,
-								height: 0,
-								length: 0,
-								mediaDesignType: 0,
-								mediaSource: null,
-								mimeType: "audio/mp3",
-								sequenceNumber: 0,
-								sizeInBytes: 0,
-								src: null,
-								subTitle: null,
-								tags: null,
-								title: data.audioUri.url,
-								type: null,
-								width: 0,
-						  },
-				createdOn: editRoom?.createdOn,
-				domain: editRoom?.domain,
-				group: true,
-				groupName: data.txt,
-				id: editRoom?.id,
-				imageCommunityUrl: null,
-				imageContent:
-					data?.roomUri?.base64Content === undefined
-						? {
-								...editRoom?.imageContent,
-								base64Content: editRoom?.imageContent?.src,
-								mimeType: "image/jpg",
-						  }
-						: {
-								aspectRatio: null,
-								base64Content: data.roomUri.imageBase64,
-								caption: null,
-								description: null,
-								height: 0,
-								length: 0,
-								mediaDesignType: 0,
-								mediaSource: null,
-								mimeType: "image/jpg",
-								sequenceNumber: 0,
-								sizeInBytes: 0,
-								src: null,
-								subTitle: null,
-								tags: null,
-								title: data.roomUri.url,
-								type: null,
-								width: 0,
-						  },
-				lastUpdatedBy: null,
-				lastUpdatedOn: null,
-				likes: 0,
-				onlyAudioRoom: toggle.audio_only,
-				playing: false,
-				recordSession: false,
-				seekPermission: false,
-				subCategoryId: data.subCategoryId,
-				subCategoryName: data.txt,
-				unreadMessages: 0,
-				user: user,
-				userId: id,
-				userIds: [id],
-			})
-				.then((res) => {
-					navigate("Room");
-					ToastMessage("Room updated Successfully");
-				})
-				.catch((err) => console.log(err));
+			console.log("Update Apicall");
+
+			// updateRoom({
+			// 	allCanAddBanjees: toggle.add_banjee,
+			// 	allCanReact: toggle.feedback,
+			// 	allCanSpeak: toggle.speak,
+			// 	allCanSwitchVideo: toggle.switch_video,
+			// 	allUseVoiceFilters: toggle.voice_filter,
+			// 	category: null, //reamining
+			// 	categoryId: roomdata.categoryId,
+			// 	categoryName: roomdata.categoryName,
+			// 	chatroomId: editRoom?.chatroomId, //remaining
+			// 	communityType: roomdata.communityType,
+			// 	connectedUserIds: roomdata.selectedUser.map((ele) => ele.id.toString()),
+			// 	connectedUsers: roomdata.selectedUser, //remaining
+			// 	connectionReq: null, //remaining
+			// 	content: null,
+			// 	// data?.audioUri?.audioBase64 === undefined ||
+			// 	// data?.audioUri?.audioBase64 === null
+			// 	// 	? editRoom?.content
+			// 	// 	: {
+			// 	// 			aspectRatio: null,
+			// 	// 			base64Content: data?.audioUri?.audioBase64,
+			// 	// 			caption: null,
+			// 	// 			description: null,
+			// 	// 			height: 0,
+			// 	// 			length: 0,
+			// 	// 			mediaDesignType: 0,
+			// 	// 			mediaSource: null,
+			// 	// 			mimeType: "audio/mp3",
+			// 	// 			sequenceNumber: 0,
+			// 	// 			sizeInBytes: 0,
+			// 	// 			src: null,
+			// 	// 			subTitle: null,
+			// 	// 			tags: null,
+			// 	// 			title: roomdata.audioUri.url,
+			// 	// 			type: null,
+			// 	// 			width: 0,
+			// 	// 	  }
+			// 	createdOn: roomdata?.createdOn,
+			// 	domain: roomdata?.domain,
+			// 	group: true,
+			// 	groupName: roomdata.groupName,
+			// 	id: roomdata?.id,
+			// 	imageCommunityUrl: null,
+			// 	imageContent:
+			// 		roomdata?.imageContent?.imageBase64 === undefined
+			// 			? {
+			// 					...roomdata?.imageContent,
+			// 					base64Content: roomdata?.imageContent?.src,
+			// 					mimeType: "image/jpg",
+			// 			  }
+			// 			: {
+			// 					aspectRatio: null,
+			// 					base64Content: roomdata?.imageContent?.imageBase64,
+			// 					caption: null,
+			// 					description: null,
+			// 					height: 0,
+			// 					length: 0,
+			// 					mediaDesignType: 0,
+			// 					mediaSource: null,
+			// 					mimeType: "image/jpg",
+			// 					sequenceNumber: 0,
+			// 					sizeInBytes: 0,
+			// 					src: null,
+			// 					subTitle: null,
+			// 					tags: null,
+			// 					title: roomdata?.imageContent?.name,
+			// 					type: null,
+			// 					width: 0,
+			// 			  },
+			// 	lastUpdatedBy: null,
+			// 	lastUpdatedOn: null,
+			// 	likes: 0,
+			// 	onlyAudioRoom: toggle.audio_only,
+			// 	playing: false,
+			// 	recordSession: false,
+			// 	seekPermission: false,
+			// 	subCategoryId: roomdata.subCategoryId,
+			// 	subCategoryName: roomdata.subCategoryName,
+			// 	unreadMessages: 0,
+			// 	user: user,
+			// 	userId: id,
+			// 	userIds: [id],
+			// })
+			// 	.then((res) => {
+			// 		navigate("Room");
+			// 		ToastMessage("Room updated Successfully");
+			// 	})
+			// 	.catch((err) => console.log(err));
 		} else {
 			console.log("EditApiCall");
 			createRoom({
@@ -174,16 +182,16 @@ function FilterCreateRoom(props) {
 				allCanSwitchVideo: toggle.switch_video,
 				allUseVoiceFilters: toggle.voice_filter,
 				category: null, //reamining
-				categoryId: data.categoryId,
-				categoryName: data.params.subCategoryItem,
+				categoryId: roomdata.categoryId,
+				categoryName: roomdata.categoryName,
 				chatroomId: null, //remaining
-				communityType: data.communityType,
-				connectedUserIds: data.params.checkUser.map((ele) => ele.id),
+				communityType: roomdata.communityType,
+				connectedUserIds: roomdata.selectedUser.map((ele) => ele.id),
 				connectedUsers: null, //remaining
 				connectionReq: null, //remaining
 				content: {
 					aspectRatio: null,
-					base64Content: data.audioUri.audioBase64,
+					base64Content: null,
 					caption: null,
 					description: null,
 					height: 0,
@@ -196,19 +204,19 @@ function FilterCreateRoom(props) {
 					src: null,
 					subTitle: null,
 					tags: null,
-					title: data.audioUri.url,
+					title: null,
 					type: null,
 					width: 0,
 				},
 				createdOn: null,
-				domain: null,
+				domain: "banjee",
 				group: true,
-				groupName: data.txt,
+				groupName: roomdata.groupName,
 				id: null,
 				imageCommunityUrl: null,
 				imageContent: {
 					aspectRatio: null,
-					base64Content: data.roomUri.imageBase64,
+					base64Content: roomdata.imageContent.imageBase64,
 					caption: null,
 					description: null,
 					height: 0,
@@ -221,7 +229,7 @@ function FilterCreateRoom(props) {
 					src: null,
 					subTitle: null,
 					tags: null,
-					title: data.roomUri.url,
+					title: roomdata.imageContent.name,
 					type: null,
 					width: 0,
 				},
@@ -232,8 +240,8 @@ function FilterCreateRoom(props) {
 				playing: false,
 				recordSession: false,
 				seekPermission: false,
-				subCategoryId: data.subCategoryId,
-				subCategoryName: data.txt,
+				subCategoryId: roomdata.subCategoryId,
+				subCategoryName: roomdata.subCategoryName,
 				unreadMessages: 0,
 				user: null,
 				userId: id,
@@ -241,13 +249,16 @@ function FilterCreateRoom(props) {
 			})
 				// .then((res) => console.log(res))
 				.then((res) => {
-					navigate("RoomVideoCall", { room: res });
-					console.log(res);
+					console.warn("room createde");
+					console.log("room created and its response", res);
+
+					// navigate("RoomVideoCall", { room: res });
 				})
 				.catch((err) => console.log(err));
 		}
-	}, []);
+	}, [toggle, roomdata]);
 
+	const editRoom = "hei";
 	React.useEffect(() => {
 		return setOptions({
 			headerTitle: () => (
@@ -363,7 +374,8 @@ function FilterCreateRoom(props) {
 			<View style={styles.container}>
 				<View style={{ alignItems: "center" }}>
 					<Text style={{ textAlign: "center", marginBottom: 24 }}>
-						You have selected {userCount?.length} members for your {data?.txt}
+						You have selected 07 members for your "gjkhkln"
+						{/* You have selected {userCount?.length} members for your {data?.txt} */}
 						Room
 					</Text>
 					<Text>Set appropriate permissions for others</Text>

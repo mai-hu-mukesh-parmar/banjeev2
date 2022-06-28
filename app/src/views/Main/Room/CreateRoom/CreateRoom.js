@@ -31,7 +31,7 @@ function CreateRoom(props) {
 			...rest
 		},
 		room: {
-			categoryName,
+			subCategoryName,
 			categoryId,
 			subCategoryId,
 			groupName,
@@ -53,12 +53,6 @@ function CreateRoom(props) {
 	const [editRoom] = React.useState(room?.categoryId ?? false);
 
 	const [imageModal, setImageModal] = React.useState(false); //Select Image
-
-	const [roomUri, setRoomUri] = React.useState(
-		room?.imageContent?.src ?? false
-	);
-
-	const [userCount, setUserCount] = React.useState([]);
 
 	const [activeBtn, setActiveBtn] = React.useState(true);
 
@@ -88,9 +82,6 @@ function CreateRoom(props) {
 			setAudioUri(params?.audio);
 		}
 
-		if (params?.checkUser) {
-			setUserCount(params?.checkUser);
-		}
 		setActiveBtn(
 			groupName?.length > 0 &&
 				// categaoryItemName &&
@@ -98,8 +89,8 @@ function CreateRoom(props) {
 		);
 	}, [
 		groupName,
-		categoryName,
-		roomUri,
+		subCategoryName,
+
 		communityType,
 		params,
 		subCategoryId,
@@ -109,8 +100,8 @@ function CreateRoom(props) {
 
 	const xData = [
 		{
-			title: categoryName ? categoryName : "Category",
-			subTitle: categoryName ? "Change Category" : "Select Category",
+			title: subCategoryName ? subCategoryName : "Category",
+			subTitle: subCategoryName ? "Change Category" : "Select Category",
 			img: require("../../../../../assets/EditDrawerIcon/ic_category.png"),
 			onPress: () => navigate("Category"),
 		},
@@ -159,7 +150,7 @@ function CreateRoom(props) {
 
 										{
 											color:
-												i === 0 && categoryName
+												i === 0 && subCategoryName
 													? color.gradient
 													: "grey" && i === 1 && groupName
 													? color.gradient
@@ -175,7 +166,7 @@ function CreateRoom(props) {
 								<MaterialCommunityIcons
 									name="greater-than"
 									color={
-										i === 0 && categoryName
+										i === 0 && subCategoryName
 											? color.gradient
 											: "grey" && i === 1 && groupName
 											? color.gradient
@@ -299,7 +290,7 @@ function CreateRoom(props) {
 									update: room ? true : false,
 									// data: {
 									// 	editRoom: room,
-									// 	categoryName,
+									// 	subCategoryName,
 									// 	categoryId,
 									// 	subCategoryId,
 									// 	groupName,
@@ -311,7 +302,7 @@ function CreateRoom(props) {
 									// },
 							  })
 							: navigate("SelectBanjee", {
-									subCategoryItem: categoryName,
+									subCategoryItem: subCategoryName,
 									previousData: room,
 							  })
 					}
