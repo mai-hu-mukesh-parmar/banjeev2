@@ -10,7 +10,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import { getFeed } from "../../../helper/services/PostFeed";
 import { useDispatch, useSelector } from "react-redux";
 import { saveFeed } from "../../../redux/store/action/feedAction";
-import { showToast } from "../../../redux/store/action/toastAction";
 import AppFabButton from "../../../constants/components/ui-component/AppFabButton";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -20,6 +19,7 @@ import color from "../../../constants/env/color";
 import FeedSkeleton from "../../../constants/components/ui-skeleton/FeedSkeleton";
 import Feed from "./Feed";
 import usePermission from "../../../utils/hooks/usePermission";
+import { showToast } from "../../../redux/store/action/toastAction";
 
 export default function FeedScreen() {
 	const dispatch = useDispatch();
@@ -94,7 +94,7 @@ export default function FeedScreen() {
 			setOptions({
 				headerRight: () => (
 					<AppFabButton
-						onPress={() => navigate("FriendRequestNotification")}
+						onPress={() => navigate("FeedNotification")}
 						size={24}
 						icon={
 							<React.Fragment>

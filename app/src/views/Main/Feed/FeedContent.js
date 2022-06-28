@@ -1,3 +1,47 @@
+// import React, { memo } from "react";
+// import { View, Dimensions } from "react-native";
+
+// import ContentViewer from "./ContentViewer";
+// import Carousel from "react-native-snap-carousel";
+// import color from "../../../constants/env/color";
+
+// function FeedContent({ item }) {
+// 	console.warn(Dimensions.get("screen").width, "Dimensions.getwidth");
+
+// 	function _renderItem({ item: { mimeType, src } }) {
+// 		if (mimeType && src) {
+// 			return <ContentViewer src={src} mimeType={mimeType} />;
+// 		}
+// 	}
+
+// 	const c = React.useRef();
+
+// 	return (
+// 		<View style={{ marginBottom: 20, alignItems: "center" }}>
+// 			<Carousel
+// 				dotColor={color.primary}
+// 				inactiveDotColor={"grey"}
+// 				layout="default"
+// 				// pinchGestureEnabled
+// 				ref={c}
+// 				data={item}
+// 				renderItem={_renderItem}
+// 				sliderWidth={320}
+// 				itemWidth={320}
+// 			/>
+
+// 			{/* <SwiperFlatList
+// 				showPagination
+// 				data={item}
+// 				windowSize={Dimensions.get("screen").width}
+// 				renderItem={_renderItem}
+// 			/>  */}
+// 		</View>
+// 	);
+// }
+
+// export default memo(FeedContent);
+
 import React, { memo } from "react";
 import { View, StyleSheet } from "react-native";
 import GestureRecognizer, {

@@ -1,5 +1,5 @@
 import React from "react";
-import { Animated } from "react-native";
+import { Animated, Dimensions } from "react-native";
 import { PinchGestureHandler, State } from "react-native-gesture-handler";
 
 const FeedZoom = ({ imageUri }) => {
@@ -33,7 +33,7 @@ const FeedZoom = ({ imageUri }) => {
 			<Animated.Image
 				source={{ uri: imageUri }}
 				style={{
-					width: "100%",
+					width: 320,
 					height: 320,
 					alignSelf: "center",
 					transform: [{ scale: scale }],
