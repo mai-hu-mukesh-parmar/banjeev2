@@ -14,7 +14,7 @@ import {
 	deleteRoom,
 	listOurRoom,
 } from "../../../helper/services/CreateRoomService";
-import { resetRoomData } from "../../../redux/store/action/roomData";
+import { resetRoomData } from "../../../redux/store/action/roomAction";
 
 import RoomElement from "./RoomComponents/RoomElement";
 
@@ -162,7 +162,7 @@ function Room(props) {
 					<Animated.View style={{ transform: [{ translateY: translateY }] }}>
 						<AppButton
 							onPress={() => {
-								dispatch(resetRoomData({})), navigate("CreateRoom");
+								dispatch(resetRoomData()), navigate("CreateRoom");
 							}}
 							title={"Create My Room"}
 						/>

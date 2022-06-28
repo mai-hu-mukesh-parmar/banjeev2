@@ -6,7 +6,7 @@ import AppBorderButton from "../../../../constants/components/ui-component/AppBo
 import AppButton from "../../../../constants/components/ui-component/AppButton";
 import AppInput from "../../../../constants/components/ui-component/AppInput";
 import OverlayDrawer from "../../../../constants/components/ui-component/OverlayDrawer";
-import { setRoomData } from "../../../../redux/store/action/roomData";
+import { setRoomData } from "../../../../redux/store/action/roomAction";
 
 function RoomTitle({ openGroupModal, setOpenGroupModal }) {
 	const [txt, setTxt] = React.useState("");

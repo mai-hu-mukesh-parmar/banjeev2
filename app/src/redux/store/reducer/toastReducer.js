@@ -1,4 +1,4 @@
-import { CLOSE_TOAST, SHOW_TOAST } from "../reducer/toastAction";
+import { CLOSE_TOAST, SHOW_TOAST } from "../action/toastAction";
 
 const initialState = {
 	open: false,

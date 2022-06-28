@@ -21,7 +21,7 @@ import AppFabButton from "../../../../../constants/components/ui-component/AppFa
 import AppButton from "../../../../../constants/components/ui-component/AppButton";
 import color from "../../../../../constants/env/color";
 import usePermission from "../../../../../utils/hooks/usePermission";
-import { showToast } from "../../../../../redux/store/reducer/toastAction";
+import { showToast } from "../../../../../redux/store/action/toastAction";
 
 function RecordVoice(props) {
 	const { checkPermission } = usePermission();

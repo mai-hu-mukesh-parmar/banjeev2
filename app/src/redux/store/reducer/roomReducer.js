@@ -1,4 +1,4 @@
-import { SET_ROOM_DATA, RESET_ROOM_DATA } from "../action/roomData";
+import { SET_ROOM_DATA, RESET_ROOM_DATA } from "../action/roomAction";
 
 const initialState = {
 	roomUri: false,
@@ -17,7 +17,7 @@ export default function roomReducer(state = initialState, action) {
 		case SET_ROOM_DATA:
 			return { ...state, ...action.payload };
 		case RESET_ROOM_DATA: {
-			return { ...action.payload };
+			return initialState;
 		}
 
 		default:

@@ -16,7 +16,7 @@ import {
 	categoryService,
 	subCategoryService,
 } from "../../../../helper/services/CategoryService";
-import { setRoomData } from "../../../../redux/store/action/roomData";
+import { setRoomData } from "../../../../redux/store/action/roomAction";
 import {
 	checkGender,
 	listProfileUrl,

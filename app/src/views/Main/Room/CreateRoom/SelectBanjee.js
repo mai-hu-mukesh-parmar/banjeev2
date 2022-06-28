@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
 	View,
 	VirtualizedList,
@@ -10,26 +10,30 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { myBanjeeService } from "../../../../helper/services/Service";
 import SelectBanjeeContact from "./SelectBanjeeContact";
 import AppLoading from "../../../../constants/components/ui-component/AppLoading";
-import { Text } from "native-base";
 import color from "../../../../constants/env/color";
-import { useSelector } from "react-redux";
-import { setRoomData } from "../../../../redux/store/action/roomData";
+import { useDispatch, useSelector } from "react-redux";
+import { Text } from "native-base";
+import { setRoomData } from "../../../../redux/store/action/roomAction";
 
 function SelectBanjee() {
-	const { connectedUser } = useSelector((state) => state.room);
+	const dispatch = useDispatch();
+
 	const [visible, setVisible] = React.useState(false);
 	const [refresh, setRefresh] = React.useState(false);
-
 	const [checkUser, setCheckUser] = React.useState([]);
 	const [singleUser, setSingleUser] = React.useState();
-	// console.warn("check user", checkUser);
 
 	const { navigate } = useNavigation();
 	const { params } = useRoute();
 
-	const { systemUserId } = useSelector((state) => state.registry);
+	const { registry, room } = useSelector((state) => state);
+	const { systemUserId } = registry;
+	const { connectedUser, selectedUser } = room;
+	const [selectedUserArray, setSelectedUserArray] = useState(selectedUser);
 
-	// console.warn("------------------------->", editRoomContact);
+	const [editRoomContact] = React.useState(
+		params?.previousData?.connectedUsers
+	);
 
 	const listUser = React.useCallback(() => {
 		myBanjeeService({
@@ -45,7 +49,6 @@ function SelectBanjee() {
 			.then((res) => {
 				setRefresh(false);
 				setVisible(false);
-
 				const x = res.content.map((item) =>
 					systemUserId === item.connectedUser.id
 						? {
@@ -63,19 +66,18 @@ function SelectBanjee() {
 								chatroomId: item.chatroomId,
 						  }
 				);
+				console.log("x", x);
 				dispatch(setRoomData({ connectedUser: x }));
 			})
 			.catch((err) => console.warn(err));
-	}, []);
+	}, [systemUserId]);
 
 	const submitButton = () => {
+		dispatch(setRoomData({ selectedUser: selectedUserArray }));
 		if (params?.addUser) {
 			navigate("RoomVideoCall", { singleUser });
 		} else {
-			navigate("CreateRoom", {
-				checkUser,
-				subCategoryItem: params?.subCategoryItem,
-			});
+			navigate("CreateRoom");
 		}
 	};
 
@@ -88,16 +90,18 @@ function SelectBanjee() {
 	function renderItem({ item }) {
 		return (
 			<SelectBanjeeContact
+				editBanjeeContact={editRoomContact}
 				contact={checkUser}
 				setContact={setCheckUser}
 				setSingleUser={setSingleUser}
 				singleUser={singleUser}
 				item={item}
 				isRoom={params.addUser}
+				setSelectedUserArray={setSelectedUserArray}
+				selectedUserArray={selectedUserArray}
 			/>
 		);
 	}
-
 	function onRefresh() {
 		return setRefresh(true), listUser();
 	}
@@ -107,7 +111,7 @@ function SelectBanjee() {
 
 			<View style={styles.container}>
 				<VirtualizedList
-					getItemCount={(data) => data.length}
+					getItemCount={(data) => data?.length}
 					getItem={(data, index) => data[index]}
 					showsVerticalScrollIndicator={false}
 					data={connectedUser}

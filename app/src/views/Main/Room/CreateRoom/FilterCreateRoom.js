@@ -18,7 +18,7 @@ function FilterCreateRoom(props) {
 		seekPermission,
 		allUseVoiceFilters,
 		onlyAudioRoom,
-	} = -useSelector((state) => state.room);
+	} = useSelector((state) => state.room);
 
 	const {
 		params: {
