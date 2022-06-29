@@ -28,8 +28,9 @@ function SelectBanjee() {
 
 	const { registry, room } = useSelector((state) => state);
 	const { systemUserId } = registry;
-	const { connectedUser, selectedUser } = room;
-	const [selectedUserArray, setSelectedUserArray] = useState(selectedUser);
+	const { allUser, connectedUsers, connectedUserLength } = room;
+
+	const [selectedUserArray, setSelectedUserArray] = useState(connectedUsers);
 
 	const [editRoomContact] = React.useState(
 		params?.previousData?.connectedUsers
@@ -67,13 +68,18 @@ function SelectBanjee() {
 						  }
 				);
 				console.log("x", x);
-				dispatch(setRoomData({ connectedUser: x }));
+				dispatch(setRoomData({ allUser: x }));
 			})
 			.catch((err) => console.warn(err));
 	}, [systemUserId]);
 
 	const submitButton = () => {
-		dispatch(setRoomData({ selectedUser: selectedUserArray }));
+		dispatch(
+			setRoomData({
+				connectedUsers: selectedUserArray,
+				connectedUserLength: false,
+			})
+		);
 		if (params?.addUser) {
 			navigate("RoomVideoCall", { singleUser });
 		} else {
@@ -114,7 +120,7 @@ function SelectBanjee() {
 					getItemCount={(data) => data?.length}
 					getItem={(data, index) => data[index]}
 					showsVerticalScrollIndicator={false}
-					data={connectedUser}
+					data={allUser}
 					keyExtractor={(item) => item.id}
 					renderItem={renderItem}
 					refreshing={refresh}
