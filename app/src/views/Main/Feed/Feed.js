@@ -70,7 +70,6 @@ function Feed({ item, myFeed, allFeed, setDeletePostModal, setPostId }) {
 			navigate("BanjeeProfile", { item: { id: item.authorId } });
 		}
 	}
-
 	return (
 		<View style={styles.mainView}>
 			<View style={styles.grid}>
@@ -232,9 +231,7 @@ function Feed({ item, myFeed, allFeed, setDeletePostModal, setPostId }) {
 						marginTop: item?.text?.length === 0 ? 10 : 0,
 					}}
 				>
-					{item?.mediaContent && (
-						<FeedContent item={item?.mediaContent} iData={item} />
-					)}
+					{item?.mediaContent && <FeedContent item={item?.mediaContent} />}
 				</View>
 			)}
 

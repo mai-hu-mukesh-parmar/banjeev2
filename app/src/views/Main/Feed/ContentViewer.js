@@ -32,98 +32,108 @@ function ContentViewer({ mimeType, src }) {
 	}, [stopPlayer, unsubscribe]);
 
 	const renderComp = () => {
-		if (mimeType && src) {
-			switch (mimeType) {
-				case "video/mp4":
-					return (
-						<Video
-							ref={videoRef}
-							source={{ uri: cloudinaryFeedUrl(src, "video") }}
-							resizeMode="contain"
-							useNativeControls={true}
-							style={{
-								width: "100%",
-								aspectRatio: 1,
-							}}
-							onError={(err) => {
-								console.log(err);
-							}}
-						/>
-					);
-				case "audio/mp3":
-					return (
+		console.log("mimeType && src", mimeType, src);
+
+		switch (mimeType) {
+			case "video/mp4":
+				return (
+					<Video
+						ref={videoRef}
+						source={{ uri: cloudinaryFeedUrl(src, "video") }}
+						resizeMode="contain"
+						useNativeControls={true}
+						style={{
+							width: "100%",
+							aspectRatio: 1,
+						}}
+						onError={(err) => {
+							console.log(err);
+						}}
+					/>
+				);
+			case "audio/mp3":
+				return (
+					<View
+						style={{
+							height: 364,
+							width: "100%",
+							display: "flex",
+							flexDirection: "row",
+							alignItems: "center",
+							flex: 1,
+						}}
+					>
 						<View
 							style={{
-								height: 364,
-								width: "100%",
-								display: "flex",
 								flexDirection: "row",
 								alignItems: "center",
-								flex: 1,
+								position: "relative",
+								height: 60,
 							}}
 						>
+							<Image
+								style={{ width: "100%", borderRadius: 4, height: "100%" }}
+								source={require("../../../../assets/EditDrawerIcon/feedAudioBg.png")}
+							/>
 							<View
 								style={{
+									position: "absolute",
+									display: "flex",
 									flexDirection: "row",
-									alignItems: "center",
-									position: "relative",
 									height: 60,
+									width: "100%",
+									padding: 8,
 								}}
 							>
-								<Image
-									style={{ width: "100%", borderRadius: 4, height: "100%" }}
-									source={require("../../../../assets/EditDrawerIcon/feedAudioBg.png")}
-								/>
-								<View
-									style={{
-										position: "absolute",
-										display: "flex",
-										flexDirection: "row",
-										height: 60,
-										width: "100%",
-										padding: 8,
-									}}
-								>
-									<TouchableOpacity
-										onPress={() => playAudio(src, "feed_audio")}
+								<TouchableOpacity onPress={() => playAudio(src, "feed_audio")}>
+									<View
+										style={{
+											marginRight: 10,
+											width: 44,
+											height: 44,
+											display: "flex",
+											flexDirection: "row",
+											justifyContent: "center",
+											alignItems: "center",
+											backgroundColor: "#FFF",
+											borderRadius: 50,
+										}}
 									>
-										<View
-											style={{
-												marginRight: 10,
-												width: 44,
-												height: 44,
-												display: "flex",
-												flexDirection: "row",
-												justifyContent: "center",
-												alignItems: "center",
-												backgroundColor: "#FFF",
-												borderRadius: 50,
-											}}
-										>
-											<MaterialCommunityIcons name={icons} size={30} />
-										</View>
-									</TouchableOpacity>
-									{icons === "pause" && (
-										<Image
-											style={{
-												height: "80%",
-												width: "85%",
-												alignSelf: "center",
-											}}
-											source={require("../../../../assets/Animations/wave.gif")}
-										/>
-									)}
-								</View>
+										<MaterialCommunityIcons name={icons} size={30} />
+									</View>
+								</TouchableOpacity>
+								{icons === "pause" && (
+									<Image
+										style={{
+											height: "80%",
+											width: "85%",
+											alignSelf: "center",
+										}}
+										source={require("../../../../assets/Animations/wave.gif")}
+									/>
+								)}
 							</View>
 						</View>
-					);
-				case "image/jpg":
-					return <FeedZoom imageUri={cloudinaryFeedUrl(src, "image")} />;
-			}
-		} else return <View />;
+					</View>
+				);
+			case "image/jpg":
+				return <FeedZoom imageUri={cloudinaryFeedUrl(src, "image")} />;
+		}
 	};
 
-	return <View>{renderComp()}</View>;
+	return (
+		<ViewportAwareImage
+			onViewportEnter={() => {
+				console.log("onViewportEnter");
+			}}
+			onViewportLeave={() => {
+				console.log("onViewportLeave");
+			}}
+			style={{ flex: 1, height: 350 }}
+		>
+			{renderComp()}
+		</ViewportAwareImage>
+	);
 }
 
 export default ContentViewer;

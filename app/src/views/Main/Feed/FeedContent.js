@@ -12,31 +12,21 @@ function FeedContent({ item }) {
 	const [data, setData] = useState(false);
 	console.warn(Dimensions.get("screen").width, "Dimensions.getwidth");
 
-	function _renderItem({ item: { mimeType, src } }) {
-		if (mimeType && src) {
-			return (
-				<ViewportAwareImage
-					onViewportEnter={() => {
-						console.log("onViewportEnter");
-						setData(true);
-					}}
-					onViewportLeave={() => {
-						console.log("onViewportLeave");
-						setData(false);
-					}}
-					style={{ flex: 1 }}
-				>
-					{data && <ContentViewer src={src} mimeType={mimeType} />}
-				</ViewportAwareImage>
-			);
-		}
+	function _renderItem() {
+		return (
+			<View>
+				{item.map((ele) => (
+					<ContentViewer {...ele} />
+				))}
+			</View>
+		);
 	}
 
 	const c = React.useRef();
 
 	return (
 		<View style={{ marginBottom: 20, alignItems: "center" }}>
-			<Carousel
+			{/* <Carousel
 				dotColor={color.primary}
 				inactiveDotColor={"grey"}
 				layout="default"
@@ -46,8 +36,8 @@ function FeedContent({ item }) {
 				renderItem={_renderItem}
 				sliderWidth={320}
 				itemWidth={320}
-			/>
-
+			/> */}
+			{_renderItem()}
 			{/* <SwiperFlatList
 				showPagination
 				data={item}
