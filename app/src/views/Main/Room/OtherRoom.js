@@ -27,12 +27,12 @@ function OtherRoom(props) {
 	const [page, setPage] = React.useState(0);
 
 	const scrollY = new Animated.Value(0);
-	const diffClamp = Animated.diffClamp(scrollY, 0, 70);
+	const diffClamp = Animated.diffClamp(scrollY, 0, 110);
 	const [category, setCategory] = React.useState([]);
 	const [roomType, setRoomType] = React.useState(null);
 	const translateY = diffClamp.interpolate({
-		inputRange: [0, 70],
-		outputRange: [0, 70],
+		inputRange: [0, 110],
+		outputRange: [0, 110],
 	});
 	const dispatch = useDispatch();
 	const diffClamp2 = Animated.diffClamp(scrollY, -70, 0);

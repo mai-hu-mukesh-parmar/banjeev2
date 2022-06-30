@@ -7,14 +7,16 @@ import userRegisteryReducer from "./userRegisteryReducer";
 import roomReducer from "./roomReducer";
 import chatMessageReducer from "./socketReducers/chatMessageReducer";
 import onlineStatusReducer from "./socketReducers/onlineStatusReducer";
+import mapReducer from "./MapAndProfileCardReducer/mapReducer";
 
 export const rootReducer = combineReducers({
-  profile: userProfileReducer,
-  registry: userRegisteryReducer,
-  user: userDataReducer,
-  feed: feedReducer,
-  toast: toastReducer,
-  room: roomReducer,
-  socketChat: chatMessageReducer,
-  onlineStatus: onlineStatusReducer,
+	profile: userProfileReducer,
+	registry: userRegisteryReducer,
+	user: userDataReducer,
+	feed: feedReducer,
+	toast: toastReducer,
+	room: roomReducer,
+	socketChat: chatMessageReducer,
+	onlineStatus: onlineStatusReducer,
+	mapLocation: mapReducer,
 });
