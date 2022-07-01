@@ -17,19 +17,25 @@ function ReportUser({ modalVisible, setModalVisible, systemUserId }) {
 	const [reportMsg, setReportMsg] = React.useState("");
 	const dispatch = useDispatch();
 	const submitReport = () => {
-		ReportUserService({
-			connectionRequestId: null,
-			fromUserId: userData.systemUserId,
-			toUserId: systemUserId,
-			inappropriate_Voice_Message: voiceReport,
-			other: reportMsg,
-			scam_Bot: scamReport,
-		})
-			.then((res) => {
-				dispatch(showToast({ open: true, description: "User reported..!!" }));
-				setModalVisible(false);
+		if (voiceReport || scamReport || reportMsg.length > 0) {
+			ReportUserService({
+				connectionRequestId: null,
+				fromUserId: userData.systemUserId,
+				toUserId: systemUserId,
+				inappropriate_Voice_Message: voiceReport,
+				other: reportMsg,
+				scam_Bot: scamReport,
 			})
-			.catch((err) => console.warn(err));
+				.then((res) => {
+					dispatch(showToast({ open: true, description: "User reported..!!" }));
+					setModalVisible(false);
+				})
+				.catch((err) => console.warn(err));
+		} else {
+			dispatch(
+				showToast({ open: true, description: "please give reason to report" })
+			);
+		}
 	};
 
 	return (

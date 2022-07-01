@@ -13,10 +13,12 @@ import { Text } from "native-base";
 import color from "../../../../constants/env/color";
 import AppInput from "../../../../constants/components/ui-component/AppInput";
 import AppFabButton from "../../../../constants/components/ui-component/AppFabButton";
+import { useSelector } from "react-redux";
 
 function SearchMapLocation({ locFun }) {
 	const refRBSheet = React.useRef(null);
 	const [suggestionsList, setSuggestionsList] = React.useState([]);
+	const { mapRef } = useSelector((state) => state.mapLocation);
 	const handleChange = (e) => {
 		const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?key=AIzaSyBqW8iaz-_qlaTMc1ynbj9f7mpfmbVUcW4&input=${e}&language=en`;
 		axios
@@ -43,7 +45,8 @@ function SearchMapLocation({ locFun }) {
 			latitudeDelta: 0.0922,
 			longitudeDelta: 0.0421,
 		};
-		locFun({ loc, title: "", open: false }, refRBSheet.current);
+		mapRef.refRBBSheet.current;
+		// locFun({ loc, title: "", open: false }, refRBSheet.current);
 	};
 
 	const locHandler = React.useCallback((data) => {
@@ -52,7 +55,7 @@ function SearchMapLocation({ locFun }) {
 
 	return (
 		<React.Fragment>
-			<AppFabButton
+			{/* <AppFabButton
 				onPress={() => {
 					refRBSheet.current.open();
 				}}
@@ -65,7 +68,7 @@ function SearchMapLocation({ locFun }) {
 						color={color.black}
 					/>
 				}
-			/>
+			/> */}
 			<RBSheet
 				customStyles={{
 					container: { borderRadius: 10 },

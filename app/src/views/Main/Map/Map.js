@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import MapView, { PROVIDER_IOS, Marker } from "react-native-maps";
 import { View, Image, StyleSheet } from "react-native";
 import * as Location from "expo-location";
@@ -11,7 +11,10 @@ import color from "../../../constants/env/color";
 import { Text } from "native-base";
 import { profileUrl } from "../../../utils/util-func/constantExport";
 import { useDispatch, useSelector } from "react-redux";
-import { setUserLocation } from "../../../redux/store/action/MapAndProfileCardAction/mapAction";
+import {
+	setMapRef,
+	setUserLocation,
+} from "../../../redux/store/action/MapAndProfileCardAction/mapAction";
 import { saveUserRegistry } from "../../../redux/store/action/useActions";
 import {
 	getLocalStorage,
@@ -31,6 +34,9 @@ import NoLoactionFound from "./MapComponents/NoLoactionFound";
 
 export default function Map() {
 	const [token, setToken] = React.useState();
+	const lref = React.useRef(null);
+	const [mref, setMref] = useState(lref);
+
 	useUserUpdate(token, "Map");
 	const getToken = useCallback(async () => {
 		await getLocalStorage("token")
@@ -43,7 +49,10 @@ export default function Map() {
 
 	const initialRegion = useSelector((state) => state.mapLocation);
 	const dispatch = useDispatch();
-	const mapRef = React.useRef(null);
+
+	// const mapRef = React.useRef(null);
+
+	const { mapRef } = useSelector((state) => state.mapLocation);
 
 	// const { setUserLocation, setUserData, user, userData } =
 	// 	React.useContext(MainContext);
@@ -103,7 +112,7 @@ export default function Map() {
 		const { latitudeDelta, longitudeDelta } = initialRegion;
 
 		if (longitude && latitude && latitudeDelta && longitudeDelta) {
-			mapRef?.current?.animateToRegion(
+			mapRef?.animateToRegion(
 				{
 					longitude,
 					latitude,
@@ -124,14 +133,19 @@ export default function Map() {
 	const { isFocused, navigate } = useNavigation();
 
 	React.useEffect(() => {
+		setMref(lref);
 		if (isFocused()) {
+			if (mref.current) {
+				alert("hey");
+				dispatch(setMapRef(mref));
+			}
 			// getLocation();
 			getToken();
 		}
 		return () => {
 			setBanjeeUsers([]);
 		};
-	}, [isFocused, getToken]);
+	}, [isFocused, getToken, mref]);
 
 	const listAllUser = React.useCallback(() => {
 		getAllUser({
@@ -154,15 +168,15 @@ export default function Map() {
 
 	const getMySearchLocation = React.useCallback((data, refRBSheet) => {
 		console.log(data);
-		mapRef.current.animateToRegion(data.loc, 1000);
-		markerRef.current.animateMarkerToCoordinate(data.loc, 1000);
+		mapRef?.current?.animateToRegion(data.loc, 1000);
+		markerRef?.current?.animateMarkerToCoordinate(data.loc, 1000);
 		refRBSheet.close();
 		setTimeout(() => {
 			setSearchData(data);
 		}, 100);
 	}, []);
 
-	console.log("------------>", searchData);
+	console.log("mapRefmapRef------------>", mref);
 
 	return (
 		<React.Fragment>
@@ -195,7 +209,7 @@ export default function Map() {
 					/>
 					<MapView
 						// liteMode={true}
-						ref={mapRef}
+						ref={lref}
 						showsCompass={false}
 						maxZoomLevel={20}
 						// maxZoomLevel={13}

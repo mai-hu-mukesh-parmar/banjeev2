@@ -383,7 +383,6 @@ export default function SwipeAnimation(
 		return async () => await removeProfileLocation("location");
 	}, []);
 
-	console.warn(data.length);
 	const c = useRef();
 	const nextEle = () => {
 		c.current.snapToNext(true, () => {
@@ -393,44 +392,38 @@ export default function SwipeAnimation(
 	const renderUsers = ({ item }) => {
 		return (
 			<React.Fragment>
-				{data.length !== 0 ? (
-					<React.Fragment>
-						<LinearGradient
-							style={{
-								height: (Dimensions.get("window").height = "6%"),
-								position: "absolute",
-								width: (Dimensions.get("window").width = "90%"),
-								alignSelf: "center",
-							}}
-							start={{ x: 1, y: 0 }}
-							end={{ x: 0, y: 0 }}
-							colors={["#ED475C", "#A93294"]}
-						/>
+				<LinearGradient
+					style={styles.textGradient}
+					start={{ x: 1, y: 0 }}
+					end={{ x: 0, y: 0 }}
+					colors={["#ED475C", "#A93294"]}
+				/>
 
-						<UserCard item={item} />
-						<BottomCard next={nextEle} item={item} />
-					</React.Fragment>
-				) : (
-					<NoLoactionFound />
-				)}
+				<UserCard item={item} />
+				<BottomCard next={nextEle} item={item} />
 			</React.Fragment>
 		);
 	};
 	return (
 		<View style={{ flex: 1 }}>
 			{/* <View style={{ height: 60 }}></View> */}
-			<Carousel
-				snapToNext={(c) => console.warn(c)}
-				dotColor={color.primary}
-				inactiveDotColor={"grey"}
-				layout="tinder"
-				// pinchGestureEnabled
-				ref={c}
-				data={data}
-				renderItem={renderUsers}
-				sliderWidth={Dimensions.get("screen").width}
-				itemWidth={Dimensions.get("screen").width}
-			/>
+			{data.length === 0 ? (
+				<NoLoactionFound />
+			) : (
+				<Carousel
+					snapToNext={(c) => console.warn(c)}
+					dotColor={color.primary}
+					inactiveDotColor={"grey"}
+					layout="tinder"
+					// pinchGestureEnabled
+					ref={c}
+					data={data}
+					renderItem={renderUsers}
+					sliderWidth={Dimensions.get("screen").width}
+					itemWidth={Dimensions.get("screen").width}
+				/>
+			)}
+
 			{/* <View style={{ height: 60 }}></View> */}
 		</View>
 	);
@@ -447,5 +440,11 @@ const styles = StyleSheet.create({
 		borderWidth: 5,
 		alignSelf: "center",
 		marginBottom: "-10%",
+	},
+	textGradient: {
+		height: (Dimensions.get("window").height = "6%"),
+		position: "absolute",
+		width: (Dimensions.get("window").width = "90%"),
+		alignSelf: "center",
 	},
 });
