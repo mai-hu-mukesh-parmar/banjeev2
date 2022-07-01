@@ -31,12 +31,12 @@ export default function FeedScreen() {
 	const { checkPermission } = usePermission();
 
 	const {
-		feed: { otherPostId, screen },
+		feed: { otherPostId, screen, feed: data },
 	} = useSelector((state) => state);
 	const [loadingData, setLoadingData] = useState(false);
 	const [page, setPage] = useState(0);
 	const [refresh, setRefresh] = useState(false);
-	const [data, setData] = useState([]);
+	// const [data, setData] = useState([]);
 	const scrollY = new Animated.Value(100);
 
 	const diffClamp = Animated.diffClamp(scrollY, 0, 70);
@@ -75,10 +75,13 @@ export default function FeedScreen() {
 				setLoadingData(false);
 
 				if (res?.length > 0) {
-					setData((pre) => [
-						...pre,
-						...res.map((ele) => ({ ...ele, key: Math.random() })),
-					]);
+					// setData((pre) => [
+					// 	...pre,
+					// 	...res.map((ele) => ({ ...ele, key: Math.random() })),
+					// ]);
+					dispatch(
+						saveFeed(res.map((ele) => ({ ...ele, key: Math.random() })))
+					);
 				} else {
 					dispatch(
 						showToast({
@@ -146,7 +149,7 @@ export default function FeedScreen() {
 		if (isFocused) {
 			allFeed();
 		} else {
-			setData([]);
+			// setData([]);
 		}
 	}, [allFeed, setHeader, isFocused]);
 

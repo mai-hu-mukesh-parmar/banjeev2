@@ -22,8 +22,9 @@ import FeedContent from "./FeedContent";
 import AppFabButton from "../../../constants/components/ui-component/AppFabButton";
 import { profileUrl } from "../../../utils/util-func/constantExport";
 import { sharePost } from "../../Other/ShareApp";
-
+import { LogBox } from "react-native";
 function Feed({ item, myFeed, allFeed, setDeletePostModal, setPostId }) {
+	LogBox.ignoreLogs(["ViewPropTypes will"]);
 	const { navigate } = useNavigation();
 	const [showReaction, setShowReaction] = React.useState(false); //fr reaction
 	const [selectedReaction, setSelectedReaction] = React.useState();
