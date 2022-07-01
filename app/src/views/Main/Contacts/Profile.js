@@ -221,6 +221,7 @@ function BanjeeProfile() {
 	}, []);
 
 	const saveIntro = async () => {
+		// console.log("===============>", userItem);
 		const toUser = {
 			avtarUrl: ourProfile.avtarUrl,
 			domain: "208991",
@@ -281,6 +282,7 @@ function BanjeeProfile() {
 			voiceIntroSrc,
 		};
 
+		// console.log("payload ---> ", JSON.stringify(payload, null, 2));
 		delete payload.fromUser.authorities;
 
 		FriendRequest(payload)

@@ -9,7 +9,18 @@ const initialState = {
 	subCategoryItem: undefined,
 	imageContent: { src: null },
 	selectedUser: [],
-	connectedUser: [],
+	connectedUsers: [],
+	allUser: [],
+	connectedUserLength: true,
+	editRoom: false,
+	allCanSwitchVideo: false,
+	allCanReact: false,
+	allCanSpeak: false,
+	allCanAddBanjees: false,
+	recordSession: false,
+	seekPermission: false,
+	allUseVoiceFilters: false,
+	onlyAudioRoom: false,
 };
 
 export default function roomReducer(state = initialState, action) {

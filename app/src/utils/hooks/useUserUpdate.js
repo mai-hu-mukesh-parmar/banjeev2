@@ -45,6 +45,7 @@ export const useUserUpdate = (token, screen) => {
 			dispatch(
 				saveUserRegistry({
 					...userRes,
+					location: coordinates,
 					address: res.data.results[0],
 				})
 			);

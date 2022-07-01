@@ -5,8 +5,6 @@ import {
 	Image,
 	TouchableWithoutFeedback,
 	ScrollView,
-	TouchableOpacity,
-	Dimensions,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -37,7 +35,10 @@ function CreateRoom(props) {
 		subCategoryId,
 		groupName,
 		communityType,
+		connectedUserLength,
 		imageContent,
+		connectedUsers,
+		editRoom,
 		...room
 	} = useSelector((state) => state.room);
 
@@ -48,8 +49,6 @@ function CreateRoom(props) {
 	const [imageError, setImageError] = React.useState();
 
 	const [openGroupModal, setOpenGroupModal] = React.useState(false);
-
-	const [editRoom] = React.useState(room?.categoryId ?? false);
 
 	const [imageModal, setImageModal] = React.useState(false); //Select Image
 
@@ -62,7 +61,6 @@ function CreateRoom(props) {
 	const [activeBtn, setActiveBtn] = React.useState(true);
 
 	const [audioUri, setAudioUri] = React.useState(room?.content?.src ?? null);
-
 	React.useEffect(() => {
 		return setOptions({
 			headerTitle: () => (
@@ -81,29 +79,24 @@ function CreateRoom(props) {
 			),
 		});
 	}, [editRoom]);
-	console.warn(groupName, communityType);
-
+	console.warn(room, "connectedUserLength");
 	React.useEffect(() => {
 		if (params?.audio) {
 			setAudioUri(params?.audio);
 		}
 
-		if (params?.checkUser) {
-			setUserCount(params?.checkUser);
-		}
 		setActiveBtn(
-			groupName?.length > 0 &&
-				// categaoryItemName &&
-				communityType
+			groupName?.length > 0 && communityType && categoryId && subCategoryId
+			//&&  imageContent.name
 		);
 	}, [
 		groupName,
 		categoryName,
-		roomUri,
 		communityType,
 		params,
 		subCategoryId,
 		categoryId,
+		imageContent,
 		audioUri,
 	]);
 
@@ -275,26 +268,34 @@ function CreateRoom(props) {
 					Please select either of one to proceed further
 				</Text>
 
-				{userCount.length >= 1 && (
-					<Text style={styles.txt2}>{userCount.length} user selected.</Text>
+				{connectedUsers.length > 0 && (
+					<Text style={styles.txt2}>
+						{connectedUsers.length} user selected.
+					</Text>
 				)}
 
-				<AppButton
-					disabled={!activeBtn}
-					style={{ marginTop: 24, marginBottom: 34, width: 230 }}
-					title={
-						editRoom
-							? userCount.length > 0
-								? "Update Room"
-								: "Update Banjee Contacts"
-							: userCount.length > 0
-							? "Create Room"
-							: "Select Banjee Contacts"
-					}
-					onPress={() =>
-						userCount.length > 0
-							? navigate("FilterCreateRoom", {
-									update: room ? true : false,
+				{connectedUsers.length > 0 ? (
+					connectedUserLength ? (
+						<AppButton
+							disabled={!activeBtn}
+							style={{ marginTop: 24, marginBottom: 34, width: 230 }}
+							title={
+								!editRoom ? "Select Banjee Contacts" : "Update Banjee Contacts"
+							}
+							onPress={() =>
+								navigate("SelectBanjee", {
+									subCategoryItem: categoryName,
+									previousData: room,
+								})
+							}
+						/>
+					) : (
+						<AppButton
+							disabled={!activeBtn}
+							style={{ marginTop: 24, marginBottom: 34, width: 230 }}
+							title={!editRoom ? "Create Room" : "Update Room"}
+							onPress={() =>
+								navigate("FilterCreateRoom", {
 									data: {
 										editRoom: room,
 										categoryName,
@@ -307,13 +308,23 @@ function CreateRoom(props) {
 										audioUri,
 										userCount,
 									},
-							  })
-							: navigate("SelectBanjee", {
-									subCategoryItem: categoryName,
-									previousData: room,
-							  })
-					}
-				/>
+								})
+							}
+						/>
+					)
+				) : (
+					<AppButton
+						disabled={!activeBtn}
+						style={{ marginTop: 24, marginBottom: 34, width: 230 }}
+						title={"Select Banjee Contacts"}
+						onPress={() =>
+							navigate("SelectBanjee", {
+								subCategoryItem: categoryName,
+								previousData: room,
+							})
+						}
+					/>
+				)}
 			</View>
 		</ScrollView>
 	);
@@ -355,7 +366,6 @@ const styles = StyleSheet.create({
 		right: 0,
 		alignItems: "center",
 		width: "30%",
-		borderWidth: 1,
 	},
 	subTitle: {
 		// color: color.gradient,

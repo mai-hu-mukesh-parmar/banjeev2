@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import { Text } from "native-base";
-import React from "react";
+import React, { useCallback } from "react";
 import {
 	View,
 	StyleSheet,
@@ -24,14 +24,15 @@ function OtherRoom(props) {
 	const { systemUserId } = useSelector((state) => state.registry);
 	const [myRoom, setMyRoom] = React.useState([]);
 	const [refresh, setRefresh] = React.useState(false);
+	const [page, setPage] = React.useState(0);
 
 	const scrollY = new Animated.Value(0);
-	const diffClamp = Animated.diffClamp(scrollY, 0, 70);
+	const diffClamp = Animated.diffClamp(scrollY, 0, 110);
 	const [category, setCategory] = React.useState([]);
 	const [roomType, setRoomType] = React.useState(null);
 	const translateY = diffClamp.interpolate({
-		inputRange: [0, 70],
-		outputRange: [0, 70],
+		inputRange: [0, 110],
+		outputRange: [0, 110],
 	});
 	const dispatch = useDispatch();
 	const diffClamp2 = Animated.diffClamp(scrollY, -70, 0);
@@ -83,23 +84,22 @@ function OtherRoom(props) {
 			user: null,
 			userId: systemUserId,
 			userIds: null,
+			page: page,
+			pageSize: 15,
 		};
 
 		listOtherRoom(data)
 			.then((res) => {
+				console.warn(res.content.length);
 				setRefresh(false);
-				setMyRoom(res.content);
+				setMyRoom((prev) => [...prev, ...res.content]);
 			})
 			.catch((err) => {
 				console.warn(err);
 			});
-	}, [roomType, systemUserId]);
+	}, [roomType, systemUserId, page]);
 
-	React.useEffect(() => {
-		getAllRoom();
-	}, [getAllRoom]);
-
-	React.useEffect(() => {
+	const listAllCategory = useCallback(() => {
 		categoryService({
 			categoryId: null,
 			categoryName: null,
@@ -107,13 +107,19 @@ function OtherRoom(props) {
 			name: null,
 		})
 			.then((res) => {
+				getAllRoom();
 				let x = res.content.map((ele) => {
 					return { name: ele.name, id: ele.id };
 				});
 				setCategory([{ name: "All", id: null }, ...x]);
 			})
 			.catch((err) => console.warn(err));
-	}, []);
+	}, [getAllRoom]);
+
+	React.useEffect(() => {
+		listAllCategory();
+	}, [listAllCategory]);
+
 	function renderItem({ item }) {
 		return <RoomElement item={item} />;
 	}
@@ -143,12 +149,7 @@ function OtherRoom(props) {
 				</View>
 			) : (
 				<View style={{ position: "relative" }}>
-					<Animated.View
-						style={[
-							{ transform: [{ translateY: translateYHeader }] },
-							styles.category,
-						]}
-					>
+					<View style={[styles.category]}>
 						<ScrollView
 							horizontal={true}
 							showsHorizontalScrollIndicator={false}
@@ -176,7 +177,7 @@ function OtherRoom(props) {
 									</TouchableOpacity>
 								))}
 						</ScrollView>
-					</Animated.View>
+					</View>
 
 					<VirtualizedList
 						getItemCount={(myRoom) => myRoom.length}
@@ -189,6 +190,8 @@ function OtherRoom(props) {
 						keyExtractor={(item) => item.id}
 						renderItem={renderItem}
 						onScroll={(e) => scrollY.setValue(e.nativeEvent.contentOffset.y)}
+						onEndReachedThreshold={1}
+						onEndReached={() => setPage((prev) => prev + 1)}
 					/>
 				</View>
 			)}
@@ -233,7 +236,7 @@ const styles = StyleSheet.create({
 		height: 50,
 		flexWrap: "nowrap",
 		backgroundColor: color.white,
-		position: "absolute",
+		// position: "absolute",
 		zIndex: 1,
 	},
 	cardView: {

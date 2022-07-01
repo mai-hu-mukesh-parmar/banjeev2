@@ -1,18 +1,21 @@
 import React from "react";
 import { View, TouchableWithoutFeedback, StyleSheet } from "react-native";
-import color from "../../../Config/color";
 
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import ReportUserService from "../../../helper/services/ReportService";
 import AppInput from "../ui-component/AppInput";
 import AppButton from "../ui-component/AppButton";
+import color from "../../env/color";
+import { useDispatch, useSelector } from "react-redux";
+import { Text } from "native-base";
+import { showToast } from "../../../redux/store/action/toastAction";
 
 function ReportUser({ modalVisible, setModalVisible, systemUserId }) {
-	const { userData } = React.useContext(MainContext);
+	const userData = useSelector((state) => state.registry);
 	const [voiceReport, setVoiceReport] = React.useState(false);
 	const [scamReport, setScamReport] = React.useState(false);
 	const [reportMsg, setReportMsg] = React.useState("");
-
+	const dispatch = useDispatch();
 	const submitReport = () => {
 		ReportUserService({
 			connectionRequestId: null,
@@ -23,7 +26,7 @@ function ReportUser({ modalVisible, setModalVisible, systemUserId }) {
 			scam_Bot: scamReport,
 		})
 			.then((res) => {
-				ToastMessage("User reported");
+				dispatch(showToast({ open: true, description: "User reported..!!" }));
 				setModalVisible(false);
 			})
 			.catch((err) => console.warn(err));
@@ -111,7 +114,7 @@ const styles = StyleSheet.create({
 	container: {
 		alignSelf: "center",
 		// zIndex: 2,
-		height: 310,
+		// height: 310,
 		display: "flex",
 		width: 305,
 		backgroundColor: color.white,
