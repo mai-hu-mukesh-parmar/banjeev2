@@ -112,7 +112,6 @@ export const useUserUpdate = (token, screen) => {
 			//   "android.permission.ACCESS_FINE_LOCATION"
 			// );
 			let result = await checkPermission("LOCATION");
-			console.log("result", result);
 			if (result === "granted") {
 				await handleApi(jwtToken);
 			} else {

@@ -22,8 +22,9 @@ import FeedContent from "./FeedContent";
 import AppFabButton from "../../../constants/components/ui-component/AppFabButton";
 import { profileUrl } from "../../../utils/util-func/constantExport";
 import { sharePost } from "../../Other/ShareApp";
-
+import { LogBox } from "react-native";
 function Feed({ item, myFeed, allFeed, setDeletePostModal, setPostId }) {
+	LogBox.ignoreLogs(["ViewPropTypes will"]);
 	const { navigate } = useNavigation();
 	const [showReaction, setShowReaction] = React.useState(false); //fr reaction
 	const [selectedReaction, setSelectedReaction] = React.useState();
@@ -70,7 +71,6 @@ function Feed({ item, myFeed, allFeed, setDeletePostModal, setPostId }) {
 			navigate("BanjeeProfile", { item: { id: item.authorId } });
 		}
 	}
-
 	return (
 		<View style={styles.mainView}>
 			<View style={styles.grid}>
@@ -232,9 +232,7 @@ function Feed({ item, myFeed, allFeed, setDeletePostModal, setPostId }) {
 						marginTop: item?.text?.length === 0 ? 10 : 0,
 					}}
 				>
-					{item?.mediaContent && (
-						<FeedContent item={item?.mediaContent} iData={item} />
-					)}
+					{item?.mediaContent && <FeedContent item={item?.mediaContent} />}
 				</View>
 			)}
 

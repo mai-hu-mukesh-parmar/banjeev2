@@ -2,49 +2,48 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { SocketContext } from "../Context/Socket";
 import {
-  getChatMessage,
-  deleteChatMessage,
-  seenChatMessage,
+	getChatMessage,
+	deleteChatMessage,
+	seenChatMessage,
 } from "../redux/store/action/socketActions/chatMessageActions";
 import { onlineStatus } from "../redux/store/action/socketActions/onlineStatusAction";
 
 function SocketEvent({ children }) {
-  const socket = React.useContext(SocketContext);
-  const dispatch = useDispatch();
-  const { systemUserId } = useSelector((state) => state.registry);
+	const socket = React.useContext(SocketContext);
+	const dispatch = useDispatch();
+	const { systemUserId } = useSelector((state) => state.registry);
 
-  // --------- Online Status Event Emit ---------- //
+	// --------- Online Status Event Emit ---------- //
 
-  socket.emit("ONLINE_STATUS_RECEIVER", systemUserId);
+	socket.emit("ONLINE_STATUS_RECEIVER", systemUserId);
 
-  // --------- Chat Messages Events Start ---------- //
+	// --------- Chat Messages Events Start ---------- //
 
-  // Chat Message Recieve Event //
-  socket.on("CHAT_MESSAGE", (data) => {
-    console.log("socket message recived");
-    dispatch(getChatMessage(data));
-  });
-  // Chat Message Delete Event //
-  socket.on("CHAT_MESSAGE_DELETED", (data) => {
-    dispatch(deleteChatMessage(data));
-  });
-  // Chat Message Seen Event //
-  socket.on("CHAT_MESSAGE_SEEN", (data) => {
-    dispatch(seenChatMessage(data));
-  });
+	// Chat Message Recieve Event //
+	socket.on("CHAT_MESSAGE", (data) => {
+		dispatch(getChatMessage(data));
+	});
+	// Chat Message Delete Event //
+	socket.on("CHAT_MESSAGE_DELETED", (data) => {
+		dispatch(deleteChatMessage(data));
+	});
+	// Chat Message Seen Event //
+	socket.on("CHAT_MESSAGE_SEEN", (data) => {
+		dispatch(seenChatMessage(data));
+	});
 
-  // --------- Chat Messages Events End ---------- //
+	// --------- Chat Messages Events End ---------- //
 
-  // --------- Online Status Event Start ---------- //
+	// --------- Online Status Event Start ---------- //
 
-  socket.on("ONLINE_STATUS", (data) => {
-    console.warn("online status event", data);
-    dispatch(onlineStatus(data));
-  });
+	socket.on("ONLINE_STATUS", (data) => {
+		console.warn("online status event", data);
+		dispatch(onlineStatus(data));
+	});
 
-  // --------- Online Status Event End ---------- //
+	// --------- Online Status Event End ---------- //
 
-  return <React.Fragment>{children}</React.Fragment>;
+	return <React.Fragment>{children}</React.Fragment>;
 }
 
 export default SocketEvent;

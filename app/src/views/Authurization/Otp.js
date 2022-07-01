@@ -27,8 +27,6 @@ function Otp({ route, navigation }) {
 	const renderDecision = () => {
 		switch (type) {
 			case "LOGIN":
-				console.log(number, transactionCode, otp);
-
 				axios
 					.post(
 						"https://gateway.banjee.org/services/system-service/oauth/token",
@@ -41,7 +39,6 @@ function Otp({ route, navigation }) {
 						}
 					)
 					.then((res) => {
-						console.log(res.data);
 						setToken(res.data.access_token);
 						setLocalStorage("token", res.data.access_token);
 						const jwtToken = jwtDecode(res.data.access_token);
@@ -71,7 +68,6 @@ function Otp({ route, navigation }) {
 	};
 
 	const getOTP = () => {
-		console.log("OTP", otp);
 		if (otp) {
 			validateOtp({
 				domain: "banjee",

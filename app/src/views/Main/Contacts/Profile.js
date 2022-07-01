@@ -290,11 +290,7 @@ function BanjeeProfile() {
 				let notificationRingtone = require("../../../assets/ringtones/sendFriendRequestTone.mp3");
 
 				let { sound } = await Audio.Sound.createAsync(notificationRingtone);
-				console.log("playing sound");
-
 				await sound.playAsync();
-				console.log("audio played");
-
 				ToastMessage("Friend Request Sent Successfully");
 			})
 			.catch((err) => {

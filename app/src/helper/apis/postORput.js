@@ -41,8 +41,6 @@ let postApiCall = (url, actionCode, payload, method, header) => {
 			};
 		}
 
-		console.warn("API--------------");
-
 		console.log(
 			`${method}\n${url}\n${JSON.stringify(body, null, 2)}\n${JSON.stringify(
 				{ headers: modifiedHeader },
@@ -71,7 +69,6 @@ let postApiCall = (url, actionCode, payload, method, header) => {
  * header : true if api does not require token else false
  */
 let executePost = (url, actionCode, payload, method, header) => {
-	console.log("PAYLOAD", payload);
 	let promise = new Promise((resolve, reject) => {
 		postApiCall(url, actionCode, payload, method, header)
 			.then((response) => {

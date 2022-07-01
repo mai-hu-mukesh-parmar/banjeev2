@@ -165,7 +165,6 @@ export default function Details({ navigation }) {
 	const userHandler = (data, method) => {
 		updateUser(data, method)
 			.then((res) => {
-				console.log("----------", JSON.stringify(res));
 				dispatch(saveUserData(res));
 				setVisible(false);
 
@@ -192,7 +191,6 @@ export default function Details({ navigation }) {
 					}}
 					enableReinitialize={true}
 					onSubmit={(values) => {
-						console.log(values);
 						updateMe(values);
 					}}
 				>
