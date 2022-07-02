@@ -66,7 +66,7 @@ function Feed({ item, myFeed, allFeed, setDeletePostModal, setPostId }) {
 
 	function seeProfile() {
 		if (systemUserId === item.authorId) {
-			navigate("NewSetting");
+			navigate("Profile");
 		} else {
 			navigate("BanjeeProfile", { item: { id: item.authorId } });
 		}

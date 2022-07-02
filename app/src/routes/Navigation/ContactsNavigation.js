@@ -5,7 +5,7 @@ import {
 } from "../../constants/navigation/navigation";
 import MainChatScreen from "../../views/Main/Contacts/MainChatScreen";
 import SearchBanjee from "../../views/Main/Contacts/SearchBanjee/SearchBanjee";
-
+import BanjeeProfile from "../../views/Main/Contacts/BanjeeProfile/BanjeeProfile";
 const Contacts = [
 	{
 		name: "BanjeeUserChatScreen",
@@ -24,6 +24,14 @@ const Contacts = [
 			headerTitle: "",
 			headerStyle: headerStyle,
 			// headerBackground: () => headerBackground([color.white, color.white]),
+		},
+	},
+	{
+		name: "BanjeeProfile",
+		component: BanjeeProfile,
+		options: {
+			headerShown: false,
+			headerTitle: "",
 		},
 	},
 ];

@@ -17,7 +17,8 @@ import { useNavigation } from "@react-navigation/native";
 import checkUserStatus from "./ChatComponent/checkUserStatus";
 import { SocketContext } from "../../../Context/Socket";
 import { Avatar, Text } from "native-base";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { getProfile } from "../../../redux/store/action/Profile/userPendingConnection";
 
 function BanjeeContacts(props) {
 	const { item } = props;
@@ -105,6 +106,7 @@ function BanjeeContacts(props) {
 	//   }
 	// };
 
+	const dispatch = useDispatch();
 	return (
 		<View
 			style={{
@@ -117,7 +119,10 @@ function BanjeeContacts(props) {
 			<View style={{ width: "18%" }}>
 				<TouchableWithoutFeedback
 					style={{ zIndex: 999999 }}
-					onPress={() => navigate("BanjeeProfile", { item: { id: item.id } })}
+					onPress={() => {
+						dispatch(getProfile({ profileId: item.id }));
+						navigate("BanjeeProfile");
+					}}
 				>
 					<View style={styles.imgView}>
 						<Avatar
