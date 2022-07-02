@@ -13,6 +13,7 @@ const initialState = {
 	loadingData: false,
 	page: 0,
 	actionOnPost: {},
+	viewableItems: [],
 };
 
 export default function feedReducer(state = initialState, action) {

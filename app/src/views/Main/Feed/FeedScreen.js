@@ -67,10 +67,8 @@ export default function FeedScreen() {
 			mediaContent: null,
 			mediaRootDirectoryId: null,
 			otherUserId: null,
-			page,
 			pageId: null,
 			pageName: null,
-			pageSize: 10,
 			percentage: 0,
 			reactions: null,
 			reactionsCount: null,
@@ -81,7 +79,6 @@ export default function FeedScreen() {
 			visibility: null,
 		})
 			.then((res) => {
-				console.log("Feeds page", page);
 				dispatch(saveFeedAction({ loadingData: false }));
 
 				if (res?.length > 0) {
@@ -100,7 +97,7 @@ export default function FeedScreen() {
 			.catch((err) => {
 				console.log(err);
 			});
-	}, [page]);
+	}, []);
 
 	const setHeader = useCallback(() => {
 		if (!otherPostId) {
@@ -173,27 +170,32 @@ export default function FeedScreen() {
 
 	return (
 		<FeedProvider>
-			<FeedClear />
 			<View style={styles.container}>
-				<Viewport.Tracker>
-					<VirtualizedList
-						howsVerticalScrollIndicator={false}
-						getItemCount={(data) => data.length}
-						getItem={(data, index) => data[index]}
-						data={data}
-						keyExtractor={(data) => data.key}
-						renderItem={renderItem}
-						refreshing={loadingData}
-						onRefresh={() => dispatch(saveFeedAction({ page: 0 }))}
-						onEndReachedThreshold={0.2}
-						ListEmptyComponent={
-							<Text style={{ alignSelf: "center", marginTop: 120 }}>
-								You have not created any post yet...!
-							</Text>
-						}
-						onEndReached={() => dispatch(saveFeedAction({ page: page + 1 }))}
-					/>
-				</Viewport.Tracker>
+				<VirtualizedList
+					howsVerticalScrollIndicator={false}
+					getItemCount={(data) => data.length}
+					getItem={(data, index) => data[index]}
+					data={data}
+					keyExtractor={(data) => data.key}
+					renderItem={renderItem}
+					refreshing={loadingData}
+					viewabilityConfig={{
+						itemVisiblePercentThreshold: 100,
+					}}
+					maxToRenderPerBatch={5}
+					initialNumToRender={5}
+					onViewableItemsChanged={(data) => {
+						dispatch(saveFeedAction({ viewableItems: data.viewableItems }));
+					}}
+					onRefresh={() => dispatch(saveFeedAction({ page: 0 }))}
+					onEndReachedThreshold={0.2}
+					ListEmptyComponent={
+						<Text style={{ alignSelf: "center", marginTop: 120 }}>
+							You have not created any post yet...!
+						</Text>
+					}
+					onEndReached={() => dispatch(saveFeedAction({ page: page + 1 }))}
+				/>
 			</View>
 
 			<View style={styles.filterView}>
@@ -222,7 +224,7 @@ const FeedClear = () => {
 
 	useEffect(() => {
 		addListener("blur", () => {
-			setPlayAbleFeed({});
+			setPlayAbleFeed([]);
 		});
 	}, []);
 	return null;

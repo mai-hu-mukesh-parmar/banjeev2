@@ -1,28 +1,9 @@
 import { Video } from "expo-av";
 import React, { useCallback, useContext, useEffect, useRef } from "react";
 import { cloudinaryFeedUrl } from "../../../../utils/util-func/constantExport";
-import FeedContext from "../FeedContext/FeedContext";
 
-export default function VideoType({ src, caption }) {
-	const { playAbleFeed } = useContext(FeedContext);
+export default function VideoType({ src }) {
 	const videoRef = useRef(null);
-
-	const managePlayBack = useCallback(() => {
-		if (playAbleFeed.includes(caption)) {
-			videoRef.current?.playAsync();
-		} else {
-			videoRef.current?.stopAsync();
-		}
-	}, [playAbleFeed, caption]);
-
-	useEffect(() => {
-		managePlayBack();
-
-		return () => {
-			videoRef.current?.unloadAsync();
-			videoRef.current?.stopAsync();
-		};
-	}, [managePlayBack]);
 
 	return (
 		<Video
