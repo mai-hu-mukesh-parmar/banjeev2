@@ -5,11 +5,21 @@ import {
 	Animated,
 	VirtualizedList,
 	StyleSheet,
+	ScrollView,
 } from "react-native";
-import React, { useCallback, useEffect, useState } from "react";
+import React, {
+	Fragment,
+	useCallback,
+	useContext,
+	useEffect,
+	useState,
+} from "react";
 import { getFeed } from "../../../helper/services/PostFeed";
 import { useDispatch, useSelector } from "react-redux";
-import { saveFeed } from "../../../redux/store/action/feedAction";
+import {
+	saveFeed,
+	saveFeedAction,
+} from "../../../redux/store/action/feedAction";
 import AppFabButton from "../../../constants/components/ui-component/AppFabButton";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -21,22 +31,20 @@ import Feed from "./Feed";
 import usePermission from "../../../utils/hooks/usePermission";
 import { useIsFocused } from "@react-navigation/native";
 import { showToast } from "../../../redux/store/action/toastAction";
+import FeedContext, { FeedProvider } from "./FeedContext/FeedContext";
 
 export default function FeedScreen() {
 	const isFocused = useIsFocused();
-
 	const dispatch = useDispatch();
+
 	const { setOptions, navigate } = useNavigation();
 
 	const { checkPermission } = usePermission();
 
 	const {
-		feed: { otherPostId, screen, feed: data },
+		feed: { otherPostId, screen, feed: data, page, loadingData },
 	} = useSelector((state) => state);
-	const [loadingData, setLoadingData] = useState(false);
-	const [page, setPage] = useState(0);
-	const [refresh, setRefresh] = useState(false);
-	// const [data, setData] = useState([]);
+
 	const scrollY = new Animated.Value(100);
 
 	const diffClamp = Animated.diffClamp(scrollY, 0, 70);
@@ -45,6 +53,8 @@ export default function FeedScreen() {
 		outputRange: [0, 70],
 	});
 	const allFeed = useCallback(async () => {
+		dispatch(saveFeedAction({ loadingData: true }));
+
 		await checkPermission("STORAGE");
 		getFeed({
 			author: null,
@@ -72,13 +82,9 @@ export default function FeedScreen() {
 		})
 			.then((res) => {
 				console.log("Feeds page", page);
-				setLoadingData(false);
+				dispatch(saveFeedAction({ loadingData: false }));
 
 				if (res?.length > 0) {
-					// setData((pre) => [
-					// 	...pre,
-					// 	...res.map((ele) => ({ ...ele, key: Math.random() })),
-					// ]);
 					dispatch(
 						saveFeed(res.map((ele) => ({ ...ele, key: Math.random() })))
 					);
@@ -166,44 +172,28 @@ export default function FeedScreen() {
 	}
 
 	return (
-		<View>
+		<FeedProvider>
+			<FeedClear />
 			<View style={styles.container}>
-				{loadingData && <FeedSkeleton />}
-				{data?.length > 0 ? (
-					<Viewport.Tracker>
-						<VirtualizedList
-							howsVerticalScrollIndicator={false}
-							getItemCount={(data) => data.length}
-							getItem={(data, index) => data[index]}
-							data={data}
-							keyExtractor={(data) => data.key}
-							renderItem={renderItem}
-							refreshing={loadingData}
-							onRefresh={() => setPage(0)}
-							onEndReachedThreshold={1}
-							onEndReached={() => setPage((prev) => prev + 1)}
-						/>
-					</Viewport.Tracker>
-				) : (
-					<React.Fragment>
-						{/* <FeedSkeleton /> */}
-						<Text
-							style={{
-								alignSelf: "center",
-								textAlign: "center",
-								position: "absolute",
-								bottom: 0,
-							}}
-						>
-							Loading...
-						</Text>
-					</React.Fragment>
-				)}
-				{screen === "ALL" && data.length === 0 && (
-					<Text style={{ alignSelf: "center", marginTop: 120 }}>
-						You have not created any post yet...!
-					</Text>
-				)}
+				<Viewport.Tracker>
+					<VirtualizedList
+						howsVerticalScrollIndicator={false}
+						getItemCount={(data) => data.length}
+						getItem={(data, index) => data[index]}
+						data={data}
+						keyExtractor={(data) => data.key}
+						renderItem={renderItem}
+						refreshing={loadingData}
+						onRefresh={() => dispatch(saveFeedAction({ page: 0 }))}
+						onEndReachedThreshold={0.2}
+						ListEmptyComponent={
+							<Text style={{ alignSelf: "center", marginTop: 120 }}>
+								You have not created any post yet...!
+							</Text>
+						}
+						onEndReached={() => dispatch(saveFeedAction({ page: page + 1 }))}
+					/>
+				</Viewport.Tracker>
 			</View>
 
 			<View style={styles.filterView}>
@@ -222,9 +212,21 @@ export default function FeedScreen() {
 					</TouchableWithoutFeedback>
 				</Animated.View>
 			</View>
-		</View>
+		</FeedProvider>
 	);
 }
+
+const FeedClear = () => {
+	const { setPlayAbleFeed } = useContext(FeedContext);
+	const { addListener } = useNavigation();
+
+	useEffect(() => {
+		addListener("blur", () => {
+			setPlayAbleFeed({});
+		});
+	}, []);
+	return null;
+};
 
 const styles = StyleSheet.create({
 	container: {

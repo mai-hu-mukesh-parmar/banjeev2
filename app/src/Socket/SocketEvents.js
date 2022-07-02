@@ -37,7 +37,6 @@ function SocketEvent({ children }) {
 	// --------- Online Status Event Start ---------- //
 
 	socket.on("ONLINE_STATUS", (data) => {
-		console.warn("online status event", data);
 		dispatch(onlineStatus(data));
 	});
 

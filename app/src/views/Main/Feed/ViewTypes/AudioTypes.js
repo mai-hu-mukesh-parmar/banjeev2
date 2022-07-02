@@ -1,20 +1,28 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useContext, useEffect } from "react";
 import { View, Image, TouchableOpacity } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import usePlayPauseAudio from "../../../../utils/hooks/usePlayPauseAudio";
-import { useNavigation } from "@react-navigation/native";
+import FeedContext from "../FeedContext/FeedContext";
 
-export default function AudioTypes({ src }) {
+export default function AudioTypes({ src, caption }) {
 	const { icons, playAudio, stopPlayer } = usePlayPauseAudio(src, false);
-	const { addListener } = useNavigation();
+	const { playAbleFeed } = useContext(FeedContext);
+
+	const managePlayBack = useCallback(async () => {
+		if (playAbleFeed.includes(caption)) {
+			await playAudio();
+		} else {
+			await stopPlayer();
+		}
+	}, [playAbleFeed, caption]);
 
 	useEffect(() => {
-		playAudio();
+		managePlayBack();
 
-		return async () => {
-			await stopPlayer();
+		return () => {
+			stopPlayer();
 		};
-	}, [playAudio, stopPlayer]);
+	}, [stopPlayer, managePlayBack]);
 
 	return (
 		<View

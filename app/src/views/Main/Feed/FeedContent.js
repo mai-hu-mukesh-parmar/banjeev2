@@ -1,14 +1,32 @@
-import React, { memo, useState } from "react";
+import React, { memo, useContext, useEffect } from "react";
 import { View, Dimensions } from "react-native";
 import ContentViewer from "./ContentViewer";
 import Carousel from "react-native-snap-carousel";
 import color from "../../../constants/env/color";
 import { Viewport } from "@skele/components";
-import { useDispatch, useSelector } from "react-redux";
-import { actionOnPost as actionOnPostAction } from "../../../redux/store/action/feedAction";
+
+import FeedContext from "./FeedContext/FeedContext";
 const ViewportAwareImage = Viewport.Aware(View);
 function FeedContent({ item: ele }) {
 	const c = React.useRef();
+	const { playAbleFeed, setPlayAbleFeed } = useContext(FeedContext);
+
+	useEffect(() => {
+		console.log("playAbleFeed", playAbleFeed);
+	}, [playAbleFeed]);
+
+	const renderItem = ({ item }) => (
+		<ViewportAwareImage
+			onViewportEnter={() => {
+				setPlayAbleFeed((pre) => [...new Set([...pre, item.caption])]);
+			}}
+			onViewportLeave={() => {
+				setPlayAbleFeed((pre) => pre.filter((ele) => ele !== item.caption));
+			}}
+		>
+			<ContentViewer {...item} />
+		</ViewportAwareImage>
+	);
 
 	return (
 		<Carousel
@@ -17,34 +35,10 @@ function FeedContent({ item: ele }) {
 			layout="default"
 			ref={c}
 			data={ele}
-			renderItem={({ item }) => <RenderItem item={item} />}
+			renderItem={renderItem}
 			sliderWidth={Dimensions.get("screen").width}
 			itemWidth={Dimensions.get("screen").width}
 		/>
 	);
 }
 export default memo(FeedContent);
-
-const RenderItem = ({ item }) => {
-	const { actionOnPost } = useSelector((state) => state.feed);
-	const dispatch = useDispatch();
-
-	return (
-		<ViewportAwareImage
-			onViewportEnter={() => {
-				dispatch(
-					actionOnPostAction({
-						actionOnPost: { ...actionOnPost, [item.caption]: item },
-					})
-				);
-			}}
-			onViewportLeave={() => {
-				let x = actionOnPost;
-				delete x?.[item.caption];
-				dispatch(actionOnPost({ actionOnPost: x }));
-			}}
-		>
-			<ContentViewer {...item} />
-		</ViewportAwareImage>
-	);
-};

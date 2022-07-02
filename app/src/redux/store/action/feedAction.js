@@ -1,7 +1,8 @@
 export const SAVE_MAIN_FEED = "SAVE_MAIN_FEED";
 export const VIEW_SCREEN = "VIEW_SCREEN";
 export const OTHER_POST_ID = "OTHER_POST_ID";
-export const ACTION_ON_POST = "ACTION_ON_POST";
+export const SAVE_FEED_ACTION = "SAVE_FEED_ACTION";
+export const PUSH_TO_PLAY_BACK = "PUSH_TO_PLAY_BACK";
 
 export const saveFeed = (data) => {
 	return {
@@ -22,9 +23,16 @@ export const saveOtherPostId = (id) => {
 		payload: id,
 	};
 };
-export const actionOnPost = (data) => {
+export const saveFeedAction = (data) => {
 	return {
-		type: ACTION_ON_POST,
+		type: SAVE_FEED_ACTION,
+		payload: data,
+	};
+};
+
+export const pushToPlayBack = (data) => {
+	return {
+		type: PUSH_TO_PLAY_BACK,
 		payload: data,
 	};
 };
