@@ -1,19 +1,28 @@
-import { useNavigation } from "@react-navigation/native";
 import { Video } from "expo-av";
-import React, { useEffect, useRef } from "react";
+import React, { useCallback, useContext, useEffect, useRef } from "react";
 import { cloudinaryFeedUrl } from "../../../../utils/util-func/constantExport";
+import FeedContext from "../FeedContext/FeedContext";
 
-export default function VideoType({ src }) {
+export default function VideoType({ src, caption }) {
+	const { playAbleFeed } = useContext(FeedContext);
 	const videoRef = useRef(null);
 
-	useEffect(() => {
-		videoRef.current?.playAsync();
+	const managePlayBack = useCallback(() => {
+		if (playAbleFeed.includes(caption)) {
+			videoRef.current?.playAsync();
+		} else {
+			videoRef.current?.stopAsync();
+		}
+	}, [playAbleFeed, caption]);
 
-		return async () => {
-			await videoRef.current?.unloadAsync();
-			await videoRef.current?.stopAsync();
+	useEffect(() => {
+		managePlayBack();
+
+		return () => {
+			videoRef.current?.unloadAsync();
+			videoRef.current?.stopAsync();
 		};
-	}, []);
+	}, [managePlayBack]);
 
 	return (
 		<Video

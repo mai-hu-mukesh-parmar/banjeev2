@@ -2,13 +2,16 @@ import {
 	SAVE_MAIN_FEED,
 	VIEW_SCREEN,
 	OTHER_POST_ID,
-	ACTION_ON_POST,
+	SAVE_FEED_ACTION,
+	PUSH_TO_PLAY_BACK,
 } from "../action/feedAction";
 
 const initialState = {
 	screen: "ALL",
 	feed: [],
 	otherPostId: "",
+	loadingData: false,
+	page: 0,
 	actionOnPost: {},
 };
 
@@ -20,8 +23,10 @@ export default function feedReducer(state = initialState, action) {
 			return { ...state, screen: action.payload };
 		case OTHER_POST_ID:
 			return { ...state, otherPostId: action.payload };
-		case ACTION_ON_POST:
+		case SAVE_FEED_ACTION:
 			return { ...state, ...action.payload };
+		case PUSH_TO_PLAY_BACK:
+			return { ...state, actionOnPost: action.payload };
 		default:
 			return state;
 	}
