@@ -8,6 +8,7 @@ import roomReducer from "./roomReducer";
 import chatMessageReducer from "./socketReducers/chatMessageReducer";
 import onlineStatusReducer from "./socketReducers/onlineStatusReducer";
 import mapReducer from "./MapAndProfileCardReducer/mapReducer";
+import { pendingConnectionReducer } from "./profile/userPendingConnectionReducer";
 
 export const rootReducer = combineReducers({
 	profile: userProfileReducer,
@@ -19,4 +20,5 @@ export const rootReducer = combineReducers({
 	socketChat: chatMessageReducer,
 	onlineStatus: onlineStatusReducer,
 	mapLocation: mapReducer,
+	viewProfile: pendingConnectionReducer,
 });

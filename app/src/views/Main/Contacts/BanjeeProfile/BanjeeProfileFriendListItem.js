@@ -7,17 +7,16 @@ import {
 	TouchableWithoutFeedback,
 	Image,
 } from "react-native";
-import AppFabButton from "../../../Components/AppComponents/AppFabButton";
-import AppText from "../../../Components/AppComponents/AppText";
-import { ToastMessage } from "../../../Components/ToastMessage";
-import usePlayPauseAudio from "../../../Components/UsePlayPauseAudio";
-import color from "../../../Config/color";
-import MainContext from "../../../Context/MainContext";
-import { checkGender, listProfileUrl } from "../../../Services/constantExport";
-import { FriendRequest } from "../../../Services/FriendRequest/FriendRequest";
 import * as Location from "expo-location";
-import { otherBanjee_service } from "../../../Services/MyBanjeeService/other_banjee";
-import { Avatar } from "native-base";
+import { Avatar, Text } from "native-base";
+import { otherBanjee_service } from "../../../../helper/services/OtherBanjee";
+import { FriendRequest } from "../../../../helper/services/FriendRequest";
+import AppFabButton from "../../../../constants/components/ui-component/AppFabButton";
+import color from "../../../../constants/env/color";
+import { showToast } from "../../../../redux/store/action/toastAction";
+import { useDispatch, useSelector } from "react-redux";
+import usePlayPauseAudio from "../../../../utils/hooks/usePlayPauseAudio";
+import { listProfileUrl } from "../../../../utils/util-func/constantExport";
 
 function BanjeeProfileFriendListItem({ item, user }) {
 	const { navigate } = useNavigation();
@@ -25,26 +24,35 @@ function BanjeeProfileFriendListItem({ item, user }) {
 	const { icons, playAudio } = usePlayPauseAudio(userAudio);
 	const [userAudio, setUserAudio] = React.useState();
 	const [imageError, setImageError] = React.useState();
-	const {
-		pendingFriendReq,
-		userData: { systemUserId, currentUser },
-	} = React.useContext(MainContext);
+	// const {
+	//   pendingFriendReq,
+	//   userData: { systemUserId, currentUser },
+	// } = React.useContext(MainContext);
 
-	const { userData } = React.useContext(MainContext);
+	const { systemUserId, currentUser, userData } = useSelector(
+		(state) => state.registry
+	);
+
+	const { pendingFriendReq } = useSelector((state) => state.viewProfile);
+	console.warn(
+		pendingFriendReq,
+		"pendingFriendReqpendingFriendReqpendingFriendReqpendingFriendReq"
+	);
+	const dispatch = useDispatch();
 
 	const mutualFriends = [
 		{
 			onPress: () => searchBanjee(item.systemUserId, "video"),
-			img: require("../../../assets/EditDrawerIcon/ic_video_call.png"),
+			img: require("../../../../../assets/EditDrawerIcon/ic_video_call.png"),
 		},
 		{
 			onPress: () => searchBanjee(item.systemUserId, "voice"),
-			img: require("../../../assets/EditDrawerIcon/ic_call_black.png"),
+			img: require("../../../../../assets/EditDrawerIcon/ic_call_black.png"),
 		},
 		{
 			onPress: () => searchBanjee(item.systemUserId, "chat"),
 			// onPress: () => navigate("BanjeeUserChatScreen", { user: user }),
-			img: require("../../../assets/EditDrawerIcon/ic_voice_black.png"),
+			img: require("../../../../../assets/EditDrawerIcon/ic_voice_black.png"),
 		},
 	];
 
@@ -169,12 +177,19 @@ function BanjeeProfileFriendListItem({ item, user }) {
 
 		FriendRequest(payload)
 			.then(async (res) => {
-				let notificationRingtone = require("../../../assets/ringtones/sendFriendRequestTone.mp3");
+				let notificationRingtone = require("../../../../../assets/ringtones/sendFriendRequestTone.mp3");
 
 				let { sound } = await Audio.Sound.createAsync(notificationRingtone);
-				await sound.playAsync();
+				console.log("playing sound");
 
-				ToastMessage("Friend Request Sent Successfully");
+				await sound.playAsync();
+				console.log("audio played");
+				dispatch(
+					showToast({
+						open: true,
+						description: "Friend Request Sent Successfully",
+					})
+				);
 			})
 			.catch((err) => {
 				console.warn(err);
@@ -186,7 +201,7 @@ function BanjeeProfileFriendListItem({ item, user }) {
 			case "YOU":
 				return (
 					<View style={{ alignItems: "flex-end", width: "30%" }}>
-						<AppText>You</AppText>
+						<Text>You</Text>
 					</View>
 				);
 
@@ -220,20 +235,21 @@ function BanjeeProfileFriendListItem({ item, user }) {
 								<Image
 									source={
 										icons === "pause" && user.voiceIntroSrc === userAudio
-											? require("../../../assets/EditDrawerIcon/ic_pause.png")
-											: require("../../../assets/EditDrawerIcon/ic_play_round.png")
+											? require("../../../../../assets/EditDrawerIcon/ic_pause.png")
+											: require("../../../../../assets/EditDrawerIcon/ic_play_round.png")
 									}
 									style={styles.iconImg}
 								/>
 							}
 						/>
+
 						{x.length > 0 ? (
 							<AppFabButton
 								onPress={() => {}}
 								size={iconSize}
 								icon={
 									<Image
-										source={require("../../../assets/EditDrawerIcon/ic_add_friend_black.png")}
+										source={require("../../../../../assets/EditDrawerIcon/ic_add_friend_black.png")}
 										style={[styles.iconImg, { tintColor: "grey" }]}
 									/>
 								}
@@ -246,7 +262,7 @@ function BanjeeProfileFriendListItem({ item, user }) {
 								size={iconSize}
 								icon={
 									<Image
-										source={require("../../../assets/EditDrawerIcon/ic_add_friend_black.png")}
+										source={require("../../../../../assets/EditDrawerIcon/ic_add_friend_black.png")}
 										style={styles.iconImg}
 									/>
 								}
@@ -256,6 +272,7 @@ function BanjeeProfileFriendListItem({ item, user }) {
 				);
 
 			default:
+				console.log("Default");
 				break;
 		}
 	}
@@ -266,7 +283,7 @@ function BanjeeProfileFriendListItem({ item, user }) {
 				<TouchableWithoutFeedback
 					onPress={() => {
 						if (item.type === "YOU") {
-							return navigate("NewSetting");
+							return navigate("Profile");
 						} else {
 							{
 								navigate("BanjeeProfile", {
@@ -303,9 +320,9 @@ function BanjeeProfileFriendListItem({ item, user }) {
 					</View>
 				</TouchableWithoutFeedback>
 
-				<AppText numberOfLines={1} style={{ marginLeft: 15, width: "50%" }}>
+				<Text numberOfLines={1} style={{ marginLeft: 15, width: "50%" }}>
 					{item.name}
-				</AppText>
+				</Text>
 				{checkConnection(item.type, item)}
 			</View>
 			<View
