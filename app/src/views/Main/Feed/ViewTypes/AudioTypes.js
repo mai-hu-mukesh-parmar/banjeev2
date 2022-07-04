@@ -1,10 +1,16 @@
-import React, { useCallback, useContext, useEffect } from "react";
+import React, { useEffect } from "react";
 import { View, Image, TouchableOpacity } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import usePlayPauseAudio from "../../../../utils/hooks/usePlayPauseAudio";
 
-export default function AudioTypes({ src, caption }) {
+export default function AudioTypes({ src }) {
 	const { icons, playAudio, stopPlayer } = usePlayPauseAudio(src, true);
+
+	useEffect(() => {
+		return () => {
+			stopPlayer();
+		};
+	}, [stopPlayer]);
 
 	return (
 		<View

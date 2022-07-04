@@ -16,16 +16,14 @@ import { useSelector } from "react-redux";
 
 function Reaction({
 	likeComment,
-	showReaction,
-	setShowReaction,
-	selectedReaction,
-	setSelectedReaction,
-	setReaction,
+
 	postId,
 	size,
 	ourLike,
 	marginLeft,
 }) {
+	const [showReaction, setShowReaction] = React.useState(false); //fr reaction
+	const [selectedReaction, setSelectedReaction] = React.useState();
 	const { systemUserId } = useSelector((state) => state.registry);
 
 	// console.warn("----------->`", ourLike?.[0]?.reactionType);
@@ -52,7 +50,6 @@ function Reaction({
 			emoji: require("../../../../assets/emoji/LIKE.png"),
 			text: "like",
 			onPress: () => {
-				setReaction("LIKE");
 				submitReaction("LIKE");
 				setSelectedReaction(require("../../../../assets/emoji/LIKE.png"));
 			},
@@ -61,7 +58,6 @@ function Reaction({
 			emoji: require("../../../../assets/emoji/LOVE.png"),
 			text: "love",
 			onPress: () => {
-				setReaction("LOVING");
 				submitReaction("LOVING");
 				setSelectedReaction(require("../../../../assets/emoji/LOVE.png"));
 			},
@@ -70,7 +66,6 @@ function Reaction({
 			emoji: require("../../../../assets/emoji/CELEBRATING.png"),
 			text: "laugh",
 			onPress: () => {
-				setReaction("CELEBRATING");
 				submitReaction("CELEBRATING");
 				setSelectedReaction(
 					require("../../../../assets/emoji/CELEBRATING.png")
@@ -81,7 +76,6 @@ function Reaction({
 			emoji: require("../../../../assets/emoji/NICE.png"),
 			text: "Wow",
 			onPress: () => {
-				setReaction("NICE");
 				submitReaction("NICE");
 
 				setSelectedReaction(require("../../../../assets/emoji/NICE.png"));
@@ -91,7 +85,6 @@ function Reaction({
 			emoji: require("../../../../assets/emoji/SAD.png"),
 			text: "sad",
 			onPress: () => {
-				setReaction("SAD");
 				submitReaction("SAD");
 				setSelectedReaction(require("../../../../assets/emoji/SAD.png"));
 			},
@@ -101,7 +94,6 @@ function Reaction({
 			emoji: require("../../../../assets/emoji/ANGRY.png"),
 			text: "angry",
 			onPress: () => {
-				setReaction("ANGRY");
 				submitReaction("ANGRY");
 
 				setSelectedReaction(require("../../../../assets/emoji/ANGRY.png"));
