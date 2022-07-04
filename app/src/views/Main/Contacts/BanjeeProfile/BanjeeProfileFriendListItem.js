@@ -24,6 +24,7 @@ function BanjeeProfileFriendListItem({ item, user }) {
 	const { icons, playAudio } = usePlayPauseAudio(userAudio);
 	const [userAudio, setUserAudio] = React.useState();
 	const [imageError, setImageError] = React.useState();
+
 	// const {
 	//   pendingFriendReq,
 	//   userData: { systemUserId, currentUser },
@@ -206,6 +207,7 @@ function BanjeeProfileFriendListItem({ item, user }) {
 				);
 
 			case "MUTUAL":
+				console.warn("mutual");
 				return (
 					<View style={styles.iconView}>
 						{mutualFriends.map((ele, i) => (
@@ -222,6 +224,8 @@ function BanjeeProfileFriendListItem({ item, user }) {
 				);
 
 			case "UNKNOWN":
+				console.warn("unknown");
+
 				let x = pendingFriendReq.filter((ele) => ele === item.userObject.id);
 				return (
 					<View style={styles.iconView}>
