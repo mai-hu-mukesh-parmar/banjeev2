@@ -97,14 +97,11 @@ function BanjeeProfile() {
 			},
 		},
 	];
-	// console.warn(
-	// 	pendingFriendReq,
-	// 	"pendingFriendReqpendingFriendReqpendingFriendReq"
-	// );
 	const { navigate, goBack } = useNavigation();
 
 	const { profileId } = useSelector((state) => state.viewProfile);
-	React.useEffect(() => {
+
+	const getRegistryData = React.useCallback(() => {
 		getUserRegistryData(profileId)
 			.then((res) => {
 				setLoad(false);
@@ -113,29 +110,39 @@ function BanjeeProfile() {
 			.catch((err) => console.log(err));
 	}, [profileId]);
 
+	React.useEffect(() => {
+		const subscribe = getRegistryData();
+		return () => {
+			subscribe();
+			setLoad(false);
+			setOurProfile();
+		};
+	}, [getRegistryData]);
+
 	const { icons, playAudio } = usePlayPauseAudio(ourProfile?.voiceIntroSrc);
 
-	React.useEffect(() => {
-		if (params?.notifyFriendRequest) {
-			ToastMessage("Friend Request Sent Successfully");
-		}
-		// if (params?.item) {
-		// 	setUserItem(params?.item);
-		// }
-	}, [params]);
+	// React.useEffect(() => {
+	// 	if (params?.notifyFriendRequest) {
+	// 		ToastMessage("Friend Request Sent Successfully");
+	// 	}
+	// 	// if (params?.item) {
+	// 	// 	setUserItem(params?.item);
+	// 	// }
+	// }, [params]);
 
-	React.useEffect(() => {
-		return () => {
-			setReportModal(false);
-			setOurProfile();
-			setLoad(true);
-		};
-	}, []);
+	// React.useEffect(() => {
+	// 	return () => {
+	// 		setReportModal(false);
+	// 		setOurProfile();
+	// 		setLoad(true);
+	// 	};
+	// }, []);
 
 	function pendingConnections() {
 		let x = ourProfile?.pendingConnections.filter((ele) => data?.includes(ele));
 		setPendingFrienReq(x);
 	}
+
 	const data = [
 		{
 			label: "Intro",
@@ -543,8 +550,8 @@ function BanjeeProfile() {
 							/>
 						)}
 
-						{room && <Room otherUser={profileId} />}
-						{post && <FeedScreen otherPostId={profileId} />}
+						{/* {room && <Room otherUser={p	rofileId} />} */}
+						{/* {post && <FeedScreen otherPostId={profileId} />} */}
 					</View>
 				</ScrollView>
 			</SafeAreaView>

@@ -2,7 +2,7 @@ import React from "react";
 import { View, StyleSheet, VirtualizedList } from "react-native";
 import { useRoute } from "@react-navigation/native";
 import BanjeeProfileFriendListItem from "./BanjeeProfileFriendListItem";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import AppLoading from "../../../../constants/components/ui-component/AppLoading";
 import { findUserContact } from "../../../../helper/services/FindUserContact";
 import { pendingConnection } from "../../../../redux/store/action/Profile/userPendingConnection";
@@ -15,16 +15,12 @@ function BanjeeProfileFriendList({
 	// 	params: { item: user },
 	// } = useRoute();
 	const { profileId: user } = useSelector((state) => state.viewProfile);
-
 	const [data, setData] = React.useState([]);
 	const [loading, setLoading] = React.useState(true);
-	const { systemUserId, pendingConnections } = useSelector(
-		(state) => state.registry
-	);
+	const { systemUserId } = useSelector((state) => state.registry);
 
 	// const { setPendingFrienReq } = React.useContext(MainContext);
-	const dispatch = useDispatch();
-	const FindUserContact = React.useCallback(
+	const findUserContactFunc = React.useCallback(
 		() =>
 			findUserContact({
 				id: user,
@@ -50,8 +46,6 @@ function BanjeeProfileFriendList({
 					// setPendingFrienReq(x.map((ele) => ele.systemUserId));
 
 					const d = res.map((ele) => {
-						console.warn(systemUserId);
-						console.warn(ele.systemUserId, ele.mutualEE);
 						if (ele.systemUserId === systemUserId) {
 							return { ...ele, type: "YOU" };
 						} else if (ele.mutual) {
@@ -67,7 +61,10 @@ function BanjeeProfileFriendList({
 		[user]
 	);
 
-	React.useEffect(() => FindUserContact(), [FindUserContact]);
+	React.useEffect(() => {
+		const subscribe = findUserContactFunc();
+		return () => subscribe();
+	}, [findUserContactFunc]);
 
 	function renderItem({ item }) {
 		return <BanjeeProfileFriendListItem item={item} user={user} />;

@@ -17,6 +17,7 @@ import { showToast } from "../../../../redux/store/action/toastAction";
 import { useDispatch, useSelector } from "react-redux";
 import usePlayPauseAudio from "../../../../utils/hooks/usePlayPauseAudio";
 import { listProfileUrl } from "../../../../utils/util-func/constantExport";
+import { getProfile } from "../../../../redux/store/action/Profile/userPendingConnection";
 
 function BanjeeProfileFriendListItem({ item, user }) {
 	const { navigate } = useNavigation();
@@ -24,7 +25,7 @@ function BanjeeProfileFriendListItem({ item, user }) {
 	const { icons, playAudio } = usePlayPauseAudio(userAudio);
 	const [userAudio, setUserAudio] = React.useState();
 	const [imageError, setImageError] = React.useState();
-
+	console.warn(item);
 	// const {
 	//   pendingFriendReq,
 	//   userData: { systemUserId, currentUser },
@@ -34,11 +35,6 @@ function BanjeeProfileFriendListItem({ item, user }) {
 		(state) => state.registry
 	);
 
-	const { pendingFriendReq } = useSelector((state) => state.viewProfile);
-	console.warn(
-		pendingFriendReq,
-		"pendingFriendReqpendingFriendReqpendingFriendReqpendingFriendReq"
-	);
 	const dispatch = useDispatch();
 
 	const mutualFriends = [
@@ -207,7 +203,6 @@ function BanjeeProfileFriendListItem({ item, user }) {
 				);
 
 			case "MUTUAL":
-				console.warn("mutual");
 				return (
 					<View style={styles.iconView}>
 						{mutualFriends.map((ele, i) => (
@@ -224,9 +219,7 @@ function BanjeeProfileFriendListItem({ item, user }) {
 				);
 
 			case "UNKNOWN":
-				console.warn("unknown");
-
-				let x = pendingFriendReq.filter((ele) => ele === item.userObject.id);
+				let { pendingRequest } = item;
 				return (
 					<View style={styles.iconView}>
 						<AppFabButton
@@ -247,7 +240,7 @@ function BanjeeProfileFriendListItem({ item, user }) {
 							}
 						/>
 
-						{x.length > 0 ? (
+						{pendingRequest ? (
 							<AppFabButton
 								onPress={() => {}}
 								size={iconSize}
@@ -290,9 +283,8 @@ function BanjeeProfileFriendListItem({ item, user }) {
 							return navigate("Profile");
 						} else {
 							{
-								navigate("BanjeeProfile", {
-									item: { id: item.systemUserId },
-								});
+								dispatch(getProfile({ profileId: item.id }));
+								navigate("BanjeeProfile");
 							}
 						}
 					}}
