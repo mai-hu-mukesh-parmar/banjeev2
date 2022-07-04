@@ -1,4 +1,4 @@
-import { View, StyleSheet, Image, Platform } from "react-native";
+import { View, StyleSheet, Image, Platform, Alert } from "react-native";
 import React from "react";
 import {
   listProfileUrl,
@@ -9,15 +9,23 @@ import AppFabButton from "../../../../constants/components/ui-component/AppFabBu
 import ImageComp from "./ImageComp";
 import VideoComp from "./VideoComp";
 import AudioComp from "./AudioComp";
-import { Text } from "native-base";
+import { Avatar, Text } from "native-base";
 import { useRoute } from "@react-navigation/native";
-import { deleteChat } from "../../../../helper/services/ChatService";
+import {
+  deleteChat,
+  updateChat,
+} from "../../../../helper/services/ChatService";
 import { SocketContext } from "../../../../Context/Socket";
+import ReactionDrawer from "./ReactionDrawer";
+
+import color from "../../../../constants/env/color";
 
 export default function RenderMedia({
   chatContent,
   mediaPlayer,
   setMediaPlayer,
+  messId,
+  setLoading,
 }) {
   const {
     params: {
@@ -25,19 +33,24 @@ export default function RenderMedia({
     },
   } = useRoute();
 
+  const [reactionDrawer, setReactionDrawer] = React.useState({ open: false });
+
   const socket = React.useContext(SocketContext);
-  const { isSender, content, createdOn, id, messageSeen } = chatContent;
+  const {
+    isSender,
+    content,
+    createdOn,
+    id,
+    messageSeen,
+    selfDestructive,
+    destructiveAgeInSeconds,
+  } = chatContent;
+
+  const { mimeType } = content;
+  const mimeHandler = mimeType?.split("/");
+  const type = mimeHandler?.[0];
 
   const renderContent = () => {
-    //  MIME_TEXT_PLAIN = "text/plain";
-    //  MIME_TEXT_HTML = "text/html";
-    //  MIME_IMAGE = "image/jpg";
-    //  MIME_VIDEO = "video/mp4";
-    //  MIME_AUDIO = "audio/mp3";
-    //  MIME_DOCUMENT = "document";
-    //  MIME_LOCATION = "location";
-    //  MIME_IMAGE_GIF = "image/gif";
-
     const { mimeType, src } = content;
     const mimeHandler = mimeType?.split("/");
     const type = mimeHandler?.[0];
@@ -54,10 +67,15 @@ export default function RenderMedia({
       case "audio":
         return (
           <AudioComp
+            messId={messId}
             src={src}
             isSender={isSender}
             mediaPlayer={mediaPlayer}
             setMediaPlayer={setMediaPlayer}
+            selfDestructive={{
+              selfDestructive: selfDestructive,
+              destructiveAgeInSeconds: destructiveAgeInSeconds,
+            }}
           />
         );
       case "document":
@@ -68,10 +86,9 @@ export default function RenderMedia({
         return null;
     }
   };
-  socket?.on("CHAT_MESSAGE_DELETED", (data) => {
-    // console.log(data);
-  });
+
   const deleteChatFun = (id) => {
+    setLoading(true);
     deleteChat(id)
       .then((res) => {
         // console.log(id);
@@ -80,13 +97,37 @@ export default function RenderMedia({
         console.warn(err);
       });
   };
+
+  const createTwoButtonAlert = () =>
+    Alert.alert("", "Delete message ?", [
+      {
+        text: "Cancel",
+        onPress: () => console.log("Cancel Pressed"),
+      },
+      { text: "Delete", onPress: () => deleteChatFun(id) },
+    ]);
+
+  const handleClickReaction = (data) => {
+    setReactionDrawer({ open: false });
+    updateChat({
+      ...chatContent,
+      reactionId: data,
+      reactionChar: 0,
+    })
+      .then((res) => console.warn("chat update response  ------>", res))
+      .catch((err) => console.log(err));
+  };
+
   return (
     <React.Fragment>
       {isSender && (
-        <Image
-          source={{ uri: listProfileUrl(avtarUrl) }}
+        <Avatar
+          bgColor={color.primary}
           style={styles.profileImg}
-        />
+          source={{ uri: listProfileUrl(avtarUrl) }}
+        >
+          {firstName?.charAt(0).toUpperCase() || ""}
+        </Avatar>
       )}
       <View>
         {isSender && (
@@ -106,7 +147,6 @@ export default function RenderMedia({
           style={{
             display: "flex",
             width: "100%",
-
             flexDirection: isSender ? "row-reverse" : "row",
             alignItems: "center",
             justifyContent: "flex-end",
@@ -114,9 +154,7 @@ export default function RenderMedia({
         >
           <View style={{}}>
             <AppFabButton
-              onPress={() => {
-                deleteChatFun(id);
-              }}
+              onPress={createTwoButtonAlert}
               size={20}
               style={{ marginTop: !isSender ? -20 : 0 }}
               icon={
@@ -153,7 +191,10 @@ export default function RenderMedia({
           </View>
           {isSender && (
             <AppFabButton
-              onPress={() => console.log("reaction")}
+              onPress={() => {
+                console.log("reaction");
+                setReactionDrawer({ open: true, id: id });
+              }}
               size={20}
               icon={
                 <Image
@@ -161,6 +202,21 @@ export default function RenderMedia({
                   source={require("../../../../../assets/EditDrawerIcon/reaction.png")}
                 />
               }
+            />
+          )}
+          {chatContent?.reactionId && (
+            <Image
+              source={{
+                uri: `https://media2.giphy.com/media/${chatContent?.reactionId}/giphy-preview.gif?cid=67e264e816a07f883c96444d0e4e78abd0472e0feb1a55cc&rid=giphy-preview.gif&ct=s`,
+              }}
+              style={{
+                height: 50,
+                width: 50,
+                zIndex: 5,
+                position: "absolute",
+                top: type === "audio" ? 20 : 0,
+                right: type === "audio" ? 60 : 5,
+              }}
             />
           )}
           {content && renderContent()}
@@ -179,6 +235,13 @@ export default function RenderMedia({
           </Text>
         )}
       </View>
+      {reactionDrawer.open && (
+        <ReactionDrawer
+          drawer={reactionDrawer}
+          handleCloseDrawer={() => setReactionDrawer({ open: false })}
+          handleClickReaction={handleClickReaction}
+        />
+      )}
     </React.Fragment>
   );
 }
@@ -188,7 +251,7 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
     borderRadius: 20,
-    marginBottom: 20,
+    marginBottom: -20,
     marginLeft: 30,
   },
 });

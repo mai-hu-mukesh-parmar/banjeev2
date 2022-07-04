@@ -11,7 +11,7 @@ import RBSheet from "react-native-raw-bottom-sheet";
 import AppLoading from "../../../../../constants/components/ui-component/AppLoading";
 
 function GifComponent({ refRBSheet, sendInChat }) {
-  console.warn("----------------------------------->", refRBSheet);
+  // console.warn("----------------------------------->", refRBSheet);
   const [page, setPage] = React.useState(1);
   const [data, setData] = React.useState([]);
   const [gifType, setGifType] = React.useState("clock");
@@ -28,7 +28,7 @@ function GifComponent({ refRBSheet, sendInChat }) {
     },
     {
       id: 1,
-      name: "gif",
+      name: "file-gif-box",
       onPress: () => {
         setData([]);
         setGifType("gif");
@@ -64,7 +64,7 @@ function GifComponent({ refRBSheet, sendInChat }) {
   const loadClockGif = React.useCallback(
     (keyword, limit) => {
       // setData([]);
-      console.log(limit);
+      // console.log(limit);
       let text;
       if (keyword) {
         text = keyword;
@@ -77,7 +77,7 @@ function GifComponent({ refRBSheet, sendInChat }) {
         .get(url)
         .then((res) => {
           if (gifType === "clock") {
-            console.log(gifType);
+            // console.log(gifType);
 
             setData((prev) => [...prev, ...res.data.data]);
           } else {
@@ -97,7 +97,7 @@ function GifComponent({ refRBSheet, sendInChat }) {
   const loadRandom = React.useCallback(
     (limit) => {
       // setData([]);
-      console.log(limit);
+      // console.log(limit);
 
       const url = `https://api.giphy.com/v1/gifs/trending?api_key=BjrzaTUXMRi27xIRU0xZIGRrNztyuNT8&limit=10&offset=${limit}&rating=g&lang=en`;
       axios
@@ -121,7 +121,7 @@ function GifComponent({ refRBSheet, sendInChat }) {
   const loadStickersGif = React.useCallback(
     (limit) => {
       // setData([]);
-      console.log(limit);
+      // console.log(limit);
 
       const url = `https://api.giphy.com/v1/stickers/trending?api_key=2an1ZhO16wRaU46OokZ4HOEOKnmMISU8&limit=10&rating=g&offset=${limit}`;
       axios
@@ -146,7 +146,7 @@ function GifComponent({ refRBSheet, sendInChat }) {
   const loadText = React.useCallback(
     (limit) => {
       // setData([]);
-      console.log(limit);
+      // console.log(limit);
 
       const url = `https://api.giphy.com/v1/text/trending?api_key=BjrzaTUXMRi27xIRU0xZIGRrNztyuNT8&limit=10&offset=${limit}&rating=g&lang=en`;
       axios
@@ -175,7 +175,7 @@ function GifComponent({ refRBSheet, sendInChat }) {
         .get(url)
         .then((res) => {
           if (gifType === "emoticon-happy") {
-            console.log(gifType);
+            // console.log(gifType);
             setData((prev) => [...prev, ...res.data.data]);
           } else {
             setData((prev) => res.data.data);
@@ -277,8 +277,8 @@ function GifComponent({ refRBSheet, sendInChat }) {
                 }))}
                 onPressImage={(giphy) => {
                   sendInChat(
-                    giphy.source.uri.substring(31, 44),
-                    giphy.source.uri.substring(31, 44),
+                    giphy.source.uri.substring(31, 49),
+                    giphy.source.uri.substring(31, 49),
                     "image/gif"
                   );
                   refRBSheet.current.close();
@@ -305,7 +305,7 @@ function GifComponent({ refRBSheet, sendInChat }) {
                 icon={
                   <MaterialCommunityIcons
                     name={ele.name}
-                    size={25}
+                    size={ele.name === "file-gif-box" ? 30 : 25}
                     color={ele.name === gifType ? color.black : color.grey}
                   />
                 }

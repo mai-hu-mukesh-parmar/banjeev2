@@ -3,6 +3,7 @@ import {
   Animated,
   Easing,
   Image,
+  Linking,
   TouchableWithoutFeedback,
 } from "react-native";
 import React from "react";
@@ -11,13 +12,17 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import color from "../../../../../constants/env/color";
 import { Text } from "native-base";
 import { Audio } from "expo-av";
+import usePermission from "../../../../../utils/hooks/usePermission";
+import { check, PERMISSIONS, RESULTS } from "react-native-permissions";
 
-export default function BottomAudioButton({ setAudioUrl }) {
+export default function BottomAudioButton({ setAudioUrl, setAudioTime }) {
   const animation = React.useRef(new Animated.Value(0)).current;
   const [recorder, setRecorder] = React.useState();
   const [timer, setTimer] = React.useState("00 : 00 : 00");
   const [icon, setIcon] = React.useState("microphone");
   const countRef = React.useRef(null);
+
+  const { checkPermission } = usePermission();
 
   React.useEffect(() => {
     return () => {
@@ -61,6 +66,8 @@ export default function BottomAudioButton({ setAudioUrl }) {
 
   const down = () => {
     setIcon("microphone");
+    console.log("timer", timer);
+    setAudioTime(timer + 25);
     setTimer(0);
     clearInterval(countRef.current); // pause timer
     if (recorder) {
@@ -85,6 +92,15 @@ export default function BottomAudioButton({ setAudioUrl }) {
     }).start();
   };
 
+  const askUserPermission = async () => {
+    const result = await checkPermission("AUDIO");
+    if (result === "granted") {
+      up();
+    } else {
+      Linking.openSettings();
+    }
+  };
+
   const formatTime = () => {
     const getSeconds = `0${timer % 60}`.slice(-2);
     const minutes = `${Math.floor(timer / 60)}`;
@@ -95,7 +111,9 @@ export default function BottomAudioButton({ setAudioUrl }) {
 
   return (
     <View>
-      <TouchableWithoutFeedback onPress={icon === "microphone" ? up : down}>
+      <TouchableWithoutFeedback
+        onPress={icon === "microphone" ? askUserPermission : down}
+      >
         <View>
           <Animated.View
             style={{
@@ -111,12 +129,21 @@ export default function BottomAudioButton({ setAudioUrl }) {
                 backgroundColor: color.primary,
                 alignItems: "center",
                 justifyContent: "center",
-                width: 70,
-                marginLeft: -10,
-                bottom: 10,
+                width: 100,
+                height: 35,
+                marginLeft: -25,
+                bottom: 5,
+                borderRadius: 8,
               }}
             >
-              <Text>{timer && icon === "stop" && formatTime()}</Text>
+              <Text
+                style={{
+                  color: "#FFF",
+                  fontSize: 18,
+                }}
+              >
+                {timer && icon === "stop" && formatTime()}
+              </Text>
             </View>
           </Animated.View>
 

@@ -4,40 +4,40 @@ import { useFormikContext } from "formik";
 import { Text, Radio } from "native-base";
 
 export default function Gender() {
-	const { setFieldValue } = useFormikContext();
+  const { setFieldValue } = useFormikContext();
 
-	return (
-		<React.Fragment>
-			<Text
-				style={{
-					marginBottom: 10,
-					fontWeight: "500",
-					fontSize: 14,
-				}}
-			>
-				Gender
-			</Text>
+  return (
+    <React.Fragment>
+      <Text
+        style={{
+          marginBottom: 10,
+          fontWeight: "500",
+          fontSize: 14,
+        }}
+      >
+        Gender
+      </Text>
 
-			<Radio.Group
-				name="gender"
-				// value={values.gender}
-				onChange={(nextValue) => {
-					console.log(nextValue);
-					setFieldValue("gender", nextValue);
-				}}
-			>
-				<Radio value="Male" my={2}>
-					Male
-				</Radio>
-				<Radio value="Female" my={2}>
-					Female
-				</Radio>
-				<Radio value="Rather not to say" my={2}>
-					Rather not to say
-				</Radio>
-			</Radio.Group>
+      <Radio.Group
+        name="gender"
+        // value={values.gender}
+        onChange={(nextValue) => {
+          // console.log(nextValue);
+          setFieldValue("gender", nextValue);
+        }}
+      >
+        <Radio value="Male" my={2}>
+          Male
+        </Radio>
+        <Radio value="Female" my={2}>
+          Female
+        </Radio>
+        <Radio value="Rather not to say" my={2}>
+          Rather not to say
+        </Radio>
+      </Radio.Group>
 
-			{/* <AppRadioButtons
+      {/* <AppRadioButtons
 				PROP={[
 					{ key: "Male", text: "Male" },
 					{ key: "Female", text: "Female" },
@@ -48,6 +48,6 @@ export default function Gender() {
 					setFieldValue("gender", e.key);
 				}}
 			/> */}
-		</React.Fragment>
-	);
+    </React.Fragment>
+  );
 }
