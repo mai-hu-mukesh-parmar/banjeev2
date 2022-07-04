@@ -16,10 +16,18 @@ import { SocketContext } from "../../../Context/Socket";
 import ConfirmModal from "./ChatComponent/ConfirmModal";
 import { BlockUser } from "../../../helper/services/Service";
 import { unfriend } from "../../../helper/services/UnfriendService";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+// import {
+//   getApiChatMessage,
+//   clearChatMessageState,
+// } from "../../../redux/store/action/chatMessageActions";
 
 function MainChatScreen() {
   const { setOptions, addListener } = useNavigation();
+
+  const dispatch = useDispatch();
+
+  const storeChat = useSelector((state) => state.chatMessage);
 
   const socket = React.useContext(SocketContext);
 
@@ -27,8 +35,9 @@ function MainChatScreen() {
     params: { item: user },
   } = useRoute();
 
+  // console.log("user?.chatroomId", user?.chatroomId);
+
   const { systemUserId } = useSelector((state) => state.registry);
-  const [userChat, setUserChat] = React.useState([]);
   const [reportModal, setReportModal] = React.useState(false);
 
   const [mediaPlayer, setMediaPlayer] = React.useState({
@@ -43,6 +52,7 @@ function MainChatScreen() {
   const [imageUri, setImageUri] = React.useState(false);
 
   const [blockModal, setBlockModal] = React.useState(false);
+  const [userChat, setUserChat] = React.useState([]);
   const [unfriendModal, setUnfriendModal] = React.useState(false);
   const { goBack } = useNavigation();
 
@@ -63,38 +73,54 @@ function MainChatScreen() {
       .catch((err) => console.warn(err));
   };
 
-  const chatWaliHistory = React.useCallback((pageNumber) => {
-    // setLoading(true);
-
-    chatHistory({
-      page: pageNumber,
-      pageSize: 10,
-      roomId: user?.chatroomId,
-      sortBy: "createdOn desc",
-    })
-      .then((res) => {
-        setUserChat((prev) => [
-          ...prev,
-          ...res.content.map((ele) => ({
-            ...ele,
-            key: Math.random(),
-            isSender: systemUserId !== ele?.sender?.id,
-          })),
-        ]);
-        setLoading(false);
-        setPage(res.pageable.pageNumber + 1);
+  const chatWaliHistory = React.useCallback(
+    (pageNumber) => {
+      setLoading(true);
+      console.warn("chatwali history called");
+      chatHistory({
+        page: pageNumber,
+        pageSize: 10,
+        roomId: user?.chatroomId,
+        sortBy: "createdOn desc",
       })
-      .catch((err) => {
-        console.warn(err);
-        setLoading(true);
-      });
-  }, []);
+        .then((res) => {
+          // console.log("chatwali history response -------->", res);
+          // if (res.content?.length > 0) {
+          //   dispatch(
+          //     getApiChatMessage({
+          //       chatroomId: user.chatroomId,
+          //       items: res.content.map((ele) => ({
+          //         ...ele,
+          //         key: Math.random(),
+          //         isSender: systemUserId !== ele?.sender?.id,
+          //       })),
+          //     })
+          //   );
+          // }
+          setUserChat((prev) => [
+            ...prev,
+            ...res.content.map((ele) => ({
+              ...ele,
+              key: Math.random(),
+              isSender: systemUserId !== ele?.sender?.id,
+            })),
+          ]);
+          setLoading(false);
+          setPage(res.pageable.pageNumber + 1);
+        })
+        .catch((err) => {
+          console.warn(err);
+          setLoading(false);
+        });
+    },
+    [user?.chatroomId]
+  );
 
   React.useEffect(() => {
     addListener("focus", () => chatWaliHistory(0));
-    return () => {
-      stopPlayer();
-    };
+    // return () => {
+    //   dispatch(clearChatMessageState());
+    // };
   }, []);
 
   const [player] = React.useState(new Audio.Sound());
@@ -193,13 +219,13 @@ function MainChatScreen() {
         />
       ),
     });
-    if (mediaPlayer.src && mediaPlayer.play) {
-      await playAudio();
-    }
-  }, [mediaPlayer]);
+    // if (mediaPlayer.src && mediaPlayer.play) {
+    //   await playAudio();
+    // }
+  }, []);
 
   const onChatMessageRecive = React.useCallback((data) => {
-    console.log("data socket on event", data);
+    setLoading(false);
     setUserChat((prev) => [
       {
         ...data,
@@ -214,8 +240,21 @@ function MainChatScreen() {
       userId: systemUserId,
       messageId: data.id,
     });
+  }, []);
 
-    // }
+  const onReactionMessageRecive = React.useCallback((data) => {
+    setLoading(false);
+    setUserChat((prev) =>
+      prev.map((ele) => {
+        if (ele?.id === data?.id) {
+          return {
+            ...data,
+            key: Math.random(),
+            isSender: systemUserId !== data?.sender?.id,
+          };
+        } else return ele;
+      })
+    );
   }, []);
 
   socket.on("ON_JOIN", (data) => {
@@ -223,6 +262,11 @@ function MainChatScreen() {
   });
 
   const msgDeleteHandler = React.useCallback((data) => {
+    setLoading(false);
+    setUserChat((prev) => prev.filter((ele) => ele.id !== data.id));
+  }, []);
+
+  const onDistructiveMessageReceiver = React.useCallback((data) => {
     setUserChat((prev) => prev.filter((ele) => ele.id !== data.id));
   }, []);
 
@@ -244,15 +288,18 @@ function MainChatScreen() {
     socket.on("connect_error", (err) => {
       console.warn(err);
     });
-    socket.emit("ONLINE_STATUS_RECEIVER", systemUserId);
+    // socket.emit("ONLINE_STATUS_RECEIVER", systemUserId);
     socket.on("CHAT_MESSAGE", onChatMessageRecive);
+    socket.on("REACTION_MESSAGE", onReactionMessageRecive);
     socket.on("CHAT_MESSAGE_DELETED", msgDeleteHandler);
+    socket.on("DESTRUCTIVE_MESSAGE", onDistructiveMessageReceiver);
     socket.on("CHAT_MESSAGE_SEEN", msgSeenHandler);
   }, [systemUserId, socket, onChatMessageRecive, msgDeleteHandler]);
 
   function renderItem({ item }) {
     return (
       <ChatFragment
+        setLoading={setLoading}
         mediaPlayer={mediaPlayer}
         setMediaPlayer={async (data) => {
           const audioData = data();
@@ -303,6 +350,7 @@ function MainChatScreen() {
             getItem={(data, index) => data[index]}
             showsVerticalScrollIndicator={false}
             data={userChat}
+            // data={storeChat?.[user?.chatroomId] || []}
             scrollEnabled={true}
             keyExtractor={(item) => item.key}
             onEndReached={() => chatWaliHistory(page)}
@@ -313,6 +361,7 @@ function MainChatScreen() {
         </View>
 
         <BottomView
+          setLoading={setLoading}
           roomId={user?.chatroomId}
           setImageModal={setImageModal}
           setImageUri={setImageUri}

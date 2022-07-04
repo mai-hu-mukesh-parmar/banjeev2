@@ -26,7 +26,7 @@ function BanjeeContacts(props) {
   const { navigate } = useNavigation();
 
   const onlineStatus = useSelector((state) => state.onlineStatus);
-  console.log(onlineStatus);
+  // console.log(onlineStatus);
   const socket = React.useContext(SocketContext);
   const [imageError, setImageError] = React.useState();
 

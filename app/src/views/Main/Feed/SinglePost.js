@@ -66,8 +66,8 @@ function SinglePost() {
     config(options)
       .fetch("GET", url)
       .then(async (res) => {
-        console.warn(res.data);
-        console.warn(`file://${res.data}`);
+        // console.warn(res.data);
+        // console.warn(`file://${res.data}`);
 
         await Sharing.shareAsync(`file:/${res.data}`, {
           mimeType: "image.jpg",

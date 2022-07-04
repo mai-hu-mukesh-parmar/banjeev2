@@ -7,6 +7,7 @@ export default function ChatFragment({
   chatContent,
   mediaPlayer,
   setMediaPlayer,
+  setLoading,
 }) {
   return (
     <View
@@ -26,6 +27,8 @@ export default function ChatFragment({
         <RenderCall chatContent={chatContent} />
       ) : (
         <RenderMedia
+          setLoading={setLoading}
+          messId={chatContent?.id}
           chatContent={chatContent}
           mediaPlayer={mediaPlayer}
           setMediaPlayer={setMediaPlayer}

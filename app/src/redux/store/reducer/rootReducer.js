@@ -5,8 +5,9 @@ import userDataReducer from "./userDataReducer";
 import userProfileReducer from "./userProfileReducer";
 import userRegisteryReducer from "./userRegisteryReducer";
 import roomReducer from "./roomReducer";
-import chatMessageReducer from "./socketReducers/chatMessageReducer";
+import chatMessageReducer from "./chatMessageReducer";
 import onlineStatusReducer from "./socketReducers/onlineStatusReducer";
+import socketReducer from "./socketReducer";
 
 export const rootReducer = combineReducers({
   profile: userProfileReducer,
@@ -15,6 +16,7 @@ export const rootReducer = combineReducers({
   feed: feedReducer,
   toast: toastReducer,
   room: roomReducer,
-  socketChat: chatMessageReducer,
+  socket: socketReducer,
+  chatMessage: chatMessageReducer,
   onlineStatus: onlineStatusReducer,
 });

@@ -6,9 +6,10 @@ import {
   Animated,
   Easing,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
 import AppFabButton from "../../../../../constants/components/ui-component/AppFabButton";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 
 import color from "../../../../../constants/env/color";
 import { Audio } from "expo-av";
@@ -18,6 +19,10 @@ import OverlayDrawer from "../../../../../constants/components/ui-component/Over
 import ShowImage from "../../../../../constants/components/ShowImage";
 import GifComponent from "./GifComponent";
 import { useSelector } from "react-redux";
+import { SocketContext } from "../../../../../Context/Socket";
+import RBSheet from "react-native-raw-bottom-sheet";
+import voiceChangerArray from "./voiceChangerArray";
+import { Text } from "native-base";
 // import BottomSheet from "react-native-bottomsheet-reanimated";
 
 function BottomView({
@@ -26,14 +31,18 @@ function BottomView({
   imageUri,
   setImageUri,
   sendData,
+  setLoading,
 }) {
   const {
     systemUserId,
     avtarUrl,
     currentUser: { mobile, email, username, userName, firstName },
   } = useSelector((state) => state.registry);
+  const socket = React.useContext(SocketContext);
+  const refRBSheet = React.useRef(null);
 
   const [audio, setAudio] = React.useState("");
+  const [audioTime, setAudioTime] = React.useState(0);
   const [icons, setIcons] = React.useState("play");
   const [player] = React.useState(new Audio.Sound());
   const [open, setOpen] = React.useState(false);
@@ -159,9 +168,8 @@ function BottomView({
   }, [audio]);
 
   const sendInChat = React.useCallback(
-    (data, fileName, mimeType) => {
-      console.log("data, fileName, mimeType", data, fileName, mimeType);
-
+    (data, fileName, mimeType, selfDestructive) => {
+      setLoading(true);
       let content;
       if (mimeType === "image/gif") {
         content = {
@@ -194,13 +202,13 @@ function BottomView({
       const payloadData = {
         canDownload: false,
         content,
-        destructiveAgeInSeconds: null,
+        destructiveAgeInSeconds: selfDestructive ? audioTime : null,
         expired: false,
         expiryAgeInHours: 24,
         group: false,
         roomId,
         secret: false,
-        selfDestructive: false,
+        selfDestructive: selfDestructive ? selfDestructive : false,
         sender: {
           age: 0,
           avtarImageUrl: avtarUrl,
@@ -221,31 +229,29 @@ function BottomView({
       // 	})
       // );
 
-      sendData.emit("CREATE_CHAT_MESSAGE", payloadData);
+      socket.emit("CREATE_CHAT_MESSAGE", payloadData);
     },
-    [sendData]
+    [socket]
   );
-  const sendAudio = async () => {
+  const sendAudio = async (selfDestructive) => {
+    console.log("send audio call---=====*&&&");
     stopPlayer();
     const fileName = audio.split("/")[audio.split("/").length - 1];
-
     let data = await FileSystem.readAsStringAsync(audio, {
       encoding: FileSystem.EncodingType.Base64,
     });
-
-    sendInChat(data, fileName, "audio/mp3");
-
+    sendInChat(data, fileName, "audio/mp3", selfDestructive);
     deleteAudio();
   };
 
-  const sendImage = async (hideModal) => {
+  const sendImage = async (hideModal, selfDestructive) => {
     const fileName = imageUri.split("/")[imageUri.split("/").length - 1];
 
     let data = await FileSystem.readAsStringAsync(imageUri, {
       encoding: FileSystem.EncodingType.Base64,
     });
 
-    sendInChat(data, fileName, "image/jpg");
+    sendInChat(data, fileName, "image/jpg", selfDestructive);
 
     hideModal();
   };
@@ -257,7 +263,7 @@ function BottomView({
           <View
             style={{
               flexDirection: "row",
-              width: "80%",
+              width: "60%",
               alignItems: "center",
               justifyContent: "space-evenly",
             }}
@@ -276,20 +282,19 @@ function BottomView({
               }}
             >
               <AppFabButton
-                size={18}
+                size={22.5}
                 style={{
                   backgroundColor: "white",
                   borderRadius: 50,
                   marginTop: 2,
-                  width: 37,
-
+                  width: 45,
                   elevation: 2,
-                  height: 37,
+                  height: 45,
                 }}
                 icon={
                   <MaterialCommunityIcons
                     name={"delete"}
-                    size={20}
+                    size={30}
                     color={"#47129E"}
                   />
                 }
@@ -300,7 +305,7 @@ function BottomView({
               />
             </Animated.View>
 
-            <Animated.View
+            {/* <Animated.View
               style={{
                 opacity: animation,
                 transform: [
@@ -335,7 +340,7 @@ function BottomView({
                   playAudio();
                 }}
               />
-            </Animated.View>
+            </Animated.View> */}
             <Animated.View
               style={{
                 opacity: animation,
@@ -350,15 +355,19 @@ function BottomView({
               }}
             >
               <AppFabButton
-                onPress={async () => {
-                  console.log("Send");
-                  sendAudio();
+                // onPress={async () => {
+                //   console.log("Send");
+                //   sendAudio(false);
+                // }}
+
+                onPress={() => {
+                  refRBSheet?.current?.open();
                 }}
-                size={20}
+                size={22.5}
                 icon={
                   <Image
                     source={require("../../../../../../assets/EditDrawerIcon/ic_send_message_round.png")}
-                    style={{ height: 35, width: 35 }}
+                    style={{ height: 45, width: 45 }}
                   />
                 }
               />
@@ -377,14 +386,18 @@ function BottomView({
               }}
             >
               <AppFabButton
-                size={20}
+                size={22.5}
+                // onPress={async () => {
+                //   console.log("Timer Send");
+                //   sendAudio(true);
+                // }}
                 onPress={() => {
-                  console.log("Timmer");
+                  refRBSheet?.current?.open();
                 }}
                 icon={
                   <Image
                     source={require("../../../../../../assets/EditDrawerIcon/ic_distructive.png")}
-                    style={{ height: 35, width: 35 }}
+                    style={{ height: 45, width: 45 }}
                   />
                 }
               />
@@ -402,13 +415,16 @@ function BottomView({
               }}
               icon={
                 <MaterialCommunityIcons
-                  name="gif"
+                  name="file-gif-box"
                   size={24}
                   color={color.white}
                 />
               }
             />
-            <BottomAudioButton setAudioUrl={setAudio} />
+            <BottomAudioButton
+              setAudioUrl={setAudio}
+              setAudioTime={setAudioTime}
+            />
             <AppFabButton
               onPress={() => setImageModal(true)}
               size={25}
@@ -423,6 +439,67 @@ function BottomView({
           </View>
         </View>
       )}
+      <RBSheet
+        customStyles={{ container: { borderRadius: 10 } }}
+        height={280}
+        ref={refRBSheet}
+        dragFromTopOnly={true}
+        closeOnDragDown={true}
+        closeOnPressMask={true}
+        draggableIcon
+      >
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            flexWrap: "wrap",
+            padding: 20,
+          }}
+        >
+          {voiceChangerArray.map((ele, index) => (
+            <TouchableOpacity
+              key={index}
+              style={{
+                height: 40,
+                width: "50%",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                paddingLeft: 20,
+                marginVertical: 2,
+              }}
+              onPress={() => {
+                // if (ele?.value === "none") {
+                console.log("Send Audio");
+                sendAudio(false);
+                refRBSheet?.current?.close();
+                // }
+              }}
+            >
+              <MaterialCommunityIcons
+                name="account-voice"
+                size={24}
+                color="black"
+              />
+              <Text
+                onPress={() => {
+                  // voiceChangerFun(ele.value);
+                  // setActionState((prev) => ({ ...prev, voice: false }));
+                  // refRBSheet?.current?.close();
+                  // if (ele?.value === "none") {
+                  console.log("Send Audio");
+                  sendAudio(false);
+                  refRBSheet?.current?.close();
+                  // }
+                }}
+                style={{ marginLeft: 10 }}
+              >
+                {ele.name}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </RBSheet>
       {imageUri && (
         <OverlayDrawer
           transparent
@@ -445,8 +522,9 @@ function BottomView({
         >
           {(hideModal) => (
             <ShowImage
+              showBtn={true}
               hideModal={() => {
-                sendImage(hideModal);
+                sendImage(hideModal, false);
               }}
               image={imageUri}
             />
@@ -460,7 +538,7 @@ function BottomView({
 
 const styles = StyleSheet.create({
   bottomView: {
-    height: 70,
+    height: 75,
     backgroundColor: "#303031",
     position: "absolute",
     bottom: 0,
