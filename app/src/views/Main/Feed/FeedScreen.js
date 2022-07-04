@@ -5,15 +5,9 @@ import {
 	Animated,
 	VirtualizedList,
 	StyleSheet,
-	ScrollView,
 } from "react-native";
-import React, {
-	Fragment,
-	useCallback,
-	useContext,
-	useEffect,
-	useState,
-} from "react";
+import React, { Fragment, useCallback, useEffect } from "react";
+
 import { getFeed } from "../../../helper/services/PostFeed";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -23,15 +17,15 @@ import {
 import AppFabButton from "../../../constants/components/ui-component/AppFabButton";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { Viewport } from "@skele/components";
 import { Text } from "native-base";
 import color from "../../../constants/env/color";
-import FeedSkeleton from "../../../constants/components/ui-skeleton/FeedSkeleton";
-import Feed from "./Feed";
 import usePermission from "../../../utils/hooks/usePermission";
 import { useIsFocused } from "@react-navigation/native";
 import { showToast } from "../../../redux/store/action/toastAction";
-import FeedContext, { FeedProvider } from "./FeedContext/FeedContext";
+import FeedProfile from "./FeedSkeleton/FeedProfile";
+import FeedHeader from "./FeedSkeleton/FeedHeader";
+import FeedContent from "./FeedSkeleton/FeedContent";
+import FeedFooter from "./FeedSkeleton/FeedFooter";
 
 export default function FeedScreen() {
 	const isFocused = useIsFocused();
@@ -71,6 +65,8 @@ export default function FeedScreen() {
 			pageName: null,
 			percentage: 0,
 			reactions: null,
+			page,
+			pageSize: 20,
 			reactionsCount: null,
 			recentComments: null,
 			text: null,
@@ -97,7 +93,7 @@ export default function FeedScreen() {
 			.catch((err) => {
 				console.log(err);
 			});
-	}, []);
+	}, [page]);
 
 	const setHeader = useCallback(() => {
 		if (!otherPostId) {
@@ -158,43 +154,60 @@ export default function FeedScreen() {
 
 	function renderItem({ item }) {
 		return (
-			<Feed
-				key={Math.random()}
-				item={item}
-				// myFeed={myFeed}
-				myPost={screen === "ALL"}
-				allFeed={allFeed}
-			/>
+			<View style={styles.mainView}>
+				<View style={styles.grid}>
+					<FeedProfile item={item} />
+					<View style={styles.header}>
+						<FeedHeader
+							item={item}
+							setDeletePostModal={() => {}}
+							setPostId={() => {}}
+						/>
+					</View>
+				</View>
+				<FeedContent item={item} />
+				<FeedFooter item={item} />
+			</View>
 		);
 	}
 
+	const getItemCount = (data) => data.length;
+	const keyExtractor = (data) => data.key;
+	const getItem = (data, index) => data[index];
+	const onViewableItemsChanged = (data) =>
+		dispatch(saveFeedAction({ viewableItems: data.viewableItems }));
+	const onRefresh = () => dispatch(saveFeedAction({ page: 0 }));
+	const onEndReached = () => dispatch(saveFeedAction({ page: page + 1 }));
+	const ListEmptyComponent = (
+		<Text style={{ alignSelf: "center", marginTop: 120 }}>
+			You have not created any post yet...!
+		</Text>
+	);
+
 	return (
-		<FeedProvider>
+		<Fragment>
 			<View style={styles.container}>
 				<VirtualizedList
 					howsVerticalScrollIndicator={false}
-					getItemCount={(data) => data.length}
-					getItem={(data, index) => data[index]}
+					getItemCount={getItemCount}
+					getItem={getItem}
 					data={data}
-					keyExtractor={(data) => data.key}
+					keyExtractor={keyExtractor}
 					renderItem={renderItem}
+					maxToRenderPerBatch={10}
+					initialNumToRender={10}
+					removeClippedSubviews={true}
+					updateCellsBatchingPeriod={50}
 					refreshing={loadingData}
 					viewabilityConfig={{
 						itemVisiblePercentThreshold: 100,
 					}}
-					maxToRenderPerBatch={5}
-					initialNumToRender={5}
-					onViewableItemsChanged={(data) => {
-						dispatch(saveFeedAction({ viewableItems: data.viewableItems }));
-					}}
-					onRefresh={() => dispatch(saveFeedAction({ page: 0 }))}
+					onViewableItemsChanged={onViewableItemsChanged}
+					onRefresh={onRefresh}
+					onScroll={(e) => scrollY.setValue(e.nativeEvent.contentOffset.y)}
 					onEndReachedThreshold={0.2}
-					ListEmptyComponent={
-						<Text style={{ alignSelf: "center", marginTop: 120 }}>
-							You have not created any post yet...!
-						</Text>
-					}
-					onEndReached={() => dispatch(saveFeedAction({ page: page + 1 }))}
+					ListEmptyComponent={ListEmptyComponent}
+					onEndReached={onEndReached}
 				/>
 			</View>
 
@@ -214,21 +227,9 @@ export default function FeedScreen() {
 					</TouchableWithoutFeedback>
 				</Animated.View>
 			</View>
-		</FeedProvider>
+		</Fragment>
 	);
 }
-
-const FeedClear = () => {
-	const { setPlayAbleFeed } = useContext(FeedContext);
-	const { addListener } = useNavigation();
-
-	useEffect(() => {
-		addListener("blur", () => {
-			setPlayAbleFeed([]);
-		});
-	}, []);
-	return null;
-};
 
 const styles = StyleSheet.create({
 	container: {
@@ -276,5 +277,57 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		borderRadius: 50,
 		zIndex: 99,
+	},
+	moreText: {
+		flexDirection: "row",
+		width: "95%",
+		alignSelf: "center",
+		marginLeft: 20,
+		alignItems: "center",
+	},
+	mainView: {
+		width: "100%",
+		alignSelf: "flex-end",
+		marginBottom: 17,
+		backgroundColor: "white",
+		paddingBottom: 15,
+	},
+	grid: {
+		paddingLeft: "5%",
+		width: "100%",
+		flexDirection: "row",
+		height: 56,
+		alignItems: "center",
+	},
+	header: {
+		flexDirection: "row",
+		height: "100%",
+		width: "87%",
+		borderBottomColor: color.greyText,
+		justifyContent: "space-between",
+		marginLeft: 20,
+	},
+
+	mainView: {
+		width: "100%",
+		alignSelf: "flex-end",
+		marginBottom: 17,
+		backgroundColor: "white",
+		paddingBottom: 15,
+	},
+	grid: {
+		paddingLeft: "5%",
+		width: "100%",
+		flexDirection: "row",
+		height: 56,
+		alignItems: "center",
+	},
+	header: {
+		flexDirection: "row",
+		height: "100%",
+		width: "87%",
+		borderBottomColor: color.greyText,
+		justifyContent: "space-between",
+		marginLeft: 20,
 	},
 });

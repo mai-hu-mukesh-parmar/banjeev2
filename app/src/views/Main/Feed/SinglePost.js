@@ -2,43 +2,29 @@ import React, { memo, useEffect, useRef, useState } from "react";
 import {
 	View,
 	StyleSheet,
-	Image,
 	TouchableWithoutFeedback,
-	Share,
 	SafeAreaView,
 } from "react-native";
-import {
-	MaterialCommunityIcons,
-	MaterialIcons,
-	Ionicons,
-	Entypo,
-} from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Text } from "native-base";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import ViewMoreText from "react-native-view-more-text";
+
 import * as Sharing from "expo-sharing";
 import RNFetchBlob from "rn-fetch-blob";
 import { searchFeed } from "../../../helper/services/SearchFeedbyId";
 import { useSelector } from "react-redux";
 import AppLoading from "../../../constants/components/ui-component/AppLoading";
-import AppFabButton from "../../../constants/components/ui-component/AppFabButton";
 import color from "../../../constants/env/color";
-import {
-	cloudinaryFeedUrl,
-	listProfileUrl,
-} from "../../../utils/util-func/constantExport";
-import { convertTime } from "../../../utils/util-func/convertTime";
-import Reaction from "./Reaction";
-import AppMenu from "../../../constants/components/ui-component/AppMenu";
-import FeedContent from "./FeedContent";
+import FeedContent from "./FeedSkeleton/FeedContent";
+import FeedProfile from "./FeedSkeleton/FeedProfile";
+import FeedHeader from "./FeedSkeleton/FeedHeader";
+import FeedFooter from "./FeedSkeleton/FeedFooter";
 
 function SinglePost() {
 	const { params } = useRoute();
 	const [item, setItem] = useState();
 	const [open, setOpen] = useState(false);
-	const [showReaction, setShowReaction] = useState(false); //for reaction
-	const [selectedReaction, setSelectedReaction] = useState();
-	const [reaction, setReaction] = useState();
+
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
 
@@ -98,43 +84,6 @@ function SinglePost() {
 		}
 	}, [params]);
 
-	function renderViewMore(onPress) {
-		return (
-			<TouchableWithoutFeedback onPress={onPress}>
-				<View style={styles.moreText}>
-					<MaterialCommunityIcons
-						name="chevron-down"
-						size={20}
-						color={color.greyText}
-					/>
-					<Text style={{ color: color.greyText }}>Show more</Text>
-				</View>
-			</TouchableWithoutFeedback>
-		);
-	}
-
-	function renderViewLess(onPress) {
-		return (
-			<TouchableWithoutFeedback onPress={onPress}>
-				<View style={styles.moreText}>
-					<MaterialCommunityIcons
-						name="chevron-up"
-						size={20}
-						color={color.greyText}
-					/>
-					<Text style={{ color: color.greyText }}>Show less</Text>
-				</View>
-			</TouchableWithoutFeedback>
-		);
-	}
-
-	function seeProfile() {
-		if (systemUserId === item.authorId) {
-			navigate("Profile");
-		} else {
-			navigate("BanjeeProfile", { item: { id: item.authorId } });
-		}
-	}
 	return (
 		<React.Fragment>
 			{error ? (
@@ -157,253 +106,19 @@ function SinglePost() {
 					) : (
 						<SafeAreaView>
 							<View style={styles.mainView}>
-								{/* <AppFabButton
-                style={{ alignSelf: "flex-end", marginTop: 10 }}
-                size={20}
-                onPress={() => goBack()}
-                icon={<Entypo name="cross" size={24} color={color.black} />}
-              /> */}
 								<View style={styles.grid}>
-									<TouchableWithoutFeedback onPress={() => seeProfile()}>
-										<Image
-											source={
-												item?.authorId
-													? {
-															uri: listProfileUrl(item?.authorId),
-													  }
-													: require("../../../../assets/EditDrawerIcon/neutral_placeholder.png")
-											}
-											style={{ height: 40, width: 40, borderRadius: 20 }}
-										/>
-									</TouchableWithoutFeedback>
-
+									<FeedProfile item={item} />
 									<View style={styles.header}>
-										<View
-											style={{
-												width: "85%",
-												height: "100%",
-												overflow: "hidden",
-												justifyContent: "center",
-											}}
-										>
-											<Text numberOfLines={1} style={{ fontWeight: "bold" }}>
-												{item?.author?.username}
-											</Text>
-
-											<View style={{ flexDirection: "row" }}>
-												{item?.locationId ? (
-													<View
-														style={{
-															maxWidth: "70%",
-															// Width: "70%",
-															flexDirection: "row",
-															alignItems: "center",
-															marginRight: 10,
-														}}
-													>
-														<Ionicons
-															name="location-outline"
-															size={15}
-															color={color.greyText}
-														/>
-														<Text
-															style={{ color: color.greyText, fontSize: 14 }}
-															numberOfLines={1}
-														>
-															{item?.locationId}
-														</Text>
-													</View>
-												) : null}
-												<View
-													style={{
-														flexDirection: "row",
-														width: "30%",
-														alignItems: "center",
-													}}
-												>
-													<MaterialIcons
-														name="access-time"
-														size={15}
-														color={color.greyText}
-													/>
-													<Text
-														numberOfLines={1}
-														style={{
-															color: color.greyText,
-															fontSize: 14,
-															marginLeft: 2,
-														}}
-													>
-														{convertTime(item?.createdOn)}
-													</Text>
-												</View>
-											</View>
-										</View>
-
-										<View
-											style={{
-												// width: "10%",
-												flexDirection: "row",
-												alignItems: "center",
-												justifyContent: "flex-end",
-												marginRight: 14,
-											}}
-										>
-											{systemUserId === item?.authorId ? (
-												<AppMenu
-													menuColor={color.black}
-													menuContent={[
-														{
-															icon: "delete",
-															label: "Delete post",
-															onPress: () => {
-																deletePost(item.id);
-																goBack();
-															},
-														},
-													]}
-												/>
-											) : (
-												<AppMenu
-													menuColor={color.black}
-													menuContent={[
-														{
-															icon: "account-minus",
-															label: "Report this feed",
-															onPress: () => console.log("report feed"),
-														},
-													]}
-												/>
-											)}
-										</View>
-									</View>
-								</View>
-
-								{/* APP TITLE */}
-
-								{/* <Text style={styles.postTitle}>{item.post}</Text> */}
-
-								{/* POST */}
-
-								{item?.text?.length > 0 && (
-									<ViewMoreText
-										numberOfLines={10}
-										renderViewMore={renderViewMore}
-										renderViewLess={renderViewLess}
-										textStyle={{
-											width: "95%",
-											alignSelf: "center",
-											paddingLeft: 10,
-											marginTop: 10,
-											marginBottom: 8,
-										}}
-									>
-										<Text>{item?.text.trim()}</Text>
-									</ViewMoreText>
-								)}
-
-								{item?.mediaContent?.length > 0 && (
-									<View
-										style={{
-											width: "95%",
-											alignSelf: "center",
-											marginTop: item?.text?.length === 0 ? 10 : 0,
-										}}
-									>
-										{item?.mediaContent && (
-											<FeedContent item={item?.mediaContent} />
-										)}
-									</View>
-								)}
-
-								<View
-									style={{
-										flexDirection: "row",
-										position: "absolute",
-										bottom: 80,
-										width: "95%",
-										paddingLeft: 10,
-										alignSelf: "center",
-									}}
-								>
-									<View
-										style={{
-											alignItems: "center",
-											flexDirection: "row",
-										}}
-									>
-										<Reaction
-											postId={item?.id}
-											reaction={reaction}
-											setReaction={setReaction}
-											selectedReaction={selectedReaction}
-											setSelectedReaction={setSelectedReaction}
-											setShowReaction={setShowReaction}
-											showReaction={showReaction}
-											size={20}
-											ourLike={item?.reactions?.filter(
-												(ele) => ele.userId === systemUserId
-											)}
-										/>
-
-										<Text
-											style={{
-												color: color.greyText,
-												fontSize: 12,
-												paddingLeft: 10,
-											}}
-											onPress={() =>
-												navigate("ViewLike", { userReaction: item?.reactions })
-											}
-										>
-											{item?.totalReactions}
-										</Text>
-									</View>
-									<View
-										style={{
-											alignItems: "center",
-											flexDirection: "row",
-											marginLeft: 20,
-										}}
-									>
-										<AppFabButton
-											size={16}
-											onPress={() => navigate("Comment", { postId: item?.id })}
-											icon={
-												<Ionicons
-													name="chatbubble-outline"
-													color={color.greyText}
-													size={20}
-												/>
-											}
-										/>
-
-										<Text style={{ color: color.greyText, fontSize: 12 }}>
-											{item?.totalComments}
-										</Text>
-									</View>
-									<View style={{ position: "absolute", right: 0 }}>
-										<AppFabButton
-											onPress={() =>
-												onShare(
-													cloudinaryFeedUrl(
-														item?.mediaContent[0].src,
-														item?.mediaContent[0].mimeType.split("/")[0]
-													)
-												)
-											}
-											// onPress={() => sharePost(item?.text, item?.mediaContent)}
-											size={16}
-											icon={
-												<MaterialCommunityIcons
-													name="share-variant"
-													color={color.greyText}
-													size={20}
-												/>
-											}
+										<FeedHeader
+											item={item}
+											setDeletePostModal={() => {}}
+											setPostId={() => {}}
 										/>
 									</View>
 								</View>
+								<FeedContent item={item} />
+								<FeedFooter item={item} />
+
 								<TouchableWithoutFeedback
 									onPress={() => navigate("Comment", { postId: item?.id })}
 								>

@@ -1,6 +1,7 @@
 import React from "react";
 import { Animated, Dimensions } from "react-native";
 import { PinchGestureHandler, State } from "react-native-gesture-handler";
+import AppLoading from "../../../constants/components/ui-component/AppLoading";
 
 const FeedZoom = ({ imageUri }) => {
 	const scale = new Animated.Value(1);
@@ -25,6 +26,7 @@ const FeedZoom = ({ imageUri }) => {
 		}
 	};
 
+	onLoadStart = () => <AppLoading visible={true} />;
 	return (
 		<PinchGestureHandler
 			onGestureEvent={onPinchEvent}
@@ -32,6 +34,7 @@ const FeedZoom = ({ imageUri }) => {
 		>
 			<Animated.Image
 				source={{ uri: imageUri }}
+				onLoadStart={onLoadStart}
 				style={{
 					width: 320,
 					height: 320,

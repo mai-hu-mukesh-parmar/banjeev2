@@ -24,7 +24,6 @@ import {
 	profileUrl,
 } from "../../../utils/util-func/constantExport";
 import ConfirmModal from "../../Others/ConfirmModal";
-import Feed from "../Feed/Feed";
 import SettingBottomSheet from "./SettingBottomSheet";
 
 function Profile(props) {
@@ -140,14 +139,20 @@ function Profile(props) {
 
 	function renderItem({ item }) {
 		return (
-			<Feed
-				key={item.id}
-				item={item}
-				myPost={true}
-				myFeed={myFeed}
-				setDeletePostModal={setDeletePostModal}
-				setPostId={setPostId}
-			/>
+			<View style={styles.mainView} key={item.id}>
+				<View style={styles.grid}>
+					<FeedProfile item={item} />
+					<View style={styles.header}>
+						<FeedHeader
+							item={item}
+							setDeletePostModal={setDeletePostModal}
+							setPostId={setPostId}
+						/>
+					</View>
+				</View>
+				<FeedContent item={item} />
+				<FeedFooter item={item} />
+			</View>
 		);
 	}
 
