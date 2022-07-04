@@ -7,7 +7,7 @@ import { useNavigation } from "@react-navigation/native";
 import AppFabButton from "./ui-component/AppFabButton";
 import color from "../env/color";
 
-function ShowImage({ image, hideModal }) {
+function ShowImage({ image, hideModal, showBtn }) {
   return (
     <View
       style={{
@@ -46,45 +46,47 @@ function ShowImage({ image, hideModal }) {
           />
         )}
 
-        <View
-          style={{
-            height: 70,
-            width: "100%",
-            backgroundColor: "purple",
-            position: "absolute",
-            bottom: 0,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
+        {showBtn && (
           <View
             style={{
-              width: "40%",
-              justifyContent: "space-evenly",
-              flexDirection: "row",
+              height: 70,
+              width: "100%",
+              backgroundColor: "purple",
+              position: "absolute",
+              bottom: 0,
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
-            <AppFabButton
-              onPress={hideModal}
-              size={20}
-              icon={
-                <Image
-                  source={require("../../../assets/EditDrawerIcon/ic_send_message_round.png")}
-                  style={{ height: 35, width: 35 }}
-                />
-              }
-            />
-            <AppFabButton
-              size={20}
-              icon={
-                <Image
-                  source={require("../../../assets/EditDrawerIcon/ic_distructive.png")}
-                  style={{ height: 35, width: 35 }}
-                />
-              }
-            />
+            <View
+              style={{
+                width: "40%",
+                justifyContent: "space-evenly",
+                flexDirection: "row",
+              }}
+            >
+              <AppFabButton
+                onPress={hideModal}
+                size={20}
+                icon={
+                  <Image
+                    source={require("../../../assets/EditDrawerIcon/ic_send_message_round.png")}
+                    style={{ height: 35, width: 35 }}
+                  />
+                }
+              />
+              <AppFabButton
+                size={20}
+                icon={
+                  <Image
+                    source={require("../../../assets/EditDrawerIcon/ic_distructive.png")}
+                    style={{ height: 35, width: 35 }}
+                  />
+                }
+              />
+            </View>
           </View>
-        </View>
+        )}
       </LinearGradient>
     </View>
   );

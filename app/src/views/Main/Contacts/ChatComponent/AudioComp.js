@@ -2,13 +2,51 @@ import { Image, StyleSheet, View } from "react-native";
 import React from "react";
 import AppFabButton from "../../../../constants/components/ui-component/AppFabButton";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Text } from "native-base";
+
+import { destructChat } from "../../../../helper/services/ChatService";
 
 export default function AudioComp({
+  messId,
   isSender,
   mediaPlayer: play,
   setMediaPlayer: setPlay,
   src,
+  selfDestructive: { selfDestructive, destructiveAgeInSeconds },
 }) {
+  const countRef = React.useRef(null);
+
+  const [timer, setTimer] = React.useState(destructiveAgeInSeconds);
+  const [timerStart, setTimerStart] = React.useState(false);
+
+  const destructChatApiCall = React.useCallback(() => {
+    destructChat(messId)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => console.warn(err));
+  }, []);
+
+  React.useEffect(() => {
+    if (selfDestructive && isSender && timerStart) {
+      let myInterval = setInterval(() => {
+        if (timer > 0) {
+          setTimer(timer - 1);
+        }
+        if (timer === 26) {
+          destructChatApiCall();
+        }
+        if (timer === 0) {
+          console.log("time over");
+          clearInterval(myInterval);
+        }
+      }, 1000);
+      return () => {
+        clearInterval(myInterval);
+      };
+    }
+  }, [timer, timerStart]);
+
   return (
     <View
       style={{
@@ -38,6 +76,43 @@ export default function AudioComp({
           resizeMode="contain"
           source={require("../../../../../assets/EditDrawerIcon/audio_reciver.png")}
         />
+      )}
+      {selfDestructive && !isSender && (
+        <View
+          style={{
+            position: "absolute",
+            left: 60,
+            top: 22,
+            shadowOpacity: 0,
+          }}
+        >
+          <Image
+            source={require("../../../../../assets/EditDrawerIcon/ic_distructive.png")}
+            style={{ height: 40, width: 40, shadowOpacity: 0 }}
+          />
+        </View>
+      )}
+      {selfDestructive && isSender && (
+        <View
+          style={{
+            height: 40,
+            width: 40,
+            backgroundColor: "#FFF",
+            position: "absolute",
+            top: 8,
+            right: 10,
+            borderRadius: 50,
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Image
+            source={require("../../../../../assets/EditDrawerIcon/oval.png")}
+            style={{ height: "100%", width: "100%" }}
+          />
+          <Text style={{ position: "absolute" }}>{timer}</Text>
+        </View>
       )}
       <View
         style={{
@@ -74,6 +149,9 @@ export default function AudioComp({
             </View>
           }
           onPress={() => {
+            if (selfDestructive && isSender) {
+              setTimerStart(true);
+            }
             setPlay((prev) => {
               return {
                 src: src,

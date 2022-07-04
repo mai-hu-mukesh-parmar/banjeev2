@@ -96,12 +96,12 @@ function Profile(props) {
 		MyPostFeed(payload)
 			.then((res) => {
 				setRefresh(false);
-				console.warn("page", page);
+				// console.warn("page", page);
 
 				if (res && res.content.length > 0) {
 					setData((prev) => [...prev, ...res.content]);
 				} else {
-					console.warn("End of list");
+					// console.warn("End of list");
 				}
 			})
 			.catch((err) => console.log("errorrr", err));

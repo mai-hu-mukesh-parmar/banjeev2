@@ -8,15 +8,17 @@ import {
   checkGender,
   listProfileUrl,
 } from "../../../../utils/util-func/constantExport";
-import { Text } from "native-base";
+import { Avatar, Text } from "native-base";
 import checkUserStatus from "../ChatComponent/checkUserStatus";
 
 import { SocketContext } from "../../../../Context/Socket";
+import color from "../../../../constants/env/color";
 
 export default function HearderLeft({ chatUser }) {
   const { goBack } = useNavigation();
   const [imageError, setImageError] = React.useState();
   const socket = React.useContext(SocketContext);
+  // const socket = useSelector((state) => state?.socket);
 
   const [onlineStatus, setOnlineStatus] = React.useState();
   React.useEffect(() => {
@@ -50,7 +52,7 @@ export default function HearderLeft({ chatUser }) {
       }
     }
   };
-  console.warn(chatUser);
+  // console.warn(chatUser);
   return (
     <View style={{ flexDirection: "row", alignItems: "center" }}>
       {Platform.select({
@@ -63,7 +65,7 @@ export default function HearderLeft({ chatUser }) {
         ),
       })}
 
-      <Image
+      {/* <Image
         onError={({ nativeEvent: { error } }) => {
           setImageError(error);
         }}
@@ -73,7 +75,14 @@ export default function HearderLeft({ chatUser }) {
             : { uri: listProfileUrl(chatUser?.id) }
         }
         style={styles.profileImg}
-      />
+      /> */}
+      <Avatar
+        bgColor={color.primary}
+        style={styles.profileImg}
+        source={{ uri: listProfileUrl(chatUser?.id) }}
+      >
+        {chatUser?.firstName?.charAt(0).toUpperCase() || ""}
+      </Avatar>
 
       <View
         style={{

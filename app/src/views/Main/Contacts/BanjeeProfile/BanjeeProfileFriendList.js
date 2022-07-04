@@ -11,9 +11,10 @@ function BanjeeProfileFriendList({
 	pendingConnectionsHandler,
 	// pendingFriendReq,
 }) {
-	const {
-		params: { item: user },
-	} = useRoute();
+	// const {
+	// 	params: { item: user },
+	// } = useRoute();
+	const { profileId: user } = useSelector((state) => state.viewProfile);
 
 	const [data, setData] = React.useState([]);
 	const [loading, setLoading] = React.useState(true);
@@ -26,32 +27,31 @@ function BanjeeProfileFriendList({
 	const FindUserContact = React.useCallback(
 		() =>
 			findUserContact({
-				id: user?.id,
+				id: user,
 				page: 0,
 				pageSize: 0,
 			})
 				.then((res) => {
 					setLoading(false);
+					// console.warn(res, "ressssss");
 					// pendingConnectionsHandler(res.map((ele) => ele.systemUserId));
 
-					let x = res.filter((ele) =>
-						pendingConnections.some((el) => el.includes(ele.systemUserId))
-					);
+					// let x = res.filter((ele) =>
+					// 	pendingConnections.some((el) => el.includes(ele.systemUserId))
+					// );
 
-					console.warn(
-						"-------->",
-						x.map((ele) => ele.systemUserId)
-					);
+					// pendingConnectionsHandler(x.map((ele) => ele.systemUserId));
 
-					pendingConnectionsHandler(x.map((ele) => ele.systemUserId));
+					// dispatch(
+					// 	pendingConnection({
+					// 		pendingFriendReq: x.map((ele) => ele.systemUserId),
+					// 	})
+					// );
+					// setPendingFrienReq(x.map((ele) => ele.systemUserId));
 
-					dispatch(
-						pendingConnection({
-							pendingFriendReq: x.map((ele) => ele.systemUserId),
-						})
-					);
-					setPendingFrienReq(x.map((ele) => ele.systemUserId));
 					const d = res.map((ele) => {
+						console.warn(systemUserId);
+						console.warn(ele.systemUserId, ele.mutualEE);
 						if (ele.systemUserId === systemUserId) {
 							return { ...ele, type: "YOU" };
 						} else if (ele.mutual) {

@@ -6,11 +6,11 @@ const setDateFormat = (date) => {
   const min = timeFormat[1];
   const formatedHour =
     hour > 12 ? `0${hour - 12}` : hour < 10 ? `0${hour}` : hour;
-  console.warn(
-    `${dateFormat
-      .slice(1, dateFormat.length)
-      .join(" ")}, ${formatedHour}:${min} ${hour >= 12 ? "PM" : "AM"}`
-  );
+  // console.warn(
+  //   `${dateFormat
+  //     .slice(1, dateFormat.length)
+  //     .join(" ")}, ${formatedHour}:${min} ${hour >= 12 ? "PM" : "AM"}`
+  // );
   return `${dateFormat
     .slice(1, dateFormat.length)
     .join(" ")}, ${formatedHour}:${min} ${hour >= 12 ? "PM" : "AM"}`;

@@ -36,7 +36,7 @@ export const sharePost = async (url, mimeType, text, FeedId, postId) => {
             message: text + `https://www.banjee.org/feed/${FeedId}`,
           });
 
-          console.log("Finished downloading to ", uri);
+          // console.log("Finished downloading to ", uri);
         })
         .catch((error) => {
           console.error(error);
