@@ -61,7 +61,7 @@ function Category(props) {
   }, []);
 
   const subCategoryFunc = (id) => {
-    // console.warn(id);
+    console.warn(id);
     if (category.length > 0) {
       setSubLoading(true);
       subCategoryService({
@@ -71,7 +71,6 @@ function Category(props) {
         name: null,
       })
         .then((res) => {
-          // console.warn("==============", res.content);
           setCategoryId(id);
           setSubLoading(false);
           setSubCategory(res.content);
@@ -188,32 +187,30 @@ function Category(props) {
                     alignSelf: "center",
                   }}
                 >
-                  {subCategory.map((item, i) => (
-                    <TouchableOpacity
-                      key={i}
-                      onPress={() => {
-                        // console.log(item.id);
+                  {subCategory.map((item, i) => {
+                    console.warn("itemmsssss", item);
+                    return (
+                      <TouchableOpacity
+                        key={i}
+                        onPress={() => {
+                          // console.log(item.id);
 
-                        dispatch(
-                          setRoomData({
-                            categoryId: categoryId,
-                            subCategoryId: item.id,
-                            categoryName: item.name,
-                          })
-                        );
-                        return navigate("CreateRoom", {
-                          categoryData: {
-                            categoryId: categoryId,
-                            subCategoryId: item.id,
-                            subCategoryItem: item.name,
-                          },
-                        });
-                      }}
-                      style={styles.name}
-                    >
-                      <Text>{item.name}</Text>
-                    </TouchableOpacity>
-                  ))}
+                          dispatch(
+                            setRoomData({
+                              categoryName: item.categoryName,
+                              categoryId: categoryId,
+                              subCategoryId: item.id,
+                              subCategoryName: item.name,
+                            })
+                          );
+                          return navigate("CreateRoom");
+                        }}
+                        style={styles.name}
+                      >
+                        <Text>{item.name}</Text>
+                      </TouchableOpacity>
+                    );
+                  })}
                 </View>
               </ScrollView>
             )}

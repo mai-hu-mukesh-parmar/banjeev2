@@ -90,19 +90,13 @@ export default function BottonCard(props) {
       toUserId: systemUserId,
       voiceIntroSrc,
     };
-    // console.log("payload ---> ", JSON.stringify(payload, null, 2));
     delete payload.fromUser.authorities;
 
     FriendRequest(payload)
       .then(async (res) => {
         let notificationRingtone = require("../../../assets/ringtones/sendFriendRequestTone.mp3");
-
         let { sound } = await Audio.Sound.createAsync(notificationRingtone);
-        // console.log("playing sound");
-
         await sound.playAsync();
-        // console.log("audio played");
-
         ToastMessage("Friend Request Sent Successfully");
         setTimeout(() => {
           setState((prev) => ({ currentIndex: prev.currentIndex + 1 }));

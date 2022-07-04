@@ -33,9 +33,13 @@ export const listOurRoom = (payload) => {
 	return executePost(url, actionCode, payload, method, {});
 };
 
-export const listOtherRoom = (payload) => {
+export const listOtherRoom = (reqLoad) => {
 	let url = urls.USER.OTHER_ROOM;
 	let actionCode = "ACTION_OTHER-GROUP-FILTER_CONNECTION";
+	let payload = reqLoad;
 	let method = "POST";
+
+	// console.warn(url, actionCode);
+	console.warn(url, reqLoad, "url list");
 	return executePost(url, actionCode, payload, method, {});
 };

@@ -1,4 +1,9 @@
-import { View, Image, StyleSheet } from "react-native";
+import {
+	View,
+	Image,
+	StyleSheet,
+	TouchableWithoutFeedback,
+} from "react-native";
 import React from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -64,6 +69,7 @@ export default function RoomElement({
 								right: 0,
 								transform: [{ rotate: "90deg" }],
 								marginTop: 15,
+								zIndex: 99,
 							}}
 						>
 							<AppMenu
@@ -116,7 +122,11 @@ export default function RoomElement({
 							/>
 
 							<Text
-								style={{ color: "#656565", fontWeight: "bold" }}
+								style={{
+									color: "#656565",
+									fontWeight: "bold",
+									width: "90%",
+								}}
 								numberOfLines={1}
 							>
 								{item.categoryName},{item?.subCategoryName}
@@ -216,7 +226,13 @@ export default function RoomElement({
 							title="Edit"
 							width={80}
 							onPress={() => {
-								dispatch(setRoomData(item));
+								dispatch(
+									setRoomData({
+										...item,
+										editRoom: true,
+										connectedUserLength: true,
+									})
+								);
 								navigate("CreateRoom", { editRoomItem: item });
 							}}
 						/>

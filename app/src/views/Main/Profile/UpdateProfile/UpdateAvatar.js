@@ -65,7 +65,6 @@ export default function UpdateAvatar({ navigation, route }) {
     )
       .then((response) => response.json())
       .then((result) => {
-        // console.warn(JSON.stringify(result.data[0].data.id));
         updateUserImage(result.data[0].data.id);
       })
       .catch((error) => {
@@ -81,13 +80,11 @@ export default function UpdateAvatar({ navigation, route }) {
   }, []);
 
   const updateUserImage = (data) => {
-    // console.log(userData);
+    console.log(userData);
     updateUser({ ...userData, avtarUrl: data }, "PUT")
       .then((res) => {
         setVisible(true);
-        // console.warn(res);
         dispatch(saveUserRegistry(res));
-        // console.warn(userData);
         setVisible(false);
         setDone(true);
         navigation.navigate("Bottom");

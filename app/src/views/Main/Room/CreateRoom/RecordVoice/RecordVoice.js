@@ -114,7 +114,7 @@ function RecordVoice(props) {
         .then(async (e) => {
           if (e.durationMillis > 10) {
             const uri = recorder.getURI();
-            // console.log("Recording stopped and stored at", uri);
+            console.log("Recording stopped and stored at", uri);
             setAudio(uri);
             setRecordingState(false);
             setVisible(false);
@@ -134,7 +134,7 @@ function RecordVoice(props) {
 
   const askUserPermission = React.useCallback(async () => {
     const result = await checkPermission("AUDIO");
-    // console.log(result);
+    console.log(result);
     if (result === "granted") {
       setView(true);
     } else {
@@ -316,7 +316,10 @@ function RecordVoice(props) {
         >
           <AppButton
             style={styles.saveBtn}
-            onPress={() => goBack()}
+            onPress={async () => {
+              goBack();
+              await player.stopAsync();
+            }}
             title={"Cancel"}
           />
           <AppButton
@@ -370,12 +373,13 @@ function RecordVoice(props) {
       </View>
     </React.Fragment>
   );
-  const isAudioPresent = (
-    // console.warn(audio, !visible, ".........."),
-    <React.Fragment>
-      {audio && !visible ? recordingStateView : playerStateView}
-    </React.Fragment>
-  );
+  const isAudioPresent =
+    (console.warn(audio, !visible, ".........."),
+    (
+      <React.Fragment>
+        {audio && !visible ? recordingStateView : playerStateView}
+      </React.Fragment>
+    ));
 
   return (
     <React.Fragment>

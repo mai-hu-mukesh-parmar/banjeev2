@@ -4,9 +4,14 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { Text } from "native-base";
 import AppButton from "../../../../constants/components/ui-component/AppButton";
 import color from "../../../../constants/env/color";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { profileUrl } from "../../../../utils/util-func/constantExport";
-import { updateRoom } from "../../../../helper/services/CreateRoomService";
+import {
+  createRoom,
+  updateRoom,
+} from "../../../../helper/services/CreateRoomService";
+import { showToast } from "../../../../redux/store/action/toastAction";
+import { setRoomData } from "../../../../redux/store/action/roomAction";
 
 function FilterCreateRoom(props) {
   const {
@@ -19,28 +24,39 @@ function FilterCreateRoom(props) {
     allUseVoiceFilters,
     onlyAudioRoom,
   } = useSelector((state) => state.room);
-
-  const {
-    params: {
-      update,
-      data,
-      data: { editRoom, userCount },
-    },
-  } = useRoute();
+  console.warn(
+    allCanSwitchVideo,
+    allCanReact,
+    allCanSpeak,
+    allCanAddBanjees,
+    recordSession,
+    seekPermission,
+    allUseVoiceFilters,
+    onlyAudioRoom
+  );
+  // const {
+  // 	params: {
+  // 		update,
+  // 		data,
+  // 		data: { editRoom, userCount },
+  // 	},
+  // } = useRoute();
 
   const { setOptions, navigate } = useNavigation();
   const [disable, setDisable] = React.useState(false);
+  const dispatch = useDispatch();
 
   const {
     userObject: { id, avtarUrl },
   } = useSelector((state) => state.registry);
 
   const user = useSelector((state) => state.user);
+  const roomdata = useSelector((state) => state.room);
+
   const btnClick = React.useCallback(() => {
     setDisable(true);
-    if (editRoom) {
-      // console.warn("----------------------------------", data?.audioUri.url);
-      // console.warn("editRoom?.imageContent", editRoom?.imageContent);
+
+    if (roomdata.editRoom) {
       // console.warn(
       //   "Imagecontettgfgdfgdfg",
       //   data?.roomUri?.base64Content === undefined
@@ -76,28 +92,31 @@ function FilterCreateRoom(props) {
       //   "data.audioUri.url",
       //   data.audioUri?.url
       // );
-      // console.log("Update Apicall");
+      console.log("Update Apicall");
+
       updateRoom({
-        allCanAddBanjees: toggle.add_banjee,
-        allCanReact: toggle.feedback,
-        allCanSpeak: toggle.speak,
-        allCanSwitchVideo: toggle.switch_video,
-        allUseVoiceFilters: toggle.voice_filter,
+        allCanAddBanjees: allCanAddBanjees,
+        allCanReact: allCanReact,
+        allCanSpeak: allCanSpeak,
+        allCanSwitchVideo: allCanSwitchVideo,
+        allUseVoiceFilters: allUseVoiceFilters,
         category: null, //reamining
-        categoryId: data.categoryId,
-        categoryName: data.params.subCategoryItem,
-        chatroomId: editRoom?.chatroomId, //remaining
-        communityType: data.communityType,
-        connectedUserIds: data.params.checkUser.map((ele) => ele.id.toString()),
-        connectedUsers: data.params.checkUser, //remaining
+        categoryId: roomdata.categoryId,
+        categoryName: roomdata.categoryName,
+        chatroomId: roomdata?.chatroomId, //remaining
+        communityType: roomdata.communityType,
+        connectedUserIds: roomdata.connectedUsers.map((ele) =>
+          ele.id.toString()
+        ),
+        connectedUsers: roomdata.connectedUsers, //remaining
         connectionReq: null, //remaining
         content:
-          data?.audioUri?.audioBase64 === undefined ||
-          data?.audioUri?.audioBase64 === null
-            ? editRoom?.content
+          roomdata?.audioUri?.audioBase64 === undefined ||
+          roomdata?.audioUri?.audioBase64 === null
+            ? roomdata?.content
             : {
                 aspectRatio: null,
-                base64Content: data?.audioUri?.audioBase64,
+                base64Content: roomdata?.audioUri?.audioBase64,
                 caption: null,
                 description: null,
                 height: 0,
@@ -110,26 +129,26 @@ function FilterCreateRoom(props) {
                 src: null,
                 subTitle: null,
                 tags: null,
-                title: data.audioUri.url,
+                title: roomdata.audioUri.url,
                 type: null,
                 width: 0,
               },
-        createdOn: editRoom?.createdOn,
-        domain: editRoom?.domain,
+        createdOn: roomdata?.createdOn,
+        domain: roomdata?.domain,
         group: true,
-        groupName: data.txt,
-        id: editRoom?.id,
+        groupName: roomdata.groupName,
+        id: roomdata?.id,
         imageCommunityUrl: null,
         imageContent:
-          data?.roomUri?.base64Content === undefined
+          roomdata?.imageContent?.imageBase64 === undefined
             ? {
-                ...editRoom?.imageContent,
-                base64Content: editRoom?.imageContent?.src,
+                ...roomdata?.imageContent,
+                base64Content: roomdata?.imageContent?.src,
                 mimeType: "image/jpg",
               }
             : {
                 aspectRatio: null,
-                base64Content: data.roomUri.imageBase64,
+                base64Content: roomdata?.imageContent?.imageBase64,
                 caption: null,
                 description: null,
                 height: 0,
@@ -142,48 +161,50 @@ function FilterCreateRoom(props) {
                 src: null,
                 subTitle: null,
                 tags: null,
-                title: data.roomUri.url,
+                title: roomdata?.imageContent?.name,
                 type: null,
                 width: 0,
               },
         lastUpdatedBy: null,
         lastUpdatedOn: null,
         likes: 0,
-        onlyAudioRoom: toggle.audio_only,
+        onlyAudioRoom: onlyAudioRoom,
         playing: false,
-        recordSession: false,
-        seekPermission: false,
-        subCategoryId: data.subCategoryId,
-        subCategoryName: data.txt,
+        recordSession: recordSession,
+        seekPermission: seekPermission,
+        subCategoryId: roomdata.subCategoryId,
+        subCategoryName: roomdata.subCategoryName,
         unreadMessages: 0,
         user: user,
         userId: id,
         userIds: [id],
       })
         .then((res) => {
+          dispatch(
+            showToast({ open: true, description: "Room Updated Successfully" })
+          );
           navigate("Room");
-          ToastMessage("Room updated Successfully");
         })
         .catch((err) => console.log(err));
     } else {
       console.log("EditApiCall");
       createRoom({
-        allCanAddBanjees: toggle.add_banjee,
-        allCanReact: toggle.feedback,
-        allCanSpeak: toggle.speak,
-        allCanSwitchVideo: toggle.switch_video,
-        allUseVoiceFilters: toggle.voice_filter,
+        allCanAddBanjees: allCanAddBanjees,
+        allCanReact: allCanReact,
+        allCanSpeak: allCanSpeak,
+        allCanSwitchVideo: allCanSwitchVideo,
+        allUseVoiceFilters: allUseVoiceFilters,
         category: null, //reamining
-        categoryId: data.categoryId,
-        categoryName: data.params.subCategoryItem,
+        categoryId: roomdata.categoryId,
+        categoryName: roomdata.categoryName,
         chatroomId: null, //remaining
-        communityType: data.communityType,
-        connectedUserIds: data.params.checkUser.map((ele) => ele.id),
-        connectedUsers: null, //remaining
+        communityType: roomdata.communityType,
+        connectedUserIds: roomdata.connectedUsers.map((ele) => ele.id),
+        connectedUsers: roomdata.connectedUsers, //remaining
         connectionReq: null, //remaining
         content: {
           aspectRatio: null,
-          base64Content: data.audioUri.audioBase64,
+          base64Content: null,
           caption: null,
           description: null,
           height: 0,
@@ -196,19 +217,19 @@ function FilterCreateRoom(props) {
           src: null,
           subTitle: null,
           tags: null,
-          title: data.audioUri.url,
+          title: null,
           type: null,
           width: 0,
         },
         createdOn: null,
-        domain: null,
+        domain: "banjee",
         group: true,
-        groupName: data.txt,
+        groupName: roomdata.groupName,
         id: null,
         imageCommunityUrl: null,
         imageContent: {
           aspectRatio: null,
-          base64Content: data.roomUri.imageBase64,
+          base64Content: roomdata.imageContent.imageBase64,
           caption: null,
           description: null,
           height: 0,
@@ -221,7 +242,7 @@ function FilterCreateRoom(props) {
           src: null,
           subTitle: null,
           tags: null,
-          title: data.roomUri.url,
+          title: roomdata.imageContent.name,
           type: null,
           width: 0,
         },
@@ -230,10 +251,10 @@ function FilterCreateRoom(props) {
         likes: 0,
         onlyAudioRoom: toggle.audio_only,
         playing: false,
-        recordSession: false,
-        seekPermission: false,
-        subCategoryId: data.subCategoryId,
-        subCategoryName: data.txt,
+        recordSession: recordSession,
+        seekPermission: seekPermission,
+        subCategoryId: roomdata.subCategoryId,
+        subCategoryName: roomdata.subCategoryName,
         unreadMessages: 0,
         user: null,
         userId: id,
@@ -241,12 +262,14 @@ function FilterCreateRoom(props) {
       })
         // .then((res) => console.log(res))
         .then((res) => {
-          navigate("RoomVideoCall", { room: res });
-          console.log(res);
+          console.warn("room createde");
+          console.log("room created and its response", res);
+
+          // navigate("RoomVideoCall", { room: res });
         })
         .catch((err) => console.log(err));
     }
-  }, []);
+  }, [toggle, roomdata]);
 
   React.useEffect(() => {
     return setOptions({
@@ -262,7 +285,7 @@ function FilterCreateRoom(props) {
               style={styles.profile}
             />
           </View>
-          <Text>{editRoom ? "Update Room" : "Create Room"}</Text>
+          <Text>{roomdata.editRoom ? "Update Room" : "Create Room"}</Text>
         </View>
       ),
     });
@@ -279,82 +302,71 @@ function FilterCreateRoom(props) {
     record_session: recordSession ? recordSession : false,
   });
 
-  // console.log("toggeleee", toggle);
-  // console.log("toggleleeeDataaaaa", {
-  // 	allCanAddBanjees: allCanAddBanjees,
-  // 	allCanReact: allCanReact,
-  // 	allCanSpeak: allCanSpeak,
-  // 	allCanSwitchVideo: allCanSwitchVideo,
-  // 	allUseVoiceFilters: allUseVoiceFilters,
-  // 	seekPermission: seekPermission,
-  // 	recordSession: recordSession,
-  // 	onlyAudioRoom: onlyAudioRoom,
-  // });
+  console.log("toggleleeeDataaaaa", {
+    allCanAddBanjees: allCanAddBanjees,
+    allCanReact: allCanReact,
+    allCanSpeak: allCanSpeak,
+    allCanSwitchVideo: allCanSwitchVideo,
+    allUseVoiceFilters: allUseVoiceFilters,
+    seekPermission: seekPermission,
+    recordSession: recordSession,
+    onlyAudioRoom: onlyAudioRoom,
+  });
 
   const content = [
     {
       title: "All can Speak",
-      isEnabled: toggle.speak,
+      isEnabled: allCanSpeak,
       id: 0,
-      setIsEnable: () => setToggle((prev) => ({ ...prev, speak: !prev.speak })),
+      setIsEnable: () => dispatch(setRoomData({ allCanSpeak: !allCanSpeak })),
     },
     {
       title: "seek permission",
       id: 1,
-      isEnabled: toggle.permission,
+      isEnabled: seekPermission,
       setIsEnable: () =>
-        setToggle((prev) => ({ ...prev, permission: !prev.permission })),
+        dispatch(setRoomData({ seekPermission: !seekPermission })),
     },
     {
       title: "All can use Voice Filters",
       id: 2,
-      isEnabled: toggle.voice_filter,
+      isEnabled: allUseVoiceFilters,
       setIsEnable: () =>
-        setToggle((prev) => ({ ...prev, voice_filter: !prev.voice_filter })),
+        dispatch(setRoomData({ allUseVoiceFilters: !allUseVoiceFilters })),
     },
     {
       title: "Feedback",
       id: 3,
-      isEnabled: toggle.feedback,
-      setIsEnable: () =>
-        setToggle((prev) => ({ ...prev, feedback: !prev.feedback })),
+      isEnabled: allCanReact,
+      setIsEnable: () => dispatch(setRoomData({ allCanReact: !allCanReact })),
     },
     {
       title: "All can switch on Video",
-      isEnabled: toggle.switch_video,
+      isEnabled: allCanSwitchVideo,
       id: 4,
       setIsEnable: () =>
-        setToggle((prev) => ({ ...prev, switch_video: !prev.switch_video })),
+        dispatch(setRoomData({ allCanSwitchVideo: !allCanSwitchVideo })),
     },
     {
       title: "All can add Banjee",
       id: 5,
-      isEnabled: toggle.add_banjee,
+      isEnabled: allCanAddBanjees,
       setIsEnable: () =>
-        setToggle((prev) => ({
-          ...prev,
-          add_banjee: !prev.add_banjee,
-        })),
+        dispatch(setRoomData({ allCanAddBanjees: !allCanAddBanjees })),
     },
     {
       title: "Record the Session",
       id: 6,
-      isEnabled: toggle.record_session,
+      isEnabled: recordSession,
       setIsEnable: () =>
-        setToggle((prev) => ({
-          ...prev,
-          record_session: !prev.record_session,
-        })),
+        dispatch(setRoomData({ recordSession: !recordSession })),
     },
     {
       title: "Audio only",
       id: 7,
-      isEnabled: toggle.audio_only,
+      isEnabled: onlyAudioRoom,
       setIsEnable: () =>
-        setToggle((prev) => ({
-          ...prev,
-          audio_only: !prev.audio_only,
-        })),
+        dispatch(setRoomData({ onlyAudioRoom: !onlyAudioRoom })),
     },
   ];
 
@@ -363,8 +375,8 @@ function FilterCreateRoom(props) {
       <View style={styles.container}>
         <View style={{ alignItems: "center" }}>
           <Text style={{ textAlign: "center", marginBottom: 24 }}>
-            You have selected {userCount?.length} members for your {data?.txt}
-            Room
+            You have selected {roomdata.connectedUserIds?.length} members for
+            your {roomdata?.groupName} Room
           </Text>
           <Text>Set appropriate permissions for others</Text>
         </View>
@@ -414,7 +426,7 @@ function FilterCreateRoom(props) {
         <AppButton
           disabled={disable}
           style={{ width: 160 }}
-          title={editRoom ? "Update Room" : "Go Live Now"}
+          title={roomdata.editRoom ? "Update Room" : "Go Live Now"}
           onPress={() => {
             console.log("Called");
             btnClick();

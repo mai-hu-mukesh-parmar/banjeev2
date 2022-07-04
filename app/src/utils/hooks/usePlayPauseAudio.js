@@ -16,12 +16,11 @@ function usePlayPauseAudio(voiceIntroSrc, doNotPlayOnLoad) {
   }, [player]);
 
   const loadSound = React.useCallback(async () => {
-    console.log("loading sound");
     const audio = voiceIntroSrc
       ? cloudinaryFeedUrl(voiceIntroSrc, "audio")
       : null;
 
-    // console.log("voiceintro", voiceIntroSrc, "audio", audio);
+    console.log("voiceintro", voiceIntroSrc, "audio", audio);
 
     await Audio.setAudioModeAsync({
       allowsRecordingIOS: false,
@@ -48,7 +47,6 @@ function usePlayPauseAudio(voiceIntroSrc, doNotPlayOnLoad) {
   const playSoundFunc = React.useCallback(async () => {
     setIcons("pause");
     const result = await player.getStatusAsync();
-    console.log("PLaying sound---------");
     if (result.isLoaded) {
       if (result.isPlaying === false) {
         player.playAsync().then((res) => {
@@ -64,7 +62,6 @@ function usePlayPauseAudio(voiceIntroSrc, doNotPlayOnLoad) {
 
   const playAudio = React.useCallback(async () => {
     const result = await player.getStatusAsync();
-    // console.log("-------> ", result);
     if (!result.isLoaded) {
       await loadSound();
     } else {

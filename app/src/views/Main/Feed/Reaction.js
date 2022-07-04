@@ -188,7 +188,11 @@ function Reaction({
 									>
 										<Image
 											source={ele.emoji}
-											style={{ height: 30, width: 30, borderRadius: 15 }}
+											style={{
+												height: 30,
+												width: 30,
+												borderRadius: 15,
+											}}
 										/>
 									</TouchableWithoutFeedback>
 								))}
@@ -225,8 +229,13 @@ const styles = StyleSheet.create({
 	menu: {
 		borderRadius: 20,
 		flexDirection: "row",
-		width: 200,
+		width: 230,
 		justifyContent: "space-between",
+		alignItems: "center",
+		// borderWidth: 1,
+		height: "100%",
+		paddingTop: 5,
+		paddingLeft: 15,
 	},
 });
 

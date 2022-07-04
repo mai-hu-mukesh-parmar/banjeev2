@@ -15,6 +15,9 @@ import ReactionSheet from "./ReactionSheet";
 import AllComments from "./AllComments";
 import color from "../../../../constants/env/color";
 
+import { Ionicons } from "@expo/vector-icons";
+import { useDispatch } from "react-redux";
+import { showToast } from "../../../../redux/store/action/toastAction";
 function Comment(props) {
 	const { params } = useRoute();
 	const [text, setText] = React.useState("");
@@ -26,6 +29,7 @@ function Comment(props) {
 	const [commentId, setCommentId] = React.useState();
 	const [reply, setReply] = React.useState(false);
 	const [delComment, setDelComment] = React.useState(false);
+	const dispatch = useDispatch();
 
 	useEffect(() => getComments(), [getComments]);
 
@@ -41,7 +45,7 @@ function Comment(props) {
 				})
 				.catch((err) => console.log(err));
 		} else {
-			ToastMessage("type comment");
+			dispatch(showToast({ open: true, description: "Type comment" }));
 		}
 	}, [text, postId]);
 
@@ -163,26 +167,38 @@ function Comment(props) {
 						</View>
 					)}
 
-					<AppInput
-						value={text}
-						multiline={true}
-						iconColor={"grey"}
-						onPressIcon={() =>
-							reply.feedId ? replyToComment() : submitComment()
-						}
-						iconName={"send"}
+					<View
 						style={{
-							// borderRadius: 20,
-							height: height,
-							maxHeight: 100,
-							minHeight: 40,
+							position: "relative",
+
+							justifyContent: "center",
 						}}
-						placeholder={reply.feedId ? "Reply a comment" : "Tap to Comment "}
-						onChangeText={(e) => setText(e)}
-						onContentSizeChange={(e) =>
-							setHeight(e.nativeEvent.contentSize.height)
-						}
-					/>
+					>
+						<AppInput
+							value={text}
+							multiline={true}
+							style={{
+								// borderRadius: 20,
+								height: height,
+								maxHeight: 100,
+								minHeight: 40,
+							}}
+							placeholder={reply.feedId ? "Reply a comment" : "Tap to Comment "}
+							onChangeText={(e) => setText(e)}
+							onContentSizeChange={(e) =>
+								setHeight(e.nativeEvent.contentSize.height)
+							}
+						/>
+						<Ionicons
+							name="ios-send-sharp"
+							size={20}
+							style={{ position: "absolute", right: 10 }}
+							color={"grey"}
+							onPress={() =>
+								reply.feedId ? replyToComment() : submitComment()
+							}
+						/>
+					</View>
 				</View>
 			</LinearGradient>
 

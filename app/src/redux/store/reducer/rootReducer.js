@@ -8,6 +8,8 @@ import roomReducer from "./roomReducer";
 import chatMessageReducer from "./chatMessageReducer";
 import onlineStatusReducer from "./socketReducers/onlineStatusReducer";
 import socketReducer from "./socketReducer";
+import mapReducer from "./MapAndProfileCardReducer/mapReducer";
+import { pendingConnectionReducer } from "./profile/userPendingConnectionReducer";
 
 export const rootReducer = combineReducers({
   profile: userProfileReducer,
@@ -17,6 +19,8 @@ export const rootReducer = combineReducers({
   toast: toastReducer,
   room: roomReducer,
   socket: socketReducer,
-  chatMessage: chatMessageReducer,
+  socketChat: chatMessageReducer,
   onlineStatus: onlineStatusReducer,
+  mapLocation: mapReducer,
+  viewProfile: pendingConnectionReducer,
 });

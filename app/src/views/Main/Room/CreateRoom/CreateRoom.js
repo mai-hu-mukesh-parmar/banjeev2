@@ -5,7 +5,6 @@ import {
   Image,
   TouchableWithoutFeedback,
   ScrollView,
-  TouchableOpacity,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -26,22 +25,23 @@ import { setRoomData } from "../../../../redux/store/action/roomAction";
 
 function CreateRoom(props) {
   const {
-    registry: {
-      currentUser: { id },
-      ...rest
-    },
-    room: {
-      categoryName,
-      categoryId,
-      subCategoryId,
-      groupName,
-      communityType,
-      imageContent,
-      ...room
-    },
-  } = useSelector((state) => state);
+    currentUser: { id },
+    ...rest
+  } = useSelector((state) => state.registry);
 
-  // console.log("room reducer ---> ", room.selectedUser);
+  const {
+    categoryName,
+    categoryId,
+    subCategoryId,
+    groupName,
+    communityType,
+    connectedUserLength,
+    imageContent,
+    connectedUsers,
+    editRoom,
+    ...room
+  } = useSelector((state) => state.room);
+
   const dispatch = useDispatch();
   const { setOptions, navigate } = useNavigation();
   const { params } = useRoute();
@@ -49,8 +49,6 @@ function CreateRoom(props) {
   const [imageError, setImageError] = React.useState();
 
   const [openGroupModal, setOpenGroupModal] = React.useState(false);
-
-  const [editRoom] = React.useState(room?.categoryId ?? false);
 
   const [imageModal, setImageModal] = React.useState(false); //Select Image
 
@@ -63,7 +61,6 @@ function CreateRoom(props) {
   const [activeBtn, setActiveBtn] = React.useState(true);
 
   const [audioUri, setAudioUri] = React.useState(room?.content?.src ?? null);
-
   React.useEffect(() => {
     return setOptions({
       headerTitle: () => (
@@ -82,28 +79,24 @@ function CreateRoom(props) {
       ),
     });
   }, [editRoom]);
-
+  console.warn(room, "connectedUserLength");
   React.useEffect(() => {
     if (params?.audio) {
       setAudioUri(params?.audio);
     }
 
-    if (params?.checkUser) {
-      setUserCount(params?.checkUser);
-    }
     setActiveBtn(
-      groupName?.length > 0 &&
-        // categaoryItemName &&
-        communityType
+      groupName?.length > 0 && communityType && categoryId && subCategoryId
+      //&&  imageContent.name
     );
   }, [
     groupName,
     categoryName,
-    roomUri,
     communityType,
     params,
     subCategoryId,
     categoryId,
+    imageContent,
     audioUri,
   ]);
 
@@ -275,47 +268,63 @@ function CreateRoom(props) {
           Please select either of one to proceed further
         </Text>
 
-        {room.selectedUser.length >= 1 && (
+        {connectedUsers.length > 0 && (
           <Text style={styles.txt2}>
-            {room.selectedUser.length} user selected.
+            {connectedUsers.length} user selected.
           </Text>
         )}
 
-        <AppButton
-          disabled={!activeBtn}
-          style={{ marginTop: 24, marginBottom: 34, width: 230 }}
-          title={
-            editRoom
-              ? room.selectedUser.length > 0
-                ? "Update Room"
-                : "Update Banjee Contacts"
-              : room.selectedUser.length > 0
-              ? "Create Room"
-              : "Select Banjee Contacts"
-          }
-          onPress={() =>
-            room.selectedUser.length > 0
-              ? navigate("FilterCreateRoom", {
-                  update: room ? true : false,
-                  // data: {
-                  // 	editRoom: room,
-                  // 	categoryName,
-                  // 	categoryId,
-                  // 	subCategoryId,
-                  // 	groupName,
-                  // 	roomUri,
-                  // 	communityType,
-                  // 	params,
-                  // 	audioUri,
-                  // 	userCount,
-                  // },
-                })
-              : navigate("SelectBanjee", {
+        {connectedUsers.length > 0 ? (
+          connectedUserLength ? (
+            <AppButton
+              disabled={!activeBtn}
+              style={{ marginTop: 24, marginBottom: 34, width: 230 }}
+              title={
+                !editRoom ? "Select Banjee Contacts" : "Update Banjee Contacts"
+              }
+              onPress={() =>
+                navigate("SelectBanjee", {
                   subCategoryItem: categoryName,
                   previousData: room,
                 })
-          }
-        />
+              }
+            />
+          ) : (
+            <AppButton
+              disabled={!activeBtn}
+              style={{ marginTop: 24, marginBottom: 34, width: 230 }}
+              title={!editRoom ? "Create Room" : "Update Room"}
+              onPress={() =>
+                navigate("FilterCreateRoom", {
+                  data: {
+                    editRoom: room,
+                    categoryName,
+                    categoryId,
+                    subCategoryId,
+                    groupName,
+                    roomUri,
+                    communityType,
+                    params,
+                    audioUri,
+                    userCount,
+                  },
+                })
+              }
+            />
+          )
+        ) : (
+          <AppButton
+            disabled={!activeBtn}
+            style={{ marginTop: 24, marginBottom: 34, width: 230 }}
+            title={"Select Banjee Contacts"}
+            onPress={() =>
+              navigate("SelectBanjee", {
+                subCategoryItem: categoryName,
+                previousData: room,
+              })
+            }
+          />
+        )}
       </View>
     </ScrollView>
   );
@@ -354,13 +363,15 @@ const styles = StyleSheet.create({
   subTitleView: {
     flexDirection: "row",
     position: "absolute",
-    right: 10,
+    right: 0,
     alignItems: "center",
+    width: "30%",
   },
   subTitle: {
     // color: color.gradient,
     fontSize: 12,
     marginRight: 10,
+    flexWrap: "wrap",
   },
   txt1: {
     marginTop: 24,

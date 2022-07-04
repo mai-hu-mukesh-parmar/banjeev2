@@ -37,7 +37,6 @@ function Login({ route, navigation }) {
 
   const buttonPress = ({ password }, resetForm) => {
     if (password) {
-      // console.log("password-------------", password);
       setPassMsg(false);
 
       axios
@@ -52,7 +51,6 @@ function Login({ route, navigation }) {
           }
         )
         .then((res) => {
-          // console.log("data", res.data);
           setVisible(true);
           resetForm();
           setLocalStorage("token", res.data.access_token);

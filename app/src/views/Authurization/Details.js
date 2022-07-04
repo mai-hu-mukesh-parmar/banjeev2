@@ -112,7 +112,6 @@ export default function Details({ navigation }) {
   const getUserProfileData = (id, data, header) => {
     getUserProfile(id, data, header)
       .then(async (res) => {
-        // console.warn(JSON.stringify(res));
         dispatch(saveUserProfile(res));
         await getUser(res.systemUserId, data);
       })
@@ -142,7 +141,6 @@ export default function Details({ navigation }) {
             "PUT"
           );
         } else {
-          // console.warn("Profile", JSON.stringify(user));
           userHandler(
             {
               email: data.email,
@@ -167,7 +165,6 @@ export default function Details({ navigation }) {
   const userHandler = (data, method) => {
     updateUser(data, method)
       .then((res) => {
-        // console.log("----------", JSON.stringify(res));
         dispatch(saveUserData(res));
         setVisible(false);
 
@@ -194,7 +191,6 @@ export default function Details({ navigation }) {
           }}
           enableReinitialize={true}
           onSubmit={(values) => {
-            // console.log(values);
             updateMe(values);
           }}
         >
