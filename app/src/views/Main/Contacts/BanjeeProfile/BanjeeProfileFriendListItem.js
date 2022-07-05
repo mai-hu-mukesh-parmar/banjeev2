@@ -17,28 +17,23 @@ import { showToast } from "../../../../redux/store/action/toastAction";
 import { useDispatch, useSelector } from "react-redux";
 import usePlayPauseAudio from "../../../../utils/hooks/usePlayPauseAudio";
 import { listProfileUrl } from "../../../../utils/util-func/constantExport";
+import {
+	getProfile,
+	pendingConnection,
+	removeProfileData,
+} from "../../../../redux/store/action/Profile/userPendingConnection";
 
-function BanjeeProfileFriendListItem({ item, user }) {
+function BanjeeProfileFriendListItem({ item }) {
 	const { navigate } = useNavigation();
 	const iconSize = 18;
 	const { icons, playAudio } = usePlayPauseAudio(userAudio);
 	const [userAudio, setUserAudio] = React.useState();
-	const [imageError, setImageError] = React.useState();
 
-	// const {
-	//   pendingFriendReq,
-	//   userData: { systemUserId, currentUser },
-	// } = React.useContext(MainContext);
-
-	const { systemUserId, currentUser, userData } = useSelector(
+	const { systemUserId, currentUser, gender } = useSelector(
 		(state) => state.registry
 	);
 
-	const { pendingFriendReq } = useSelector((state) => state.viewProfile);
-	console.warn(
-		pendingFriendReq,
-		"pendingFriendReqpendingFriendReqpendingFriendReqpendingFriendReq"
-	);
+	const { pendingId } = useSelector((state) => state.viewProfile);
 	const dispatch = useDispatch();
 
 	const mutualFriends = [
@@ -62,7 +57,7 @@ function BanjeeProfileFriendListItem({ item, user }) {
 			blocked: "false",
 			circleId: null,
 			connectedUserId: null,
-			fromUserId: userData.systemUserId,
+			fromUserId: systemUserId,
 			id: null,
 			keyword: null,
 			page: 0,
@@ -162,7 +157,7 @@ function BanjeeProfileFriendListItem({ item, user }) {
 				id: systemUserId,
 				firstName: currentUser.userName,
 				avtarUrl: currentUser.avtarUrl,
-				gender: userData.gender,
+				gender: gender,
 			},
 			fromUserId: systemUserId,
 			message: `from ${currentUser.userName} to ${toUser.username}`,
@@ -207,7 +202,6 @@ function BanjeeProfileFriendListItem({ item, user }) {
 				);
 
 			case "MUTUAL":
-				console.warn("mutual");
 				return (
 					<View style={styles.iconView}>
 						{mutualFriends.map((ele, i) => (
@@ -224,21 +218,24 @@ function BanjeeProfileFriendListItem({ item, user }) {
 				);
 
 			case "UNKNOWN":
-				console.warn("unknown");
+				let { systemUserId } = item;
 
-				let x = pendingFriendReq.filter((ele) => ele === item.userObject.id);
+				// console.warn(systemUserId);
+				// console.warn(pendingId);
+				console.warn(pendingId?.filter((ele) => ele === systemUserId));
+
 				return (
 					<View style={styles.iconView}>
 						<AppFabButton
 							onPress={() => {
-								setUserAudio(user.voiceIntroSrc);
+								setUserAudio(item.voiceIntroSrc);
 								playAudio();
 							}}
 							size={iconSize}
 							icon={
 								<Image
 									source={
-										icons === "pause" && user.voiceIntroSrc === userAudio
+										icons === "pause" && item.voiceIntroSrc === userAudio
 											? require("../../../../../assets/EditDrawerIcon/ic_pause.png")
 											: require("../../../../../assets/EditDrawerIcon/ic_play_round.png")
 									}
@@ -247,7 +244,8 @@ function BanjeeProfileFriendListItem({ item, user }) {
 							}
 						/>
 
-						{x.length > 0 ? (
+						{pendingId?.filter((ele) => ele === item.systemUserId).length >
+						0 ? (
 							<AppFabButton
 								onPress={() => {}}
 								size={iconSize}
@@ -287,12 +285,16 @@ function BanjeeProfileFriendListItem({ item, user }) {
 				<TouchableWithoutFeedback
 					onPress={() => {
 						if (item.type === "YOU") {
+							if (pendingId?.filter((ele) => ele === systemUserId).length > 0) {
+								dispatch(pendingConnection({ pendingReq: true }));
+							}
+
 							return navigate("Profile");
 						} else {
 							{
-								navigate("BanjeeProfile", {
-									item: { id: item.systemUserId },
-								});
+								dispatch(removeProfileData({}));
+								dispatch(getProfile({ profileId: item.systemUserId }));
+								navigate("BanjeeProfile");
 							}
 						}
 					}}

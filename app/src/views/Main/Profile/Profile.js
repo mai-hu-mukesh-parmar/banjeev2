@@ -25,7 +25,10 @@ import {
 } from "../../../utils/util-func/constantExport";
 import ConfirmModal from "../../Others/ConfirmModal";
 import SettingBottomSheet from "./SettingBottomSheet";
-
+import FeedProfile from "../../Main/Feed/FeedSkeleton/FeedProfile";
+import FeedContent from "../../Main/Feed/FeedSkeleton/FeedContent";
+import FeedFooter from "../../Main/Feed/FeedSkeleton/FeedFooter";
+import FeedHeader from "../../Main/Feed/FeedSkeleton/FeedHeader";
 function Profile(props) {
 	const { avtarUrl, systemUserId, gender, name } = useSelector(
 		(state) => state.registry
@@ -142,7 +145,7 @@ function Profile(props) {
 			<View style={styles.mainView} key={item.id}>
 				<View style={styles.grid}>
 					<FeedProfile item={item} />
-					<View style={styles.header}>
+					<View style={styles.profileHeader}>
 						<FeedHeader
 							item={item}
 							setDeletePostModal={setDeletePostModal}
@@ -352,6 +355,28 @@ const styles = StyleSheet.create({
 		height: "100%",
 		fontSize: 14,
 		paddingTop: 15,
+	},
+	grid: {
+		paddingLeft: "5%",
+		width: "100%",
+		flexDirection: "row",
+		height: 56,
+		alignItems: "center",
+	},
+	profileHeader: {
+		flexDirection: "row",
+		height: "100%",
+		width: "87%",
+		borderBottomColor: color.greyText,
+		justifyContent: "space-between",
+		marginLeft: 20,
+	},
+	mainView: {
+		width: "100%",
+		alignSelf: "flex-end",
+		marginBottom: 17,
+		backgroundColor: "white",
+		paddingBottom: 15,
 	},
 });
 
