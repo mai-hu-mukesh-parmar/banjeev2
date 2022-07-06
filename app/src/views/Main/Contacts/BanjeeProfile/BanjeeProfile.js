@@ -2,12 +2,13 @@ import React from "react";
 import {
 	View,
 	StyleSheet,
-	Image,
 	ScrollView,
 	ImageBackground,
 	Dimensions,
 	TouchableWithoutFeedback,
 	DevSettings,
+	ActivityIndicator,
+	Image,
 	SafeAreaView,
 } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
@@ -37,20 +38,17 @@ import {
 } from "../../../../utils/util-func/constantExport";
 import BanjeeProfileFriendList from "./BanjeeProfileFriendList";
 import { pendingConnection } from "../../../../redux/store/action/Profile/userPendingConnection";
+import { otherBanjee_service } from "../../../../helper/services/OtherBanjee";
+import ProfilePost from "./ProfilePost";
 
 function BanjeeProfile() {
-	const { params } = useRoute();
-
-	// const {
-	//   userData,
-	//   setPendingFrienReq,
-	//   userData: { systemUserId, currentUser, voiceIntroSrc },
-	// } = React.useContext(MainContext);
-
 	const { systemUserId, currentUser, voiceIntroSrc, ...userData } = useSelector(
 		(state) => state.registry
 	);
-
+	const { mutualFriend, loading, pendingId, pendingReq } = useSelector(
+		(state) => state.viewProfile
+	);
+	console.warn(pendingReq, "........................	");
 	const [banjee, setBanjee] = React.useState(true);
 	const [room, setRoom] = React.useState(false);
 	const [post, setPost] = React.useState(false);
@@ -58,7 +56,6 @@ function BanjeeProfile() {
 	const [ourProfile, setOurProfile] = React.useState(null);
 	const [load, setLoad] = React.useState(true);
 	const [imageError, setImageError] = React.useState("");
-	const [userItem, setUserItem] = React.useState();
 	const [unfriendModal, setUnfriendModal] = React.useState(false);
 	const [blockModal, setBlockModal] = React.useState(false);
 	const [acceptFrndReq, setAcceptFrndReq] = React.useState(false);
@@ -97,44 +94,35 @@ function BanjeeProfile() {
 			},
 		},
 	];
-	// console.warn(
-	// 	pendingFriendReq,
-	// 	"pendingFriendReqpendingFriendReqpendingFriendReq"
-	// );
 	const { navigate, goBack } = useNavigation();
 
 	const { profileId } = useSelector((state) => state.viewProfile);
-	React.useEffect(() => {
+
+	const getRegistryData = React.useCallback(() => {
 		getUserRegistryData(profileId)
 			.then((res) => {
 				setLoad(false);
 				setOurProfile(res);
+				console.warn(res);
+				// console.log("res", JSON.stringify(res));
 			})
 			.catch((err) => console.log(err));
 	}, [profileId]);
 
+	React.useEffect(() => {
+		getRegistryData();
+		return () => {
+			setLoad(false);
+			setOurProfile();
+		};
+	}, [getRegistryData]);
+
 	const { icons, playAudio } = usePlayPauseAudio(ourProfile?.voiceIntroSrc);
 
-	React.useEffect(() => {
-		if (params?.notifyFriendRequest) {
-			ToastMessage("Friend Request Sent Successfully");
-		}
-		// if (params?.item) {
-		// 	setUserItem(params?.item);
-		// }
-	}, [params]);
-
-	React.useEffect(() => {
-		return () => {
-			setReportModal(false);
-			setOurProfile();
-			setLoad(true);
-		};
-	}, []);
-
 	function pendingConnections() {
-		let x = ourProfile?.pendingConnections.filter((ele) => data?.includes(ele));
-		setPendingFrienReq(x);
+		// let x = ourProfile?.pendingConnections.filter((ele) => data?.includes(ele));
+		// setPendingFrienReq(x);
+		console.warn(pendingConnections);
 	}
 	const data = [
 		{
@@ -313,30 +301,33 @@ function BanjeeProfile() {
 				console.warn(err);
 			});
 	};
+	const unMutual = [
+		{
+			label: "Intro",
+			onPress: () => playAudio(),
+		},
+		{
+			label:
+				pendingId?.filter((ele) => ele === systemUserId).length > 0
+					? "Request Sent"
+					: "Connect",
+			img: require("../../../../../assets/EditDrawerIcon/ic_add_contact.png"),
+			tintColor:
+				pendingId?.filter((ele) => ele === systemUserId).length > 0
+					? "grey"
+					: "white",
+			borderColor:
+				pendingId?.filter((ele) => ele === systemUserId).length > 0
+					? "grey"
+					: "white",
+			onPress:
+				pendingId?.filter((ele) => ele === systemUserId).length > 0
+					? console.log("hiii")
+					: saveIntro,
+		},
+	];
 
-	let mutual = userData.connections.filter((ele) => ele === profileId);
-
-	// const unMutual = [
-	// 	{
-	// 		label: "Intro",
-	// 		onPress: () => playAudio(),
-	// 	},
-	// 	{
-	// 		label: pendingRequest.length > 0 ? "Request Sent" : "Connect",
-	// 		img: require("../../../../../assets/EditDrawerIcon/ic_add_contact.png"),
-	// 		tintColor: pendingRequest.length > 0 ? "grey" : "white",
-	// 		borderColor: pendingRequest.length > 0 ? "grey" : "white",
-	// 		onPress: pendingRequest.length > 0 ? console.log("hiii") : saveIntro,
-	// 	},
-	// ];
-
-	const userType = data;
-
-	// const userType = params?.item?.showReqestedFriend
-	// ? frndReqData
-	// : mutual.length > 0
-	// ? data
-	// : unMutual;
+	const userType = mutualFriend ? data : unMutual;
 
 	const blockUser = () => {
 		BlockUser(ourProfile?.id)
@@ -362,7 +353,22 @@ function BanjeeProfile() {
 
 	return (
 		<React.Fragment>
-			{load && <AppLoading visible={load} />}
+			{/* {loading && <AppLoading visible={loading} />} */}
+
+			{loading && (
+				<View
+					style={{
+						// zIndex: 2,
+						height: "100%",
+						width: "100%",
+						position: "absolute",
+						justifyContent: "center",
+						backgroundColor: "white",
+					}}
+				>
+					<AppLoading color={color.primary} />
+				</View>
+			)}
 
 			{reportModal && (
 				<ReportUser
@@ -415,7 +421,7 @@ function BanjeeProfile() {
 							<AppMenu
 								menuColor={color.white}
 								menuContent={
-									mutual.length > 0
+									mutualFriend
 										? [
 												{
 													icon: "account-minus",
@@ -544,7 +550,8 @@ function BanjeeProfile() {
 						)}
 
 						{room && <Room otherUser={profileId} />}
-						{post && <FeedScreen otherPostId={profileId} />}
+						{post && <ProfilePost />}
+						{/* {post && <FeedScreen otherPostId={profileId} />} */}
 					</View>
 				</ScrollView>
 			</SafeAreaView>

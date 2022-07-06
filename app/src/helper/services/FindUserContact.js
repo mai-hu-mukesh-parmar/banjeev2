@@ -6,5 +6,5 @@ export const findUserContact = (data) => {
 	let actionCode = "ACTION_CONTACTS_REGISTRY";
 	let payload = data;
 	let method = "POST";
-	return executePost(url, actionCode, payload, method, false);
+	return executePost(url, actionCode, payload, method, {});
 };

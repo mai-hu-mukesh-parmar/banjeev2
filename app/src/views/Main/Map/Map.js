@@ -1,5 +1,9 @@
 import React, { useCallback, useState } from "react";
-import MapView, { PROVIDER_IOS, Marker } from "react-native-maps";
+import MapView, {
+	PROVIDER_IOS,
+	Marker,
+	PROVIDER_GOOGLE,
+} from "react-native-maps";
 import { View, Image, StyleSheet } from "react-native";
 import * as Location from "expo-location";
 import { updateUser } from "../../../helper/services/SettingService";
@@ -25,12 +29,12 @@ import { useUserUpdate } from "../../../utils/hooks/useUserUpdate";
 import SearchMapLocation from "./MapComponents/SearchMapLocation";
 import NoLoactionFound from "./MapComponents/NoLoactionFound";
 
-// const initialRegion = {
-// 	latitude: 23.049712651170047,
-// 	longitude: 72.50148585561955,
-// 	latitudeDelta: 0.0922,
-// 	longitudeDelta: 0.0421,
-// };
+const initialRegion = {
+	latitude: 23.049712651170047,
+	longitude: 72.50148585561955,
+	latitudeDelta: 0.0922,
+	longitudeDelta: 0.0421,
+};
 
 export default function Map() {
 	const [token, setToken] = React.useState();
@@ -207,17 +211,16 @@ export default function Map() {
 							/>
 						}
 					/>
+					{/* searchData && searchData.open ? { ...searchData.loc } : { ...loc } */}
 					<MapView
 						// liteMode={true}
 						ref={lref}
 						showsCompass={false}
 						maxZoomLevel={20}
 						// maxZoomLevel={13}
-						region={
-							searchData && searchData.open ? { ...searchData.loc } : { ...loc }
-						}
+						region={initialRegion}
 						userLocationPriority="low"
-						provider={PROVIDER_IOS}
+						provider={PROVIDER_GOOGLE}
 						style={styles.map}
 					>
 						<Marker ref={markerRef} coordinate={{ ...loc }}>

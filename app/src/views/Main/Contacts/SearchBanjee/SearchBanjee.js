@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import {
 	View,
 	StyleSheet,
-	Dimensions,
 	TouchableWithoutFeedback,
 	SafeAreaView,
 } from "react-native";
@@ -107,7 +106,6 @@ function SearchBanjee(props) {
 	};
 
 	// console.warn("searchBanjee.length", searchBanjee?.length);
-	console.warn(searchBanjee?.length > 0 && banjee);
 
 	return (
 		<SafeAreaView>
@@ -163,8 +161,6 @@ function SearchBanjee(props) {
 						<AppInput
 							height={10}
 							value={keyword}
-							style={{}}
-							autoComplete={true}
 							onChangeText={handleChange}
 							placeholder={"Search Banjee"}
 						/>

@@ -6,12 +6,15 @@ import {
 	Image,
 } from "react-native";
 import { MarkAsReadNotification } from "../../../../../helper/services/BanjeeNotification";
-import { profileUrl } from "../../../../../utils/util-func/constantExport";
+import {
+	listProfileUrl,
+	profileUrl,
+} from "../../../../../utils/util-func/constantExport";
 
 import { useNavigation } from "@react-navigation/native";
 import color from "../../../../../constants/env/color";
 import { emojies } from "../../../../../utils/util-func/emojies";
-import { Text } from "native-base";
+import { Avatar, Text } from "native-base";
 
 function CommentReaction({ item }) {
 	const { navigate } = useNavigation();
@@ -42,10 +45,17 @@ function CommentReaction({ item }) {
 					onPress={() => navigate("BanjeeProfile", { item: { id: userId } })}
 				>
 					<View style={styles.subContainer}>
-						<Image
+						{/* <Image
 							source={{ uri: profileUrl(avtarUrl) }}
 							style={{ height: 40, width: 40, borderRadius: 20 }}
-						/>
+						/> */}
+						<Avatar
+							bgColor={color.primary}
+							style={{ height: 40, width: 40, borderRadius: 20 }}
+							source={{ uri: listProfileUrl(userId) }}
+						>
+							{username?.charAt(0).toUpperCase() || ""}
+						</Avatar>
 						{emojies(reactionType, false, 18)}
 					</View>
 				</TouchableWithoutFeedback>
