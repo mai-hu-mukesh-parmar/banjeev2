@@ -10,25 +10,50 @@ import * as ImagePicker from "expo-image-picker";
 import { Entypo } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import * as DocumentPicker from "expo-document-picker";
+import axios from "axios";
 import { Video, Audio } from "expo-av";
 import { AntDesign } from "@expo/vector-icons";
+import { Radio, Text } from "native-base";
+import AppFabButton from "../../../../constants/components/ui-component/AppFabButton";
+import AppInput from "../../../../constants/components/ui-component/AppInput";
+import AppBorderButton from "../../../../constants/components/ui-component/AppBorderButton";
+import AppButton from "../../../../constants/components/ui-component/AppButton";
+import AppLoading from "../../../../constants/components/ui-component/AppLoading";
 import color from "../../../../constants/env/color";
+import { useDispatch, useSelector } from "react-redux";
+import {
+	returnSource,
+	uploadToCloudinaryFunc,
+} from "../../../../utils/util-func/uploadToImage";
+import {
+	createFeedData,
+	removeFeedData,
+} from "../../../../redux/store/action/createFeedAction";
+import { postFeed } from "../../../../helper/services/PostFeed";
+import { showToast } from "../../../../redux/store/action/toastAction";
+
 function CreateFeed(props) {
 	const { navigate } = useNavigation();
 	const { params } = useRoute();
 
-	const [text, setText] = useState("");
-	const [play, setPlay] = useState("");
-	const [location, setLocation] = useState();
-	const [disable, setDisable] = useState(false);
+	const dispatch = useDispatch();
+	// const [text, setText] = useState("");
+	// const [connection, setConnection] = useState("PUBLIC");
+	const { text, connection } = useSelector((state) => state.createdFeedData);
 
-	const [connection, setConnection] = useState("PUBLIC");
+	const [play, setPlay] = useState("");
+	const [disable, setDisable] = useState(false);
 
 	const [uploadContentData, setUploadContentData] = useState([]);
 
 	const [apploading, setApploading] = useState(false);
 
-	const { userData } = useContext(MainContext);
+	const {
+		id,
+		origin: { x, y },
+	} = useSelector((state) => state.registry);
+
+	console.warn(text, connection, "testing");
 
 	const pickImage = async () => {
 		let result = await ImagePicker.launchImageLibraryAsync({
@@ -49,11 +74,8 @@ function CreateFeed(props) {
 		}
 	};
 
-	console.log("uploadContentData", uploadContentData);
-
 	const cameraPickImg = async () => {
 		let result = await ImagePicker.launchCameraAsync({ base64: false });
-		console.log("capture image...	", result);
 		if (!result.cancelled) {
 			let data = await uploadToCloudinary(
 				returnSource(result),
@@ -91,8 +113,6 @@ function CreateFeed(props) {
 			type: media.mimeType,
 			uri: media.uri,
 		};
-		console.log("media media", media);
-		console.log("media source", source);
 		const data = await uploadToCloudinary(source, "auto", "feed_audio");
 		if (data) {
 			// console.log(data);
@@ -100,7 +120,7 @@ function CreateFeed(props) {
 		}
 	};
 
-	const x = [
+	const xdata = [
 		{
 			title: "Upload image from gallery",
 			icon: require("../../../../../assets/EditDrawerIcon/icons_gallery.png"),
@@ -129,9 +149,10 @@ function CreateFeed(props) {
 	];
 
 	const reset_Post = () => {
-		setText("");
-		setConnection(undefined);
-		setLocation();
+		dispatch(removeFeedData({}));
+		// setText("");
+		// setConnection(undefined);
+		// setLocation();
 		setUploadContentData([]);
 	};
 
@@ -165,10 +186,11 @@ function CreateFeed(props) {
 				original_filename,
 				version,
 			} = result;
+
 			return {
 				aspectRatio: "",
 				base64Content: null,
-				caption: userData?.id,
+				caption: id,
 				description: url,
 				height: 0,
 				length: 0,
@@ -191,23 +213,6 @@ function CreateFeed(props) {
 				JSON.parse(JSON.stringify(err))
 			);
 		}
-		// try {
-		// 	let d = await axios.post(
-		// 		"https://api.cloudinary.com/v1_1/banjee/image/upload",
-		// 		uploadData,
-		// 		{
-		// 			headers: {
-		// 				"Content-Type": "multipart/form-data; ",
-		// 			},
-		// 		}
-		// 	);
-		// 	console.log("-------- Cloud Result ------------->>>>", d);
-		// } catch (err) {
-		// 	console.log(
-		// 		"--------- Catch Error --------->>",
-		// 		JSON.parse(JSON.stringify(err))
-		// 	);
-		// }
 	};
 
 	const submitPost = () => {
@@ -215,8 +220,8 @@ function CreateFeed(props) {
 		if (uploadContentData.length <= 5) {
 			let payload = {
 				geoLocation: {
-					x: userData?.origin?.x,
-					y: userData?.origin?.y,
+					x: x,
+					y: y,
 				},
 				mediaContent: uploadContentData,
 				text: text ? text : null,
@@ -228,31 +233,23 @@ function CreateFeed(props) {
 						.then((res) => {
 							setDisable(false);
 							console.log(JSON.stringify(res, null, 2));
-							navigate("HomeNavigation");
+							navigate("Feed");
 						})
 						.catch((err) => {
 							console.warn(err);
 						}))
-				: ToastMessage("add some comment or select any media");
+				: dispatch(
+						showToast({
+							open: true,
+							description: "add some comment or select any media",
+						})
+				  );
 		} else {
-			ToastMessage("You can upload maximum 5 post ");
+			dispatch(
+				showToast({ open: true, description: "You can upload maximum 5 post " })
+			);
 		}
 	};
-
-	// const handlePlayBack = useCallback(async () => {
-	// 	const sound = new Audio.Sound();
-	// 	try {
-	// 		await sound.loadAsync({uri: play});
-	// 		await sound.playAsync();
-	// 		// Your sound is playing!
-
-	// 		// Don't forget to unload the sound from memory
-	// 		// when you are done using the Sound object
-	// 		await sound.unloadAsync();
-	// 	} catch (error) {
-	// 		// An error occurred!
-	// 	}
-	// }, []);
 
 	const renderMedia = (ele) => {
 		switch (ele.resource_type) {
@@ -302,60 +299,29 @@ function CreateFeed(props) {
 	return (
 		<View style={styles.container}>
 			<View style={{ width: "95%", alignSelf: "center" }}>
-				<AppTextInput
-					value={text}
-					onChangeText={(e) => setText(e)}
-					style={styles.tb}
-					placeholder={"Write your feedback title...."}
-					multiline={true}
-					textAlignVertical={"top"}
-				/>
-
+				<View style={{ marginTop: 20 }}>
+					<AppInput
+						height={156}
+						value={text}
+						onChangeText={(e) => dispatch(createFeedData({ text: e }))}
+						style={styles.tb}
+						placeholder={"Write your feedback title...."}
+						multiline={true}
+						textAlignVertical={"top"}
+					/>
+				</View>
 				<View
 					style={{
-						marginTop: 152,
+						marginTop: 20,
 						borderTopColor: color.line,
 						borderTopWidth: 1,
 					}}
 				>
-					{/* <TouchableWithoutFeedback onPress={pickImage}>
-						<View
-							style={{
-								height: 48,
-								flexDirection: "row",
-								width: "100%",
-								borderBottomColor: color.line,
-								borderBottomWidth: 1,
-								alignItems: "center",
-							}}
-						>
-							<Image
-								source={require("../../../../assets/EditDrawerIcon/icons_gallery.png")}
-								style={{ height: 24, width: 24, marginRight: 16 }}
-							/>
-							<AppText style={{ color: color.primary }} onPress={pickImage}>
-								{"Image"}
-							</AppText>
-						</View>
-					</TouchableWithoutFeedback> */}
-
-					{x?.map((item, i) => (
+					{xdata?.map((item, i) => (
 						<TouchableWithoutFeedback key={i} onPress={() => item.onPress()}>
-							<View
-								style={{
-									height: 48,
-									flexDirection: "row",
-									width: "100%",
-									borderBottomColor: color.line,
-									borderBottomWidth: 1,
-									alignItems: "center",
-								}}
-							>
-								<Image
-									source={item.icon}
-									style={{ height: 24, width: 24, marginRight: 16 }}
-								/>
-								<AppText
+							<View style={styles.postView}>
+								<Image source={item.icon} style={styles.smallImg} />
+								<Text
 									style={{ color: color.primary }}
 									onPress={() => item.onPress()}
 								>
@@ -364,7 +330,7 @@ function CreateFeed(props) {
 											? params.locData?.formatted_address
 											: item.title
 										: item.title}
-								</AppText>
+								</Text>
 							</View>
 						</TouchableWithoutFeedback>
 					))}
@@ -379,25 +345,17 @@ function CreateFeed(props) {
 						height: 48,
 					}}
 				>
-					<AppRadioButtons
-						style={{
-							alignItems: "center",
-							flexDirection: "row",
-							width: "45%",
-							justifyContent: "space-between",
-							paddingTop: 14,
+					<Radio.Group
+						defaultValue={connection}
+						onChange={(value) => {
+							dispatch(createFeedData({ connection: value }));
 						}}
-						PROP={[
-							// { key: "CUSTOM", text: "CUSTOM" },
-							{ key: "CONNECTIONS", text: "Private" },
-							// { key: "EXTENDED_CONNECTIONS", text: "EXTENDED CONNECTIONS" },
-							{ key: "PUBLIC", text: "Public" },
-						]}
-						value={connection}
-						onChange={(e) => {
-							setConnection(e.key);
-						}}
-					/>
+					>
+						<View style={styles.radio}>
+							<Radio value="CONNECTIONS">CONNECTIONS</Radio>
+							<Radio value="PUBLIC">PUBLIC</Radio>
+						</View>
+					</Radio.Group>
 				</View>
 
 				{/* ```````````````````````````` IMAGES */}
@@ -473,8 +431,6 @@ function CreateFeed(props) {
 const styles = StyleSheet.create({
 	container: { flex: 1 },
 	tb: {
-		height: 156,
-		marginTop: 126,
 		padding: 15,
 		lineHeight: 21,
 		borderRadius: 6,
@@ -502,6 +458,20 @@ const styles = StyleSheet.create({
 		width: 80,
 		borderRadius: 8,
 	},
+	radio: {
+		flexDirection: "row",
+		width: "60%",
+		justifyContent: "space-between",
+	},
+	postView: {
+		height: 48,
+		flexDirection: "row",
+		width: "100%",
+		borderBottomColor: color.line,
+		borderBottomWidth: 1,
+		alignItems: "center",
+	},
+	smallImg: { height: 24, width: 24, marginRight: 16 },
 });
 
 export default CreateFeed;

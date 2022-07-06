@@ -9,7 +9,7 @@ import { useNavigation } from "@react-navigation/native";
 import { MarkAsReadNotification } from "../../../../../helper/services/BanjeeNotification";
 import { listProfileUrl } from "../../../../../utils/util-func/constantExport";
 import color from "../../../../../constants/env/color";
-import { Text } from "native-base";
+import { Avatar, Text } from "native-base";
 
 function AcceptRequest({ item }) {
 	const {
@@ -17,10 +17,7 @@ function AcceptRequest({ item }) {
 			toUser: { avtarUrl, firstName, id: userId },
 		},
 	} = item;
-
 	const { navigate } = useNavigation();
-	const [imageError, setImageError] = React.useState();
-
 	return (
 		<TouchableWithoutFeedback
 			onPress={() => {
@@ -37,7 +34,7 @@ function AcceptRequest({ item }) {
 				<TouchableWithoutFeedback
 					onPress={() => navigate("BanjeeProfile", { item: { id: userId } })}
 				>
-					<Image
+					{/* <Image
 						// onError={({ nativeEvent: { error } }) => setImageError(error)}
 						source={
 							// imageError
@@ -46,7 +43,14 @@ function AcceptRequest({ item }) {
 							{ uri: listProfileUrl(userId) }
 						}
 						style={{ height: 40, width: 40, borderRadius: 20 }}
-					/>
+					/> */}
+					<Avatar
+						bgColor={color.primary}
+						style={{ height: 40, width: 40, borderRadius: 20 }}
+						source={{ uri: listProfileUrl(userId) }}
+					>
+						{firstName?.charAt(0).toUpperCase() || ""}
+					</Avatar>
 				</TouchableWithoutFeedback>
 
 				<Text
