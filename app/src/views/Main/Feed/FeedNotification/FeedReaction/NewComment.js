@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-import { Text } from "native-base";
+import { Avatar, Text } from "native-base";
 import React from "react";
 import {
 	View,
@@ -9,7 +9,10 @@ import {
 } from "react-native";
 import color from "../../../../../constants/env/color";
 import { MarkAsReadNotification } from "../../../../../helper/services/BanjeeNotification";
-import { profileUrl } from "../../../../../utils/util-func/constantExport";
+import {
+	listProfileUrl,
+	profileUrl,
+} from "../../../../../utils/util-func/constantExport";
 
 function NewComment({ item }) {
 	const {
@@ -41,10 +44,17 @@ function NewComment({ item }) {
 				<TouchableWithoutFeedback
 					onPress={() => navigate("BanjeeProfile", { item: { id: userId } })}
 				>
-					<Image
+					{/* <Image
 						source={{ uri: profileUrl(avtarUrl) }}
 						style={{ height: 40, width: 40, borderRadius: 20 }}
-					/>
+					/> */}
+					<Avatar
+						bgColor={color.primary}
+						style={{ height: 40, width: 40, borderRadius: 20 }}
+						source={{ uri: listProfileUrl(userId) }}
+					>
+						{username?.charAt(0).toUpperCase() || ""}
+					</Avatar>
 				</TouchableWithoutFeedback>
 				<View style={{ flexDirection: "column", marginLeft: 20 }}>
 					<Text>
