@@ -194,6 +194,7 @@ function SignIn({ navigation }) {
 							<Text
 								style={{
 									marginTop: 5,
+									zIndex: -1,
 									fontSize: 14,
 									// fontStyle: "italic",
 									textAlign: "center",
@@ -234,7 +235,7 @@ function SignIn({ navigation }) {
 								.
 							</Text>
 
-							<View style={{ zIndex: 0 }}>
+							<View style={{ zIndex: -1 }}>
 								<AppButton
 									style={{ marginTop: 20, width: "100%", zIndex: 0 }}
 									onPress={submitForm}
