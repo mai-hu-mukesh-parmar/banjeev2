@@ -45,11 +45,13 @@ function ConfirmModal({ setModalVisible, btnLabel, message, onPress, title }) {
 						/>
 
 						<Text
+							fontSize={24}
+							mt={5}
+							mb={19}
 							style={{
 								textAlign: "center",
-								marginTop: 5,
-								fontSize: 24,
-								marginBottom: 19,
+								// marginTop: 5,
+								// marginBottom: 19,
 							}}
 						>
 							{message}

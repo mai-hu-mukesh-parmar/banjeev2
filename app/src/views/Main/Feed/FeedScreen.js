@@ -178,11 +178,6 @@ export default function FeedScreen() {
 		dispatch(saveFeedAction({ viewableItems: data.viewableItems }));
 	const onRefresh = () => dispatch(saveFeedAction({ page: 0 }));
 	const onEndReached = () => dispatch(saveFeedAction({ page: page + 1 }));
-	const ListEmptyComponent = (
-		<Text style={{ alignSelf: "center", marginTop: 120 }}>
-			You have not created any post yet...!
-		</Text>
-	);
 
 	return (
 		<Fragment>
@@ -206,7 +201,6 @@ export default function FeedScreen() {
 					onRefresh={onRefresh}
 					onScroll={(e) => scrollY.setValue(e.nativeEvent.contentOffset.y)}
 					onEndReachedThreshold={0.2}
-					ListEmptyComponent={ListEmptyComponent}
 					onEndReached={onEndReached}
 				/>
 			</View>

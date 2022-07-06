@@ -18,8 +18,9 @@ import {
 import { Text } from "native-base";
 import FeedReactionNotification from "./FeedReaction/FeedReactionNotification";
 import color from "../../../../constants/env/color";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import AppLoading from "../../../../constants/components/ui-component/AppLoading";
+import { getProfile } from "../../../../redux/store/action/Profile/userPendingConnection";
 
 function FeedNotification(props) {
 	const { navigate } = useNavigation();
@@ -29,6 +30,7 @@ function FeedNotification(props) {
 	const [page, setPage] = React.useState(0);
 	const [imageError, setImageError] = React.useState();
 	const { systemUserId } = useSelector((state) => state.registry);
+	const dispatch = useDispatch();
 
 	const apiCall = React.useCallback(
 		() =>
@@ -106,14 +108,22 @@ function FeedNotification(props) {
 	}
 
 	function renderItem(item, i) {
+		console.warn(JSON.stringify(item, null, 2));
+
 		return (
 			<TouchableWithoutFeedback
 				key={i}
-				onPress={() =>
-					navigate("BanjeeProfile", {
-						item: { showReqestedFriend: true, id: item.fromUserId },
-					})
-				}
+				onPress={() => {
+					dispatch(
+						getProfile({
+							showReqestedFriend: true,
+							profileId: item.fromUserId,
+							connectionId: item.id,
+							apiCall,
+						})
+					),
+						navigate("BanjeeProfile");
+				}}
 			>
 				<View style={styles.container}>
 					<View style={styles.subContainer}>
@@ -130,19 +140,31 @@ function FeedNotification(props) {
 						<Text
 							style={styles.txt}
 							numberOfLines={1}
-							onPress={() =>
-								navigate("BanjeeProfile", {
-									item: { showReqestedFriend: true, id: item.fromUserId },
-								})
-							}
+							onPress={() => {
+								dispatch(
+									getProfile({
+										showReqestedFriend: true,
+										profileId: item.fromUserId,
+										connectionId: item.id,
+										apiCall,
+									})
+								),
+									navigate("BanjeeProfile");
+							}}
 						>
 							<Text
 								style={{ fontWeight: "bold" }}
-								onPress={() =>
-									navigate("BanjeeProfile", {
-										item: { showReqestedFriend: true, id: item.fromUserId },
-									})
-								}
+								onPress={() => {
+									dispatch(
+										getProfile({
+											showReqestedFriend: true,
+											profileId: item.fromUserId,
+											connectionId: item.id,
+											apiCall,
+										})
+									),
+										navigate("BanjeeProfile");
+								}}
 							>
 								{item?.sender?.userName}
 							</Text>{" "}

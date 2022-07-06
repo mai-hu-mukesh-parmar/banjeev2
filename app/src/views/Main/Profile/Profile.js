@@ -253,6 +253,12 @@ function Profile(props) {
 			)}
 		</React.Fragment>
 	);
+
+	const ListEmptyComponent = (
+		<Text style={{ alignSelf: "center", marginTop: 120 }}>
+			You have not created any post yet...!
+		</Text>
+	);
 	return (
 		<React.Fragment>
 			<View style={styles.container}>
@@ -269,6 +275,7 @@ function Profile(props) {
 						setPage(0);
 						myFeed();
 					}}
+					ListEmptyComponent={ListEmptyComponent}
 					refreshing={refresh}
 					// onScroll={(e) => scrollY.setValue(e.nativeEvent.contentOffset.y)}
 					onEndReachedThreshold={0.1}

@@ -6,7 +6,7 @@ export const acceptRequest = (id) => {
 	const actionCode = "";
 	const payload = "";
 	const method = "GET";
-
+	console.warn(url, "---------------");
 	return executeGet(url, actionCode, payload, method, {});
 };
 export const rejectRequest = (id) => {

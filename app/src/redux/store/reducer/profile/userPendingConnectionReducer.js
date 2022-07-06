@@ -9,6 +9,9 @@ const initialState = {
 	loading: true,
 	pendingId: [],
 	pendingReq: false,
+	showReqestedFriend: false,
+	connectionId: undefined,
+	apiCall: () => {},
 };
 
 export const pendingConnectionReducer = (state = initialState, action) => {

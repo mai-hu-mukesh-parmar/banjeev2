@@ -23,7 +23,10 @@ import usePlayPauseAudio from "../../../../utils/hooks/usePlayPauseAudio";
 import { FriendRequest } from "../../../../helper/services/FriendRequest";
 import { BlockUser } from "../../../../helper/services/Service";
 import { unfriend } from "../../../../helper/services/UnfriendService";
-import { acceptRequest } from "../../../../helper/services/AcceptAndRejectFriendRequest";
+import {
+	acceptRequest,
+	rejectRequest,
+} from "../../../../helper/services/AcceptAndRejectFriendRequest";
 import AppLoading from "../../../../constants/components/ui-component/AppLoading";
 import ReportUser from "../../../../constants/components/Cards/ReportUser";
 import { Text } from "native-base";
@@ -37,7 +40,11 @@ import {
 	listProfileUrl,
 } from "../../../../utils/util-func/constantExport";
 import BanjeeProfileFriendList from "./BanjeeProfileFriendList";
-import { pendingConnection } from "../../../../redux/store/action/Profile/userPendingConnection";
+import {
+	getProfile,
+	pendingConnection,
+	removeProfileData,
+} from "../../../../redux/store/action/Profile/userPendingConnection";
 import { otherBanjee_service } from "../../../../helper/services/OtherBanjee";
 import ProfilePost from "./ProfilePost";
 
@@ -45,10 +52,14 @@ function BanjeeProfile() {
 	const { systemUserId, currentUser, voiceIntroSrc, ...userData } = useSelector(
 		(state) => state.registry
 	);
-	const { mutualFriend, loading, pendingId, pendingReq } = useSelector(
-		(state) => state.viewProfile
-	);
-	console.warn(pendingReq, "........................	");
+	const {
+		mutualFriend,
+		loading,
+		pendingId,
+		pendingReq,
+		showReqestedFriend,
+		connectionId,
+	} = useSelector((state) => state.viewProfile);
 	const [banjee, setBanjee] = React.useState(true);
 	const [room, setRoom] = React.useState(false);
 	const [post, setPost] = React.useState(false);
@@ -60,7 +71,7 @@ function BanjeeProfile() {
 	const [blockModal, setBlockModal] = React.useState(false);
 	const [acceptFrndReq, setAcceptFrndReq] = React.useState(false);
 	const [rejectFrndReq, setRejectFrndReq] = React.useState(false);
-
+	const dispatch = useDispatch();
 	const navigator = [
 		{
 			label: " Banjees",
@@ -327,7 +338,11 @@ function BanjeeProfile() {
 		},
 	];
 
-	const userType = mutualFriend ? data : unMutual;
+	const userType = showReqestedFriend
+		? frndReqData
+		: mutualFriend
+		? data
+		: unMutual;
 
 	const blockUser = () => {
 		BlockUser(ourProfile?.id)
@@ -344,12 +359,27 @@ function BanjeeProfile() {
 	};
 
 	const acceptFriendRequest = () => {
-		acceptRequest(ourProfile?.id)
-			.then(() => navigate("BanjeeProfile", { item: { id: ourProfile.id } }))
+		acceptRequest(connectionId)
+			.then(() => {
+				dispatch(
+					getProfile({
+						connectionId: undefined,
+						showReqestedFriend: false,
+						profileId: profileId,
+					})
+				),
+					navigate("BanjeeProfile");
+			})
 			.catch((err) => console.warn(err));
 	};
 
-	const rejectFriendRequest = () => {};
+	const rejectFriendRequest = () => {
+		rejectRequest(connectionId)
+			.then(() => {
+				goBack();
+			})
+			.catch((err) => console.warn(err));
+	};
 
 	return (
 		<React.Fragment>
