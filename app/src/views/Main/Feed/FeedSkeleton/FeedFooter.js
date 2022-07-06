@@ -9,6 +9,7 @@ import { useNavigation } from "@react-navigation/native";
 import color from "../../../../constants/env/color";
 import { useSelector } from "react-redux";
 import { sharePost } from "../../../Other/ShareApp";
+import { cloudinaryFeedUrl } from "../../../../utils/util-func/constantExport";
 export default function FeedFooter({ item }) {
 	const { navigate } = useNavigation();
 	const {
@@ -73,7 +74,24 @@ export default function FeedFooter({ item }) {
 			</View>
 			<View style={{ position: "absolute", right: 0 }}>
 				<AppFabButton
-					onPress={() => sharePost(item.text, item.mediaContent)}
+					onPress={() => {
+						console.log(
+							"item.text, item.mediaContent",
+
+							JSON.stringify(item)
+						);
+						sharePost(
+							item?.mediaContent.length > 0 &&
+								cloudinaryFeedUrl(
+									item?.mediaContent[0]?.src,
+									item?.mediaContent[0]?.mimeType?.split("/")[0]
+								),
+							item?.mediaContent[0]?.mimeType?.split("/")[0],
+							item?.text,
+							item.id,
+							item?.mediaContent[0]?.src
+						);
+					}}
 					size={16}
 					icon={
 						<MaterialCommunityIcons
