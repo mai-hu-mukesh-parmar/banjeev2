@@ -9,21 +9,21 @@ import ProfileNavigation from "./Navigation/ProfileNavigation";
 import RoomNavigation from "./Navigation/RoomNavigation";
 
 export const NavigationJson = [
-  {
-    options: { headerShown: false },
-    name: "Splash",
-    component: Splash,
-  },
-  ...AuthNavJson,
-  {
-    options: { headerShown: false },
-    name: "Bottom",
-    component: BottomNavigation,
-  },
-  ...FeedNavigation,
-  ...RoomNavigation,
-  ...ProfileNavigation,
-  ...Contacts,
-  ...MapNavigation,
-  ...CallNavigation,
+	{
+		options: { headerShown: false },
+		name: "Splash",
+		component: Splash,
+	},
+	...AuthNavJson,
+	{
+		options: { headerShown: false },
+		name: "Bottom",
+		component: BottomNavigation,
+	},
+	...FeedNavigation,
+	...RoomNavigation,
+	...ProfileNavigation,
+	...Contacts,
+	...MapNavigation,
+	...CallNavigation,
 ];

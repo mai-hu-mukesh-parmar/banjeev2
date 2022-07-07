@@ -1,45 +1,65 @@
-import React from "react";
-import { Menu, Box, Pressable, Text } from "native-base";
-import { MaterialCommunityIcons } from "react-native-vector-icons";
-import { View } from "react-native";
+import { Text } from "native-base";
+import React, { useState } from "react";
+
+import { View, Platform } from "react-native";
+
+import { Menu, MenuItem } from "react-native-material-menu";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import AppFabButton from "./AppFabButton";
 
 export default function AppMenu({ menuContent, menuColor }) {
-  return (
-    <Box h="80%" w="90%" alignItems="flex-start">
-      <Menu
-        shouldOverlapWithTrigger={true}
-        placement="bottom left"
-        shadow={2}
-        w="190"
-        trigger={(triggerProps) => {
-          return (
-            <Pressable accessiilityLabel="More options menu" {...triggerProps}>
-              <MaterialCommunityIcons
-                style={{
-                  marginRight: 10,
-                  paddingHorizontal: 5,
-                }}
-                name="dots-vertical"
-                size={20}
-                color={menuColor}
-              />
-            </Pressable>
-          );
-        }}
-      >
-        {menuContent?.map((ele, i) => (
-          <Menu.Item onPress={ele.onPress} key={i}>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <MaterialCommunityIcons name={ele.icon} size={16} />
-              <Text style={{ marginLeft: 10 }}>{ele.label} </Text>
-            </View>
-          </Menu.Item>
-        ))}
-      </Menu>
-    </Box>
-  );
-}
+	const [visible, setVisible] = useState(false);
 
+	const hideMenu = () => setVisible(false);
+
+	const showMenu = () => setVisible(true);
+
+	return (
+		<View
+			style={{ height: "100%", alignItems: "center", justifyContent: "center" }}
+		>
+			<Menu
+				visible={visible}
+				style={{
+					left: "60%",
+				}}
+				animationDuration={0}
+				anchor={
+					<AppFabButton
+						onPress={() => showMenu()}
+						size={20}
+						icon={
+							<MaterialCommunityIcons
+								name="dots-vertical"
+								size={20}
+								color={menuColor}
+							/>
+						}
+					/>
+				}
+				onRequestClose={hideMenu}
+			>
+				{menuContent.map((ele) => (
+					<MenuItem
+						style={{
+							marginLeft: Platform.OS === "ios" ? 10 : 0,
+						}}
+						key={Math.random()}
+						onPress={() => {
+							ele.onPress();
+							hideMenu();
+						}}
+					>
+						<View style={{ flexDirection: "row", alignItems: "center" }}>
+							<MaterialCommunityIcons name={ele.icon} size={16} />
+							<Text style={{ marginLeft: 10 }}>{ele.label} </Text>
+						</View>
+					</MenuItem>
+				))}
+			</Menu>
+		</View>
+	);
+}
 // import { Box, Text } from "native-base";
 // import React from "react";
 // import { Menu, MenuItem, MenuDivider } from "react-native-material-menu";

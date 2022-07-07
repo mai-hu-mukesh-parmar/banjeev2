@@ -55,7 +55,6 @@ export default function NavigationView() {
 			},
 		};
 	};
-
 	return (
 		<Stack.Navigator
 			screenOptions={{
