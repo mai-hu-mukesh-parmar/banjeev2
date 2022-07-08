@@ -11,6 +11,7 @@ import onlineStatusReducer from "./socketReducers/onlineStatusReducer";
 import socketReducer from "./socketReducer";
 import mapReducer from "./mapReducer";
 import createFeedReducer from "./createFeedReducer";
+import { listContactReducer } from "./contactReducer";
 
 export const rootReducer = combineReducers({
 	profile: userProfileReducer,
@@ -25,4 +26,5 @@ export const rootReducer = combineReducers({
 	map: mapReducer,
 	viewProfile: pendingConnectionReducer,
 	createdFeedData: createFeedReducer,
+	contact: listContactReducer,
 });

@@ -112,18 +112,20 @@ function Room(props) {
 		<React.Fragment>
 			<View style={styles.container}>
 				{myRoom ? (
-					<ScrollView>
-						<View
-							style={{
-								width: Dimensions.get("screen").width,
-								justifyContent: "center",
-								alignSelf: "center",
-								height: Dimensions.get("screen").height - 225,
-								alignItems: "center",
-								justifyContent: "center",
-							}}
-						>
-							{/* <View
+					// <ScrollView>
+					<View
+						style={{
+							width: Dimensions.get("screen").width,
+							// justifyContent: "center",
+
+							// height: Dimensions.get("screen").height - 225,
+							height: Dimensions.get("screen").height,
+							alignItems: "center",
+							justifyContent: "center",
+							paddingBottom: 255,
+						}}
+					>
+						{/* <View
                 style={{
                   //   width: "100%",
                   // height: (Dimensi ons.get("window").height = "87.5%"),
@@ -131,27 +133,25 @@ function Room(props) {
                   //   paddingBottom: 55, //``````````````````````
                 }}
               > */}
-							<Text fontSize={24}>Hey There!!</Text>
-							<Image
-								source={require("../../../../assets/EditDrawerIcon/dummy_delete_user.png")}
-								style={{
-									height: 120,
-									width: 120,
-									marginTop: 20,
-									marginBottom: 10,
-								}}
-							/>
+						<Text fontSize={24}>Hey There!!</Text>
+						<Image
+							source={require("../../../../assets/EditDrawerIcon/dummy_delete_user.png")}
+							style={{
+								height: 120,
+								width: 120,
+								marginTop: 20,
+								marginBottom: 10,
+							}}
+						/>
 
-							<Text>You haven't created any Rooms Yet!!</Text>
-							<Text
-								style={{ textAlign: "center", width: "80%", marginTop: 10 }}
-							>
-								Create Rooms based on your intrests and start interactions
-							</Text>
-						</View>
-						{/* </View> */}
-					</ScrollView>
+						<Text>You haven't created any Rooms Yet!!</Text>
+						<Text style={{ textAlign: "center", width: "80%", marginTop: 10 }}>
+							Create Rooms based on your intrests and start interactions
+						</Text>
+					</View>
 				) : (
+					// {/* </View> */}
+					// </ScrollView>
 					<VirtualizedList
 						getItemCount={(myRoom) => myRoom.length}
 						getItem={(data, index) => data[index]}

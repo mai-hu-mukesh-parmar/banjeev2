@@ -15,6 +15,7 @@ import usePlayPauseAudio from "../../../../utils/hooks/usePlayPauseAudio";
 import AppMenu from "../../../../constants/components/ui-component/AppMenu";
 import { useDispatch } from "react-redux";
 import { setRoomData } from "../../../../redux/store/action/roomAction";
+import { shareRoom } from "../../../Other/ShareApp";
 
 export default function RoomElement({
 	item,
@@ -212,12 +213,20 @@ export default function RoomElement({
 							onPress={navigateToRoomCall}
 						/>
 					) : (
-						<AppBorderButton
-							title="Join"
-							width={80}
-							style={{ width: 80 }}
-							onPress={navigateToRoomCall}
-						/>
+						<React.Fragment>
+							<AppBorderButton
+								title="Join"
+								width={80}
+								style={{ width: 80 }}
+								onPress={navigateToRoomCall}
+							/>
+							<AppButton
+								title="share"
+								width={80}
+								style={{ width: 80 }}
+								onPress={() => shareRoom(item.chatroomId)}
+							/>
+						</React.Fragment>
 					)}
 					{/* userRoom comes from room component */}
 
