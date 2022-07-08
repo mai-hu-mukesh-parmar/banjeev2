@@ -1,18 +1,13 @@
 import React from "react";
 import {
-	TouchableHighlight,
 	View,
 	StyleSheet,
 	Image,
 	TouchableWithoutFeedback,
-	DevSettings,
 } from "react-native";
 import AppFabButton from "../../../constants/components/ui-component/AppFabButton";
 import color from "../../../constants/env/color";
-import {
-	checkGender,
-	listProfileUrl,
-} from "../../../utils/util-func/constantExport";
+import { listProfileUrl } from "../../../utils/util-func/constantExport";
 import { useNavigation } from "@react-navigation/native";
 import checkUserStatus from "./ChatComponent/checkUserStatus";
 import { SocketContext } from "../../../Context/Socket";
@@ -22,7 +17,6 @@ import { getProfile } from "../../../redux/store/action/Profile/userPendingConne
 
 function BanjeeContacts(props) {
 	const { item } = props;
-	console.warn(item, "BanjeeContacts");
 	const { navigate } = useNavigation();
 
 	const onlineStatus = useSelector((state) => state.onlineStatus);
@@ -106,6 +100,7 @@ function BanjeeContacts(props) {
 	// };
 
 	const dispatch = useDispatch();
+
 	return (
 		<View
 			style={{

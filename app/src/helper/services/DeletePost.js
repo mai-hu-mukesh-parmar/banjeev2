@@ -7,5 +7,5 @@ export const deletePost = (postId) => {
 	const payload = "";
 	const method = "DELETE";
 
-	return executeGet(url, actionCode, payload, method, false);
+	return executeGet(url, actionCode, payload, method, {});
 };

@@ -5,6 +5,7 @@ import {
 	headerBackground,
 	headerStyle,
 } from "../../constants/navigation/navigation";
+import BlockBanjee from "../../views/Main/Profile/BlockBanjee/BlockBanjee";
 import UpdateUserInfo from "../../views/Main/Profile/UpdateInfo/UpdateUserInfo";
 import PickAvatar from "../../views/Main/Profile/UpdateProfile/PickAvatar";
 import UpdateAvatar from "../../views/Main/Profile/UpdateProfile/UpdateAvatar";
@@ -66,6 +67,17 @@ const ProfileNavigation = [
 			headerTintColor: color.white,
 			headerStyle: headerStyle,
 			headerBackground: () => headerBackground(greyColor),
+		},
+	},
+	{
+		name: "Blocked_Banjee_Contacts",
+		component: BlockBanjee,
+		options: {
+			headerTitleAlign: "center",
+			headerTitle: "Block Banjees",
+			headerTintColor: color.white,
+			headerStyle: headerStyle,
+			headerBackground: () => headerBackground(gradientColor),
 		},
 	},
 ];
