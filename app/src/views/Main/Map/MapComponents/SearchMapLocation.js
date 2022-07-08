@@ -1,9 +1,10 @@
-import React, { useEffect } from "react";
+import React, { Fragment, useRef, useCallback, useState } from "react";
 import {
 	View,
 	StyleSheet,
 	TouchableWithoutFeedback,
 	Image,
+	Dimensions,
 } from "react-native";
 import RBSheet from "react-native-raw-bottom-sheet";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -13,12 +14,16 @@ import { Text } from "native-base";
 import color from "../../../../constants/env/color";
 import AppInput from "../../../../constants/components/ui-component/AppInput";
 import AppFabButton from "../../../../constants/components/ui-component/AppFabButton";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setMapData } from "../../../../redux/store/action/mapAction";
 
 function SearchMapLocation({ locFun }) {
-	const refRBSheet = React.useRef(null);
-	const [suggestionsList, setSuggestionsList] = React.useState([]);
-	const { mapRef } = useSelector((state) => state.mapLocation);
+	const dispatch = useDispatch();
+	const { userLocation, searchData } = useSelector((state) => state.map);
+
+	const refRBSheet = useRef(null);
+	const [suggestionsList, setSuggestionsList] = useState([]);
+
 	const handleChange = (e) => {
 		const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?key=AIzaSyBqW8iaz-_qlaTMc1ynbj9f7mpfmbVUcW4&input=${e}&language=en`;
 		axios
@@ -37,29 +42,33 @@ function SearchMapLocation({ locFun }) {
 
 	const getCurrentLocation = async () => {
 		let locationAsync = await Location.getCurrentPositionAsync({});
-
-		const { longitude, latitude } = locationAsync.coords;
-		let loc = {
-			longitude: longitude,
-			latitude: latitude,
-			latitudeDelta: 0.0922,
-			longitudeDelta: 0.0421,
-		};
-		mapRef.refRBBSheet.current;
-		// locFun({ loc, title: "", open: false }, refRBSheet.current);
+		dispatch(
+			setMapData({ userLocation: { ...userLocation, ...locationAsync.coords } })
+		);
+		refRBSheet.current.close();
 	};
 
-	const locHandler = React.useCallback((data) => {
-		locFun({ ...data, open: true }, refRBSheet.current);
+	const getMySearchLocation = useCallback((data) => {
+		dispatch(
+			setMapData({
+				userLocation: { ...userLocation, ...data.loc },
+				searchData: { ...searchData, ...data },
+			})
+		);
+		refRBSheet.current.close();
+	}, []);
+
+	const locHandler = useCallback((data) => {
+		getMySearchLocation({ ...data, open: true });
 	}, []);
 
 	return (
-		<React.Fragment>
-			{/* <AppFabButton
+		<Fragment>
+			<AppFabButton
 				onPress={() => {
 					refRBSheet.current.open();
 				}}
-				style={{ position: "absolute", top: 5, right: 5, zIndex: 1 }}
+				style={{ position: "absolute", top: 35, right: 5, zIndex: 999 }}
 				size={20}
 				icon={
 					<MaterialCommunityIcons
@@ -68,7 +77,7 @@ function SearchMapLocation({ locFun }) {
 						color={color.black}
 					/>
 				}
-			/> */}
+			/>
 			<RBSheet
 				customStyles={{
 					container: { borderRadius: 10 },
@@ -128,7 +137,7 @@ function SearchMapLocation({ locFun }) {
 					</View>
 				</View>
 			</RBSheet>
-		</React.Fragment>
+		</Fragment>
 	);
 }
 
@@ -136,7 +145,7 @@ const styles = StyleSheet.create({
 	container: {
 		height: "100%",
 		zIndex: 9,
-		width: "95%",
+		width: Dimensions.get("window").width,
 		alignSelf: "center",
 	},
 	icon: {

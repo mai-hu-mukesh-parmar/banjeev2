@@ -1,14 +1,11 @@
 import { Text } from "native-base";
 import React from "react";
 import { View, StyleSheet, Image } from "react-native";
-import { useSelector } from "react-redux";
 import AppBorderButton from "../../../../constants/components/ui-component/AppBorderButton";
 import color from "../../../../constants/env/color";
 import SearchMapLocation from "./SearchMapLocation";
 
 function NoLoactionFound({ locFun }) {
-	const { refRBSheet } = useSelector((state) => state.mapLocation);
-
 	return (
 		<React.Fragment>
 			<View
