@@ -1,4 +1,10 @@
-import React, { Fragment, useRef, useCallback, useState } from "react";
+import React, {
+	Fragment,
+	useRef,
+	useCallback,
+	useState,
+	useEffect,
+} from "react";
 import {
 	View,
 	StyleSheet,
@@ -16,12 +22,18 @@ import AppInput from "../../../../constants/components/ui-component/AppInput";
 import AppFabButton from "../../../../constants/components/ui-component/AppFabButton";
 import { useDispatch, useSelector } from "react-redux";
 import { setMapData } from "../../../../redux/store/action/mapAction";
+import SearchMapLocationItem from "./SearchMapLocationItem";
 
-function SearchMapLocation({ locFun }) {
+function SearchMapLocation() {
 	const dispatch = useDispatch();
-	const { userLocation, searchData } = useSelector((state) => state.map);
+	const {
+		userLocation,
+		searchData,
+		refRBSheet: sheet,
+	} = useSelector((state) => state.map);
 
 	const refRBSheet = useRef(null);
+
 	const [suggestionsList, setSuggestionsList] = useState([]);
 
 	const handleChange = (e) => {
@@ -43,7 +55,7 @@ function SearchMapLocation({ locFun }) {
 	const getCurrentLocation = async () => {
 		let locationAsync = await Location.getCurrentPositionAsync({});
 		dispatch(
-			setMapData({ userLocation: { ...userLocation, ...locationAsync.coords } })
+			setMapData({ searchData: { ...userLocation, ...locationAsync.coords } })
 		);
 		refRBSheet.current.close();
 	};
@@ -51,7 +63,6 @@ function SearchMapLocation({ locFun }) {
 	const getMySearchLocation = useCallback((data) => {
 		dispatch(
 			setMapData({
-				userLocation: { ...userLocation, ...data.loc },
 				searchData: { ...searchData, ...data },
 			})
 		);
@@ -62,28 +73,23 @@ function SearchMapLocation({ locFun }) {
 		getMySearchLocation({ ...data, open: true });
 	}, []);
 
+	useEffect(() => {
+		if (sheet && refRBSheet.current) {
+			refRBSheet.current.open();
+		}
+	}, [sheet]);
+
 	return (
 		<Fragment>
-			<AppFabButton
-				onPress={() => {
-					refRBSheet.current.open();
-				}}
-				style={{ position: "absolute", top: 35, right: 5, zIndex: 999 }}
-				size={20}
-				icon={
-					<MaterialCommunityIcons
-						name="magnify"
-						size={24}
-						color={color.black}
-					/>
-				}
-			/>
 			<RBSheet
 				customStyles={{
 					container: { borderRadius: 10 },
 				}}
 				height={500}
 				width={"100%"}
+				onClose={() => {
+					dispatch(setMapData({ refRBSheet: false }));
+				}}
 				ref={refRBSheet}
 				dragFromTopOnly={true}
 				closeOnDragDown={true}
@@ -103,11 +109,13 @@ function SearchMapLocation({ locFun }) {
 							color={color.black}
 						/>
 
-						<View style={{ position: "absolute", marginTop: -10 }}>
+						<View
+							style={{ position: "absolute", marginTop: 10, width: "100%" }}
+						>
 							{/* TEXT INPUT */}
 
 							<AppInput
-								style={{ paddingLeft: 40 }}
+								style={{ paddingLeft: 40, width: "100%" }}
 								placeholder={"Search Location"}
 								onChangeText={handleChange}
 							/>

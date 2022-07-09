@@ -5,6 +5,7 @@ import React, {
 	useState,
 	Fragment,
 } from "react";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { View, Image, StyleSheet, SafeAreaView } from "react-native";
 import * as Location from "expo-location";
@@ -22,6 +23,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { setMapData } from "../../../redux/store/action/mapAction";
 import RenderMarker from "./MapComponents/RenderMarker";
 import _ from "underscore";
+import {
+	listProfileUrl,
+	profileUrl,
+} from "../../../utils/util-func/constantExport";
+import { Entypo } from "@expo/vector-icons";
 
 const initialRegion = {
 	latitude: 23.049712651170047,
@@ -39,9 +45,10 @@ export default function Map() {
 	const { isFocused, navigate } = useNavigation();
 	const {
 		registry: { systemUserId: id },
-		map: { userLocation: loc, searchData },
+		map,
 	} = useSelector((state) => state, _.isEqual);
 
+	const { userLocation: loc, searchData, banjeeUsers } = map;
 	const [visible, setvisible] = useState(true);
 
 	const userHandler = useCallback((data) => {
@@ -79,6 +86,25 @@ export default function Map() {
 		[userHandler, id]
 	);
 
+	const listAllUser = useCallback(({ latitude, longitude }) => {
+		getAllUser({
+			distance: "100",
+			point: { lat: latitude, lon: longitude },
+			page: 0,
+			pageSize: 20,
+			blockedList: null,
+			connections: null,
+			pendingConnections: null,
+		})
+			.then((res) => {
+				setvisible(false);
+				dispatch(setMapData({ banjeeUsers: res.content }));
+			})
+			.catch((err) => {
+				console.warn(err);
+			});
+	}, []);
+
 	const getLocation = useCallback(async () => {
 		let locationAsync = await Location.getCurrentPositionAsync({});
 		const { longitude, latitude } = locationAsync.coords;
@@ -108,30 +134,13 @@ export default function Map() {
 			);
 
 			getUser({ longitude, latitude });
-			getAllUser({
-				distance: "100",
-				point: { lat: latitude, lon: longitude },
-				page: 0,
-				pageSize: 20,
-				blockedList: null,
-				connections: null,
-				pendingConnections: null,
-			})
-				.then((res) => {
-					setvisible(false);
-					dispatch(setMapData({ banjeeUsers: res.content }));
-				})
-				.catch((err) => {
-					console.warn(err);
-				});
+			listAllUser({ longitude, latitude });
 		}
-	}, [initialRegion, getUser]);
+	}, [initialRegion, getUser, listAllUser]);
 
 	useEffect(() => {
-		if (isFocused()) {
-			setvisible(true);
-			getLocation();
-		}
+		setvisible(true);
+		getLocation();
 	}, [getLocation, isFocused]);
 
 	return (
@@ -148,6 +157,21 @@ export default function Map() {
 			{visible && <AppLoading visible={visible} />}
 			{!visible && loc && (
 				<Fragment>
+					<AppFabButton
+						onPress={() => {
+							// refRBSheet.current.open();
+							dispatch(setMapData({ refRBSheet: true }));
+						}}
+						style={{ position: "absolute", top: 35, right: 5, zIndex: 999 }}
+						size={20}
+						icon={
+							<MaterialCommunityIcons
+								name="magnify"
+								size={24}
+								color={color.black}
+							/>
+						}
+					/>
 					<SearchMapLocation />
 					{loc && <NoLoactionFound />}
 					<AppFabButton
@@ -185,37 +209,62 @@ export default function Map() {
 						style={styles.map}
 					>
 						<View>
-							<Marker ref={markerRef} coordinate={{ ...loc }}>
-								{searchData && searchData.open ? (
-									<View>
-										{searchData.title && (
-											<View
-												style={{
-													display: "flex",
-													flexDirection: "column",
-													alignItems: "center",
-												}}
-											>
-												<Text style={{ backgroundColor: "white" }}>
-													{searchData.title}
-												</Text>
-												<Entypo name="location-pin" size={24} color="red" />
-											</View>
-										)}
-									</View>
-								) : (
-									<View>
-										<Image
+							{searchData && searchData.open && (
+								<Marker ref={markerRef} coordinate={{ ...searchData.loc }}>
+									{searchData.title && (
+										<View
 											style={{
-												width: 50,
-												height: 60,
+												display: "flex",
+												flexDirection: "column",
+												alignItems: "center",
 											}}
-											source={require("../../../../assets/EditDrawerIcon/ic_me.png")}
-										/>
-									</View>
-								)}
+										>
+											<Text style={{ backgroundColor: "white" }}>
+												{searchData.title}
+											</Text>
+											<Entypo name="location-pin" size={24} color="red" />
+										</View>
+									)}
+								</Marker>
+							)}
+							<Marker
+								ref={markerRef}
+								key={id}
+								coordinate={{
+									longitude: loc.longitude,
+									latitude: loc.latitude,
+									latitudeDelta: 1,
+									longitudeDelta: 1,
+								}}
+							>
+								<Image
+									style={{
+										width: 50,
+										height: 60,
+										top: 0,
+
+										left: 0,
+									}}
+									source={require("../../../../assets/EditDrawerIcon/ic_me.png")}
+								/>
+								<Image
+									style={{
+										width: 40,
+										height: 40,
+										position: "absolute",
+										top: 5,
+										zIndex: 99,
+										left: 5,
+										borderRadius: 50,
+										zIndex: 1,
+									}}
+									source={{
+										uri: listProfileUrl(id),
+									}}
+								/>
 							</Marker>
-							<RenderMarker />
+
+							{banjeeUsers.length > 0 && <RenderMarker />}
 						</View>
 					</MapView>
 					<AppFabButton

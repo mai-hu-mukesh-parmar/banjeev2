@@ -4,7 +4,10 @@ import React, { Fragment, useEffect, useRef } from "react";
 import { Image, View } from "react-native";
 import { Marker } from "react-native-maps";
 import { useSelector } from "react-redux";
-import { profileUrl } from "../../../../utils/util-func/constantExport";
+import {
+	listProfileUrl,
+	profileUrl,
+} from "../../../../utils/util-func/constantExport";
 
 export default function RenderMarker() {
 	const { navigate } = useNavigation();
@@ -46,7 +49,7 @@ export default function RenderMarker() {
 									zIndex: 99999,
 								}}
 							>
-								{!existsInContact ? (
+								{mySysId !== systemUserId && !existsInContact ? (
 									<Marker
 										onPress={() =>
 											navigate("ProfileCards", {
@@ -149,7 +152,7 @@ export default function RenderMarker() {
 												zIndex: 1,
 											}}
 											source={{
-												uri: profileUrl(avtarUrl),
+												uri: profileUrl(systemUserId),
 											}}
 										/>
 									</Marker>

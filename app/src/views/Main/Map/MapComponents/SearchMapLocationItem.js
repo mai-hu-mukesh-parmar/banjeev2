@@ -6,10 +6,10 @@ import {
 	TouchableWithoutFeedback,
 	Keyboard,
 } from "react-native";
-import AppText from "../../../../Components/AppComponents/AppText";
 import { EvilIcons } from "@expo/vector-icons";
 import axios from "axios";
-import { setProfileLocation } from "../../../../Cache/TempStorage";
+import { setProfileLocation } from "../../../../utils/Cache/TempStorage";
+import { Text } from "native-base";
 
 function SearchMapLocationItem({
 	suggestionsList,
@@ -53,7 +53,7 @@ function SearchMapLocationItem({
 					/>
 
 					<View style={{ marginLeft: 10 }}>
-						<AppText
+						<Text
 							numberOfLines={1}
 							style={{ fontWeight: "bold" }}
 							onPress={() => {
@@ -62,9 +62,9 @@ function SearchMapLocationItem({
 							}}
 						>
 							{item.title.split(",")[0]}
-						</AppText>
+						</Text>
 
-						<AppText
+						<Text
 							numberOfLines={2}
 							style={{ fontSize: 16 }}
 							onPress={() => {
@@ -72,7 +72,7 @@ function SearchMapLocationItem({
 							}}
 						>
 							{item.title}
-						</AppText>
+						</Text>
 					</View>
 				</View>
 			</TouchableWithoutFeedback>
