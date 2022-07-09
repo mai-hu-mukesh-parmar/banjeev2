@@ -16,7 +16,7 @@ export const NavigationJson = [
 	},
 	...AuthNavJson,
 	{
-		options: { headerShown: false },
+		options: { headerTitle: "Back", headerShown: false },
 		name: "Bottom",
 		component: BottomNavigation,
 	},
