@@ -2,10 +2,10 @@ import React, { useContext } from "react";
 import {
 	View,
 	StyleSheet,
-	Image,
 	TouchableWithoutFeedback,
 	ScrollView,
 } from "react-native";
+import FastImage from "react-native-fast-image";
 import { LinearGradient } from "expo-linear-gradient";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -138,7 +138,7 @@ function CreateRoom(props) {
 								colors={["rgba(237, 69, 100, 1 )", "rgba(169, 50, 148, 1 )"]}
 								style={styles.gradient}
 							>
-								<Image source={ele.img} style={{ height: 24, width: 24 }} />
+								<FastImage source={ele.img} style={{ height: 24, width: 24 }} />
 							</LinearGradient>
 
 							<Text style={styles.title}>{ele.title}</Text>
@@ -187,7 +187,7 @@ function CreateRoom(props) {
 
 				<SelectImage imageModal={imageModal} setImageModal={setImageModal} />
 
-				<Image
+				<FastImage
 					source={require("../../../../../assets/EditDrawerIcon/shadow.png")}
 					style={{ height: 10, width: 90, marginTop: 4 }}
 				/>
@@ -221,7 +221,7 @@ function CreateRoom(props) {
 								]}
 							/>
 
-							<Image
+							<FastImage
 								source={require("../../../../../assets/EditDrawerIcon/close_group.png")}
 								style={{ height: 72, width: 72 }}
 							/>
@@ -253,7 +253,7 @@ function CreateRoom(props) {
 									},
 								]}
 							/>
-							<Image
+							<FastImage
 								source={require("../../../../../assets/EditDrawerIcon/public_group.png")}
 								style={{ height: 72, width: 72 }}
 							/>

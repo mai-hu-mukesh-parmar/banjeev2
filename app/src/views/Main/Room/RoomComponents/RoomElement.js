@@ -1,9 +1,5 @@
-import {
-	View,
-	Image,
-	StyleSheet,
-	TouchableWithoutFeedback,
-} from "react-native";
+import { View, StyleSheet, TouchableWithoutFeedback } from "react-native";
+import FastImage from "react-native-fast-image";
 import React from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -46,7 +42,7 @@ export default function RoomElement({
 			>
 				<View style={styles.subContainer}>
 					{item?.live && (
-						<Image
+						<FastImage
 							source={require("../../../../../assets/EditDrawerIcon/live.png")}
 							style={[
 								styles.img,
@@ -54,7 +50,7 @@ export default function RoomElement({
 							]}
 						/>
 					)}
-					<Image
+					<FastImage
 						source={
 							item?.imageContent?.src
 								? { uri: profileUrl(item?.imageContent?.src) }
@@ -112,7 +108,7 @@ export default function RoomElement({
 								alignItems: "center",
 							}}
 						>
-							<Image
+							<FastImage
 								source={require("../../../../../assets/EditDrawerIcon/category.png")}
 								style={{
 									width: 24,
@@ -177,7 +173,7 @@ export default function RoomElement({
 									</Text>
 								</View>
 
-								<Image
+								<FastImage
 									source={require("../../../../../assets/EditDrawerIcon/ic_community_group.png")}
 									style={{
 										width: 20,

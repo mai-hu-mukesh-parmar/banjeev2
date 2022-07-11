@@ -19,7 +19,7 @@ const initialState = {
 		},
 	},
 
-	refRBSheet: false,
+	refRBSheet: { open: false, screen: "map" },
 };
 
 export default function mapReducer(state = initialState, action) {

@@ -1,11 +1,7 @@
 import { Text } from "native-base";
 import React from "react";
-import {
-	View,
-	StyleSheet,
-	TouchableWithoutFeedback,
-	Image,
-} from "react-native";
+import { View, StyleSheet, TouchableWithoutFeedback } from "react-native";
+import FastImage from "react-native-fast-image";
 import color from "../../../../../constants/env/color";
 
 function FeedRemove({ item }) {
@@ -22,7 +18,7 @@ function FeedRemove({ item }) {
 					{ backgroundColor: markAsRead ? color.white : "#dadaef" },
 				]}
 			>
-				<Image
+				<FastImage
 					source={require("../../../../../../assets/logo.png")}
 					style={{ height: 40, width: 40, borderRadius: 20 }}
 				/>

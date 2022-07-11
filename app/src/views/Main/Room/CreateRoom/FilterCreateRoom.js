@@ -15,6 +15,7 @@ import {
 } from "../../../../helper/services/CreateRoomService";
 import { showToast } from "../../../../redux/store/action/toastAction";
 import { setRoomData } from "../../../../redux/store/action/roomAction";
+import FastImage from "react-native-fast-image";
 
 function FilterCreateRoom(props) {
 	const {
@@ -287,9 +288,9 @@ function FilterCreateRoom(props) {
 							source={{ uri: listProfileUrl(systemUserId) }}
 						>
 							{username.charAt(0).toUpperCase() || ""}
-							{/* <Image source={checkGender(item.gender)} style={styles.img} /> */}
+							{/* <FastImage source={checkGender(item.gender)} style={styles.img} /> */}
 						</Avatar>
-						<Image
+						<FastImage
 							source={
 								// userData.avatarUrl
 								{ uri: listProfileUrl(systemUserId) }

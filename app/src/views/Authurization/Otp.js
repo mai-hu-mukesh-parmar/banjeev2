@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { StyleSheet, Image, View, Platform } from "react-native";
+import { StyleSheet, View, Platform } from "react-native";
 import { HStack, Text } from "native-base";
 import color from "../../constants/env/color";
 import BackGroundImg from "../../constants/components/BackGroundImg";
@@ -11,6 +11,7 @@ import axios from "axios";
 import jwtDecode from "jwt-decode";
 import { setLocalStorage } from "../../utils/Cache/TempStorage";
 import AppInput from "../../constants/components/ui-component/AppInput";
+import FastImage from "react-native-fast-image";
 
 function Otp({ route, navigation }) {
 	const [showView, setShowView] = useState("auto");
@@ -133,10 +134,16 @@ function Otp({ route, navigation }) {
 		};
 	});
 
+	const handleNavigateSignIn = () => navigation.navigate("SignIn");
+	const handleManageThings = () => {
+		sendOtpToUser();
+		setSeconds(30);
+		setOtp(null);
+	};
 	return (
 		<BackGroundImg>
 			<Card>
-				<Image
+				<FastImage
 					source={require("../../../assets/logo.png")}
 					style={[
 						{ height: 80, width: 80, marginBottom: 26, alignSelf: "center" },
@@ -207,7 +214,7 @@ function Otp({ route, navigation }) {
 					)}
 				</View>
 
-				<Text style={styles.link} onPress={() => navigation.navigate("SignIn")}>
+				<Text style={styles.link} onPress={handleNavigateSignIn}>
 					Change phone number
 				</Text>
 
@@ -224,11 +231,7 @@ function Otp({ route, navigation }) {
 								marginTop: 10,
 								width: "100%",
 							}}
-							onPress={() => {
-								sendOtpToUser();
-								setSeconds(30);
-								setOtp(null);
-							}}
+							onPress={handleManageThings}
 							title={"Resend"}
 						/>
 					</View>

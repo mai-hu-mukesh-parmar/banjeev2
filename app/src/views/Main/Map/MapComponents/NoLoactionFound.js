@@ -1,6 +1,7 @@
 import { Text } from "native-base";
 import React, { useEffect } from "react";
 import { View, StyleSheet, Image } from "react-native";
+import FastImage from "react-native-fast-image";
 import { useDispatch } from "react-redux";
 import AppBorderButton from "../../../../constants/components/ui-component/AppBorderButton";
 import color from "../../../../constants/env/color";
@@ -52,7 +53,7 @@ function NoLoactionFound() {
 							borderRadius: 13,
 						}}
 					/>
-					<Image
+					<FastImage
 						source={require("../../../../../assets/EditDrawerIcon/dog.png")}
 						style={{ width: 144, height: 148 }}
 					/>
@@ -87,7 +88,11 @@ function NoLoactionFound() {
 					<AppBorderButton
 						width={194}
 						title="Search more Locations"
-						onPress={() => dispatch(setMapData({ refRBSheet: true }))}
+						onPress={() =>
+							dispatch(
+								setMapData({ refRBSheet: { open: true, screen: "Cards" } })
+							)
+						}
 					/>
 				</View>
 			</View>

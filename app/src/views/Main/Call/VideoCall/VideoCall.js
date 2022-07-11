@@ -1,10 +1,10 @@
 import {
 	StyleSheet,
 	View,
-	Image,
 	TouchableOpacity,
 	ImageBackground,
 } from "react-native";
+import FastImage from "react-native-fast-image";
 import React, {
 	Fragment,
 	useCallback,
@@ -383,6 +383,11 @@ export default function VideoCall() {
 	// 	}
 	// });
 
+	const handleGoBack = () => {
+		if (canGoBack()) {
+			dispatch(pop(2));
+		}
+	};
 	const remoteVideo = userStream ? (
 		<Fragment>
 			{myStream?.getVideoTracks()[0].enabled ? (
@@ -425,13 +430,9 @@ export default function VideoCall() {
 						</View>
 						<AppFabButton
 							style={{ borderRadius: 50, backgroundColor: "red" }}
-							onPress={() => {
-								if (canGoBack()) {
-									dispatch(pop(2));
-								}
-							}}
+							onPress={handleGoBack}
 							icon={
-								<Image
+								<FastImage
 									source={require("../../../../../assets/EditDrawerIcon/ic_call.png")}
 									style={[
 										styles.callImg,
@@ -462,13 +463,9 @@ export default function VideoCall() {
 
 						<AppFabButton
 							style={{ borderRadius: 50, zIndex: 1, backgroundColor: "red" }}
-							onPress={() => {
-								if (canGoBack()) {
-									dispatch(pop(2));
-								}
-							}}
+							onPress={handleGoBack}
 							icon={
-								<Image
+								<FastImage
 									source={require("../../../../../assets/EditDrawerIcon/ic_call.png")}
 									style={[
 										styles.callImg,
@@ -483,6 +480,65 @@ export default function VideoCall() {
 		</View>
 	);
 
+	const handleSwitchCamera = () => myStream?._tracks[1]._switchCamera();
+	const handleGetAudioTrack = () => {
+		myStream.getAudioTracks()[0].enabled =
+			!myStream.getAudioTracks()[0].enabled;
+	};
+
+	const handleGetVideoTrack = () => {
+		// myStream.getVideoTracks()[0].enabled
+		// 	? socket.emit("SIGNALLING_SERVER", {
+		// 			roomId: params.roomId,
+		// 			fromUserId: systemUserId,
+		// 			initiator: {
+		// 				...currentUser,
+		// 				avtarImageUrl: avtarUrl,
+		// 				firstName: currentUser.userName,
+		// 			},
+		// 			targetUser: params.targetUser,
+		// 			toUserId: params.targetUser.id,
+		// 			eventType: "VIDEO_MUTE",
+		// 			iceCandidate: null,
+		// 			offer: null,
+		// 			answer: null,
+		// 			mediaStream: null,
+		// 			responseMessage: "Room Joined",
+		// 			callDuration: "00",
+		// 			callType: "Video",
+		// 			groupName: null,
+		// 			toAvatarSrc: null,
+		// 			groupMemberCounts: 0,
+		// 			groupCreatorId: null,
+		// 			addToCall: false,
+		// 	  })
+		// 	: socket.emit("SIGNALLING_SERVER", {
+		// 			roomId: params.roomId,
+		// 			fromUserId: systemUserId,
+		// 			initiator: {
+		// 				...currentUser,
+		// 				avtarImageUrl: avtarUrl,
+		// 				firstName: currentUser.userName,
+		// 			},
+		// 			targetUser: params.targetUser,
+		// 			toUserId: params.targetUser.id,
+		// 			eventType: "VIDEO_UNMUTE",
+		// 			iceCandidate: null,
+		// 			offer: null,
+		// 			answer: null,
+		// 			mediaStream: null,
+		// 			responseMessage: "Room Joined",
+		// 			callDuration: "00",
+		// 			callType: "Video",
+		// 			groupName: null,
+		// 			toAvatarSrc: null,
+		// 			groupMemberCounts: 0,
+		// 			groupCreatorId: null,
+		// 			addToCall: false,
+		// 	  });
+		myStream.getVideoTracks()[0].enabled =
+			!myStream.getVideoTracks()[0].enabled;
+	};
 	return (
 		<View style={{ ...styles.videosContainer }}>
 			{/* <ScrollView style={{ ...styles.scrollView }}> */}
@@ -518,7 +574,7 @@ export default function VideoCall() {
 								streamURL={myStream && myStream?.toURL()}
 							/>
 						) : (
-							<Image
+							<FastImage
 								style={{ height: "100%", width: "100%" }}
 								resizeMode={"cover"}
 								source={{
@@ -542,7 +598,7 @@ export default function VideoCall() {
 								justifyContent: "center",
 								alignItems: "center",
 							}}
-							onPress={() => myStream?._tracks[1]._switchCamera()}
+							onPress={handleSwitchCamera}
 						>
 							<MaterialIcons
 								name="flip-camera-android"
@@ -561,10 +617,7 @@ export default function VideoCall() {
 								alignItems: "center",
 								marginTop: 20,
 							}}
-							onPress={() => {
-								myStream.getAudioTracks()[0].enabled =
-									!myStream.getAudioTracks()[0].enabled;
-							}}
+							onPress={handleGetAudioTrack}
 						>
 							{!myStream.getAudioTracks()[0].enabled ? (
 								<Feather name="mic" size={22} color="white" />
@@ -583,59 +636,7 @@ export default function VideoCall() {
 								alignItems: "center",
 								marginTop: 20,
 							}}
-							onPress={() => {
-								// myStream.getVideoTracks()[0].enabled
-								// 	? socket.emit("SIGNALLING_SERVER", {
-								// 			roomId: params.roomId,
-								// 			fromUserId: systemUserId,
-								// 			initiator: {
-								// 				...currentUser,
-								// 				avtarImageUrl: avtarUrl,
-								// 				firstName: currentUser.userName,
-								// 			},
-								// 			targetUser: params.targetUser,
-								// 			toUserId: params.targetUser.id,
-								// 			eventType: "VIDEO_MUTE",
-								// 			iceCandidate: null,
-								// 			offer: null,
-								// 			answer: null,
-								// 			mediaStream: null,
-								// 			responseMessage: "Room Joined",
-								// 			callDuration: "00",
-								// 			callType: "Video",
-								// 			groupName: null,
-								// 			toAvatarSrc: null,
-								// 			groupMemberCounts: 0,
-								// 			groupCreatorId: null,
-								// 			addToCall: false,
-								// 	  })
-								// 	: socket.emit("SIGNALLING_SERVER", {
-								// 			roomId: params.roomId,
-								// 			fromUserId: systemUserId,
-								// 			initiator: {
-								// 				...currentUser,
-								// 				avtarImageUrl: avtarUrl,
-								// 				firstName: currentUser.userName,
-								// 			},
-								// 			targetUser: params.targetUser,
-								// 			toUserId: params.targetUser.id,
-								// 			eventType: "VIDEO_UNMUTE",
-								// 			iceCandidate: null,
-								// 			offer: null,
-								// 			answer: null,
-								// 			mediaStream: null,
-								// 			responseMessage: "Room Joined",
-								// 			callDuration: "00",
-								// 			callType: "Video",
-								// 			groupName: null,
-								// 			toAvatarSrc: null,
-								// 			groupMemberCounts: 0,
-								// 			groupCreatorId: null,
-								// 			addToCall: false,
-								// 	  });
-								myStream.getVideoTracks()[0].enabled =
-									!myStream.getVideoTracks()[0].enabled;
-							}}
+							onPress={handleGetVideoTrack}
 						>
 							{!myStream.getVideoTracks()[0].enabled ? (
 								<Feather name="video" size={22} color="white" />
@@ -649,7 +650,7 @@ export default function VideoCall() {
 							style={{ borderRadius: 50, backgroundColor: "red" }}
 							// onPress={goBack}
 							icon={
-								<Image
+								<FastImage
 									source={require("../../../../../assets/EditDrawerIcon/ic_call.png")}
 									style={[
 										{
@@ -698,7 +699,7 @@ export default function VideoCall() {
 							// await connectSocket(socket);
 						}}
 						icon={
-							<Image
+							<FastImage
 								source={require("../../../../../assets/EditDrawerIcon/ic_call.png")}
 								style={[styles.callImg, { transform: [{ rotate: "130deg" }] }]}
 							/>

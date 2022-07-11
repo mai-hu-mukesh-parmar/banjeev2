@@ -4,12 +4,12 @@ import React, { useCallback } from "react";
 import {
 	View,
 	StyleSheet,
-	Image,
 	VirtualizedList,
 	Animated,
 	TouchableOpacity,
 	ScrollView,
 } from "react-native";
+import FastImage from "react-native-fast-image";
 import { useDispatch, useSelector } from "react-redux";
 import AppButton from "../../../constants/components/ui-component/AppButton";
 import color from "../../../constants/env/color";
@@ -147,7 +147,7 @@ function OtherRoom(props) {
 					}}
 				>
 					<Text fontSize={24}>Hey There!!</Text>
-					<Image
+					<FastImage
 						source={require("../../../../assets/EditDrawerIcon/dummy_delete_user.png")}
 						style={{ height: 120, width: 120, marginTop: 20, marginBottom: 10 }}
 					/>

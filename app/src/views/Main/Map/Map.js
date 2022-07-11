@@ -6,8 +6,13 @@ import React, {
 	Fragment,
 } from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import { View, Image, StyleSheet, SafeAreaView } from "react-native";
+import MapView, {
+	MAP_TYPES,
+	Marker,
+	PROVIDER_DEFAULT,
+	PROVIDER_GOOGLE,
+} from "react-native-maps";
+import { View, StyleSheet, SafeAreaView } from "react-native";
 import * as Location from "expo-location";
 import { updateUser } from "../../../helper/services/SettingService";
 import { getUserRegistryData } from "../../../helper/services/SplashService";
@@ -16,9 +21,8 @@ import AppLoading from "../../../constants/components/ui-component/AppLoading";
 import AppFabButton from "../../../constants/components/ui-component/AppFabButton";
 import color from "../../../constants/env/color";
 import { Text } from "native-base";
-import { useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import SearchMapLocation from "./MapComponents/SearchMapLocation";
-import NoLoactionFound from "./MapComponents/NoLoactionFound";
 import { useDispatch, useSelector } from "react-redux";
 import { setMapData } from "../../../redux/store/action/mapAction";
 import RenderMarker from "./MapComponents/RenderMarker";
@@ -28,6 +32,7 @@ import {
 	profileUrl,
 } from "../../../utils/util-func/constantExport";
 import { Entypo } from "@expo/vector-icons";
+import FastImage from "react-native-fast-image";
 
 const initialRegion = {
 	latitude: 23.049712651170047,
@@ -37,12 +42,13 @@ const initialRegion = {
 };
 
 export default function Map() {
+	const isFocused = useIsFocused();
 	const mapRef = useRef(null);
 	const markerRef = useRef(null);
 
 	const dispatch = useDispatch();
 
-	const { isFocused, navigate } = useNavigation();
+	const { navigate } = useNavigation();
 	const {
 		registry: { systemUserId: id },
 		map,
@@ -86,24 +92,39 @@ export default function Map() {
 		[userHandler, id]
 	);
 
-	const listAllUser = useCallback(({ latitude, longitude }) => {
-		getAllUser({
-			distance: "100",
-			point: { lat: latitude, lon: longitude },
-			page: 0,
-			pageSize: 20,
-			blockedList: null,
-			connections: null,
-			pendingConnections: null,
-		})
-			.then((res) => {
-				setvisible(false);
-				dispatch(setMapData({ banjeeUsers: res.content }));
+	const listAllUser = useCallback(
+		({ latitude, longitude }) => {
+			let point = { lat: latitude, lon: longitude };
+			if (searchData.open) {
+				point = {
+					lat: searchData.loc.latitude,
+					lon: searchData.loc.longitude,
+				};
+			} else {
+				point = {
+					lon: longitude,
+					lat: latitude,
+				};
+			}
+			getAllUser({
+				distance: "100",
+				point,
+				page: 0,
+				pageSize: 20,
+				blockedList: null,
+				connections: null,
+				pendingConnections: null,
 			})
-			.catch((err) => {
-				console.warn(err);
-			});
-	}, []);
+				.then((res) => {
+					setvisible(false);
+					dispatch(setMapData({ banjeeUsers: res.content }));
+				})
+				.catch((err) => {
+					console.warn(err);
+				});
+		},
+		[searchData]
+	);
 
 	const getLocation = useCallback(async () => {
 		let locationAsync = await Location.getCurrentPositionAsync({});
@@ -139,41 +160,18 @@ export default function Map() {
 	}, [initialRegion, getUser, listAllUser]);
 
 	useEffect(() => {
-		setvisible(true);
-		getLocation();
+		if (isFocused) {
+			getLocation();
+		} else {
+			setvisible(false);
+		}
 	}, [getLocation, isFocused]);
 
 	return (
-		<View
-			style={{
-				position: "relative",
-				display: "flex",
-				flex: 1,
-
-				alignItems: "center",
-				justifyContent: "center",
-			}}
-		>
+		<Fragment>
 			{visible && <AppLoading visible={visible} />}
-			{!visible && loc && (
+			{!visible && (
 				<Fragment>
-					<AppFabButton
-						onPress={() => {
-							// refRBSheet.current.open();
-							dispatch(setMapData({ refRBSheet: true }));
-						}}
-						style={{ position: "absolute", top: 35, right: 5, zIndex: 999 }}
-						size={20}
-						icon={
-							<MaterialCommunityIcons
-								name="magnify"
-								size={24}
-								color={color.black}
-							/>
-						}
-					/>
-					<SearchMapLocation />
-					{loc && <NoLoactionFound />}
 					<AppFabButton
 						style={{
 							height: 60,
@@ -190,9 +188,25 @@ export default function Map() {
 						size={24}
 						onPress={() => navigate("ProfileCards")}
 						icon={
-							<Image
+							<FastImage
 								source={require("../../../../assets/EditDrawerIcon/ic_explore.png")}
 								style={{ height: 24, width: 24 }}
+							/>
+						}
+					/>
+					<AppFabButton
+						onPress={() => {
+							dispatch(
+								setMapData({ refRBSheet: { open: true, screen: "Maps" } })
+							);
+						}}
+						style={{ position: "absolute", top: 50, right: 10, zIndex: 1 }}
+						size={30}
+						icon={
+							<MaterialCommunityIcons
+								name="magnify"
+								size={24}
+								color={color.black}
 							/>
 						}
 					/>
@@ -201,59 +215,44 @@ export default function Map() {
 						ref={mapRef}
 						showsCompass={false}
 						maxZoomLevel={20}
+						// maxZoomLevel={13}
 						region={
 							searchData && searchData.open ? { ...searchData.loc } : { ...loc }
 						}
-						userLocationPriority="passive"
-						provider={PROVIDER_GOOGLE}
+						userLocationPriority="low"
+						provider={"google"}
 						style={styles.map}
 					>
-						<View>
-							{searchData && searchData.open && (
-								<Marker ref={markerRef} coordinate={{ ...searchData.loc }}>
-									{searchData.title && (
-										<View
-											style={{
-												display: "flex",
-												flexDirection: "column",
-												alignItems: "center",
-											}}
-										>
-											<Text style={{ backgroundColor: "white" }}>
-												{searchData.title}
-											</Text>
-											<Entypo name="location-pin" size={24} color="red" />
-										</View>
-									)}
-								</Marker>
-							)}
+						{searchData && searchData.open ? (
 							<Marker
 								ref={markerRef}
-								key={id}
-								coordinate={{
-									longitude: loc.longitude,
-									latitude: loc.latitude,
-									latitudeDelta: 1,
-									longitudeDelta: 1,
+								coordinate={{ ...searchData.loc }}
+								style={{
+									display: "flex",
+									flexDirection: "column",
+									alignItems: "center",
 								}}
 							>
-								<Image
+								<Text style={{ backgroundColor: "white" }}>
+									{searchData.title}
+								</Text>
+								<Entypo name="location-pin" size={24} color="red" />
+							</Marker>
+						) : (
+							<Marker ref={markerRef} coordinate={{ ...loc }}>
+								<FastImage
 									style={{
 										width: 50,
 										height: 60,
-										top: 0,
-
-										left: 0,
 									}}
 									source={require("../../../../assets/EditDrawerIcon/ic_me.png")}
 								/>
-								<Image
+								<FastImage
 									style={{
 										width: 40,
 										height: 40,
 										position: "absolute",
-										top: 5,
-										zIndex: 99,
+										top: 4,
 										left: 5,
 										borderRadius: 50,
 										zIndex: 1,
@@ -263,18 +262,32 @@ export default function Map() {
 									}}
 								/>
 							</Marker>
+						)}
 
-							{banjeeUsers.length > 0 && <RenderMarker />}
-						</View>
+						<RenderMarker />
 					</MapView>
 					<AppFabButton
 						size={30}
 						onPress={() => {
 							getLocation();
+							dispatch(
+								setMapData({
+									searchData: {
+										loc: {
+											longitude: loc.longitude,
+											latitude: loc.latitude,
+											latitudeDelta: initialRegion.latitudeDelta,
+											longitudeDelta: initialRegion.longitudeDelta,
+										},
+										open: false,
+										title: "",
+									},
+								})
+							);
 						}}
 						style={styles.mapIcon}
 						icon={
-							<Image
+							<FastImage
 								style={{
 									width: 40,
 									height: 40,
@@ -283,9 +296,10 @@ export default function Map() {
 							/>
 						}
 					/>
+					<SearchMapLocation />
 				</Fragment>
 			)}
-		</View>
+		</Fragment>
 	);
 }
 const styles = StyleSheet.create({

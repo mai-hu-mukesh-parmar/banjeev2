@@ -8,10 +8,13 @@ import React, {
 import {
 	View,
 	StyleSheet,
+	VirtualizedList,
 	TouchableWithoutFeedback,
-	Image,
 	Dimensions,
+	Keyboard,
 } from "react-native";
+import { EvilIcons } from "@expo/vector-icons";
+import FastImage from "react-native-fast-image";
 import RBSheet from "react-native-raw-bottom-sheet";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import axios from "axios";
@@ -23,6 +26,7 @@ import AppFabButton from "../../../../constants/components/ui-component/AppFabBu
 import { useDispatch, useSelector } from "react-redux";
 import { setMapData } from "../../../../redux/store/action/mapAction";
 import SearchMapLocationItem from "./SearchMapLocationItem";
+import { useNavigation } from "@react-navigation/native";
 
 function SearchMapLocation() {
 	const dispatch = useDispatch();
@@ -33,6 +37,7 @@ function SearchMapLocation() {
 	} = useSelector((state) => state.map);
 
 	const refRBSheet = useRef(null);
+	const { navigate } = useNavigation();
 
 	const [suggestionsList, setSuggestionsList] = useState([]);
 
@@ -60,24 +65,92 @@ function SearchMapLocation() {
 		refRBSheet.current.close();
 	};
 
-	const getMySearchLocation = useCallback((data) => {
-		dispatch(
-			setMapData({
-				searchData: { ...searchData, ...data },
-			})
-		);
-		refRBSheet.current.close();
-	}, []);
+	const getMySearchLocation = useCallback(
+		(data) => {
+			dispatch(
+				setMapData({
+					searchData: { ...searchData, ...data },
+				})
+			);
+			refRBSheet.current.close();
+			if (sheet.screen === "Cards") {
+				console.log("hey");
+				navigate("Map");
+			}
+		},
+		[sheet]
+	);
 
 	const locHandler = useCallback((data) => {
 		getMySearchLocation({ ...data, open: true });
 	}, []);
 
+	console.log(searchData);
 	useEffect(() => {
-		if (sheet && refRBSheet.current) {
+		console.log("sheet", sheet);
+		if (sheet.open && refRBSheet.current) {
 			refRBSheet.current.open();
 		}
 	}, [sheet]);
+
+	const navigateLocation = ({ title, id }) => {
+		const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${id}&key=AIzaSyBqW8iaz-_qlaTMc1ynbj9f7mpfmbVUcW4`;
+		axios
+			.get(url)
+			.then((res) => {
+				let x = res.data.result.geometry.location;
+				let loc = {
+					longitude: x.lng,
+					latitude: x.lat,
+					latitudeDelta: 0.0922,
+					longitudeDelta: 0.0421,
+				};
+				locHandler({ loc, title });
+				setSuggestionsList([]);
+			})
+			.catch((err) => console.log(err));
+	};
+	const renderItem = ({ item }) => {
+		return (
+			<TouchableWithoutFeedback
+				onPress={() => {
+					navigateLocation(item);
+				}}
+			>
+				<View style={{ flexDirection: "row", marginTop: 10 }}>
+					<EvilIcons
+						name="location"
+						color={"black"}
+						size={20}
+						style={{ marginTop: 5 }}
+					/>
+
+					<View style={{ marginLeft: 10 }}>
+						<Text
+							numberOfLines={1}
+							style={{ fontWeight: "bold" }}
+							onPress={() => {
+								Keyboard.dismiss((e) => console.warn(e));
+								navigateLocation(item);
+							}}
+						>
+							{item.title.split(",")[0]}
+						</Text>
+
+						<Text
+							numberOfLines={2}
+							style={{ fontSize: 16 }}
+							onPress={() => {
+								navigateLocation(item);
+							}}
+						>
+							{item.title}
+						</Text>
+					</View>
+				</View>
+			</TouchableWithoutFeedback>
+		);
+	};
 
 	return (
 		<Fragment>
@@ -88,7 +161,7 @@ function SearchMapLocation() {
 				height={500}
 				width={"100%"}
 				onClose={() => {
-					dispatch(setMapData({ refRBSheet: false }));
+					dispatch(setMapData({ refRBSheet: { ...sheet, open: false } }));
 				}}
 				ref={refRBSheet}
 				dragFromTopOnly={true}
@@ -122,7 +195,7 @@ function SearchMapLocation() {
 
 							<TouchableWithoutFeedback onPress={getCurrentLocation}>
 								<View style={styles.grp}>
-									<Image
+									<FastImage
 										style={styles.img}
 										source={require("../../../../../assets/EditDrawerIcon/ic_loc_center.png")}
 									/>
@@ -134,13 +207,13 @@ function SearchMapLocation() {
 									</Text>
 								</View>
 							</TouchableWithoutFeedback>
-							{suggestionsList.length > 0 && (
-								<SearchMapLocationItem
-									suggestionsList={suggestionsList}
-									locHandler={locHandler}
-									setSuggestionsList={setSuggestionsList}
-								/>
-							)}
+							<VirtualizedList
+								getItemCount={(data) => data.length}
+								getItem={(data, index) => data[index]}
+								showsVerticalScrollIndicator={false}
+								data={suggestionsList}
+								renderItem={renderItem}
+							/>
 						</View>
 					</View>
 				</View>

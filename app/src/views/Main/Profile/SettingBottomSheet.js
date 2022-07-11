@@ -1,13 +1,8 @@
 import { useNavigation } from "@react-navigation/native";
 import { Text } from "native-base";
 import React from "react";
-import {
-	View,
-	StyleSheet,
-	Image,
-	TouchableWithoutFeedback,
-} from "react-native";
-
+import { View, StyleSheet, TouchableWithoutFeedback } from "react-native";
+import FastImage from "react-native-fast-image";
 import RBSheet from "react-native-raw-bottom-sheet";
 import { useDispatch, useSelector } from "react-redux";
 import color from "../../../constants/env/color";
@@ -133,7 +128,7 @@ function SettingBottomSheet({ refRBSheet, setOpen, setDeleteAccountModal }) {
 										marginTop: index === 0 ? 15 : 0,
 									}}
 								>
-									<Image
+									<FastImage
 										source={ele.icon}
 										height={20}
 										width={20}

@@ -3,6 +3,7 @@ import React from "react";
 import { TouchableHighlight, View, StyleSheet, Image } from "react-native";
 import color from "../../../../constants/env/color";
 import { listProfileUrl } from "../../../../utils/util-func/constantExport";
+import FastImage from "react-native-fast-image";
 
 function BlockBanjeeContacts({ item, onPress }) {
 	return (
@@ -24,7 +25,7 @@ function BlockBanjeeContacts({ item, onPress }) {
 								: item.connectedUser.firstName.charAt(0).toUpperCase()}
 						</Avatar>
 
-						{/* <Image
+						{/* <FastImage
 							style={styles.img}
 							source={{ uri: listProfileUrl(item.user.id) }}
 						/> */}
