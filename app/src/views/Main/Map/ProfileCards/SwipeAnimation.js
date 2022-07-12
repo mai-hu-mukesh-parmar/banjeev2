@@ -64,7 +64,6 @@ export default function SwipeAnimation() {
 			pageSize: 20,
 		})
 			.then((res) => {
-				console.warn(res.content, "response of location");
 				setVisible(false);
 				setData([...res.content, "last"]);
 			})
@@ -90,13 +89,6 @@ export default function SwipeAnimation() {
 		} else {
 			return (
 				<Fragment>
-					<LinearGradient
-						style={styles.textGradient}
-						start={{ x: 1, y: 0 }}
-						end={{ x: 0, y: 0 }}
-						colors={["#ED475C", "#A93294"]}
-					/>
-
 					<UserCard item={item} />
 					<BottomCard next={nextEle} item={item} />
 				</Fragment>
@@ -137,7 +129,6 @@ export default function SwipeAnimation() {
 								onSnapToItem={(index) => {
 									setIndex(index);
 								}}
-								snapToNext={(c) => console.warn(c)}
 								dotColor={color.primary}
 								inactiveDotColor={"grey"}
 								layout="tinder"

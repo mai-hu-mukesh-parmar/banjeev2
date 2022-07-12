@@ -7,7 +7,12 @@ import {
 
 const initialState = {
 	// userLatitude: 0,
-	userLocation: null,
+	userLocation: {
+		latitude: 23.049712651170047,
+		longitude: 72.50148585561955,
+		latitudeDelta: 0.0922,
+		longitudeDelta: 0.0421,
+	},
 	banjeeUsers: [],
 	searchData: {
 		open: false,

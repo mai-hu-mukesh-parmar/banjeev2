@@ -11,8 +11,6 @@ import {
 
 export default function RenderMarker() {
 	const { navigate } = useNavigation();
-	const markerRef = useRef(null);
-
 	const {
 		registry: { systemUserId: mySysId },
 		map,
@@ -22,8 +20,7 @@ export default function RenderMarker() {
 
 	return (
 		<Fragment>
-			{banjeeUsers &&
-				banjeeUsers.length > 0 &&
+			{banjeeUsers.length > 0 &&
 				banjeeUsers.map((user, i) => {
 					const {
 						id: banjeeId,
