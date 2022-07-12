@@ -33,7 +33,7 @@ export const sharePost = async (url, mimeType, text, FeedId, postId) => {
 				.then(async ({ uri }) => {
 					await RNShare.default.open({
 						url: uri,
-						message: text + `https://www.banjee.org/feed/${FeedId}`,
+						message: text + `${"\n"}https://www.banjee.org/feed/${FeedId}`,
 					});
 
 					// console.log("Finished downloading to ", uri);
@@ -47,7 +47,7 @@ export const sharePost = async (url, mimeType, text, FeedId, postId) => {
 				.then(async ({ uri }) => {
 					await RNShare.default.open({
 						url: uri,
-						message: text + `https://www.banjee.org/feed/${FeedId}`,
+						message: text + `${"\n"}https://www.banjee.org/feed/${FeedId}`,
 					});
 				})
 				.catch((error) => {
@@ -56,13 +56,21 @@ export const sharePost = async (url, mimeType, text, FeedId, postId) => {
 
 		case "audio":
 			RNShare.default.open({
-				message: text + `https://www.banjee.org/feed/${FeedId}`,
+				message: text + `${"\n"}https://www.banjee.org/feed/${FeedId}`,
 			});
 
 		default:
 			RNShare.default.open({
-				message: text + `https://www.banjee.org/feed/${FeedId}`,
+				message: text + `${"\n"}https://www.banjee.org/feed/${FeedId}`,
 			});
 			break;
 	}
+};
+
+export const shareRoom = (roomId) => {
+	const text =
+		"Checkout more exciting content,connect with people around the world with similar interest and talk to them in numerous voice changing filters in Bnajee App.";
+	RNShare.default.open({
+		message: text + `${"\n"}https://www.banjee.org/room/${roomId}`,
+	});
 };

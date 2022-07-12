@@ -5,8 +5,8 @@ import {
 	StyleSheet,
 	TouchableWithoutFeedback,
 	ImageBackground,
-	Image,
 } from "react-native";
+import FastImage from "react-native-fast-image";
 import AppBorderButton from "../../constants/components/ui-component/AppBorderButton";
 import AppButton from "../../constants/components/ui-component/AppButton";
 
@@ -34,7 +34,7 @@ function ConfirmModal({ setModalVisible, btnLabel, message, onPress, title }) {
 						source={require("../../../assets/EditDrawerIcon/modalBg.png")}
 						style={styles.container}
 					>
-						<Image
+						<FastImage
 							source={require("../../../assets/EditDrawerIcon/danger.png")}
 							style={{
 								width: "60%",

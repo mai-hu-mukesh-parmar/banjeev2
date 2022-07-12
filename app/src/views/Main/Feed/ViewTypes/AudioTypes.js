@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
-import { View, Image, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import usePlayPauseAudio from "../../../../utils/hooks/usePlayPauseAudio";
+import FastImage from "react-native-fast-image";
 
 export default function AudioTypes({ src }) {
 	const { icons, playAudio, stopPlayer } = usePlayPauseAudio(src, true);
@@ -18,11 +19,13 @@ export default function AudioTypes({ src }) {
 				flexDirection: "row",
 				alignItems: "center",
 				position: "relative",
-				height: 60,
+				flex: 1,
+				justifyContent: "center",
+				width: "95%",
 			}}
 		>
-			<Image
-				style={{ width: "100%", borderRadius: 4, height: "100%" }}
+			<FastImage
+				style={{ width: "100%", borderRadius: 4, height: 60 }}
 				source={require("../../../../../assets/EditDrawerIcon/feedAudioBg.png")}
 			/>
 			<View
@@ -53,7 +56,7 @@ export default function AudioTypes({ src }) {
 					</View>
 				</TouchableOpacity>
 				{icons === "pause" && (
-					<Image
+					<FastImage
 						style={{
 							height: "80%",
 							width: "85%",

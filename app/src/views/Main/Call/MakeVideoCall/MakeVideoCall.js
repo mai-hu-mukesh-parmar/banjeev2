@@ -1,4 +1,5 @@
-import { View, ImageBackground, Image, StyleSheet } from "react-native";
+import { View, ImageBackground, StyleSheet } from "react-native";
+import FastImage from "react-native-fast-image";
 import React, { useContext, useEffect } from "react";
 import { Text } from "native-base";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -166,7 +167,7 @@ export default function MakeVideoCall() {
 						style={{ borderRadius: 50, backgroundColor: "red" }}
 						onPress={goBack}
 						icon={
-							<Image
+							<FastImage
 								source={require("../../../../../assets/EditDrawerIcon/ic_call.png")}
 								style={[styles.callImg, { transform: [{ rotate: "130deg" }] }]}
 							/>

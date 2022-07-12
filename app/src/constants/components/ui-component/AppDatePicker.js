@@ -30,7 +30,19 @@ export default function AppDatePicker({ onChange, value }) {
 		const date = accDate.getDate();
 		return `${year}-${month + 1}-${date}`;
 	};
+	const handleOpen = () => setOpen(true);
 
+	const handleOnChangeEvent = (e) => {
+		if (e.type === "set") {
+			let date = e.nativeEvent.timestamp;
+			if (Platform.OS === "ios") {
+				onChange(new Date(date));
+			} else {
+				onChange(date);
+				onClose();
+			}
+		}
+	};
 	return (
 		<React.Fragment>
 			<View
@@ -41,7 +53,7 @@ export default function AppDatePicker({ onChange, value }) {
 				}}
 			>
 				<TouchableOpacity
-					onPress={() => setOpen(true)}
+					onPress={handleOpen}
 					style={{
 						height: 40,
 						paddingLeft: 23,
@@ -60,7 +72,7 @@ export default function AppDatePicker({ onChange, value }) {
 					<Text>{typeof value === "string" ? value : getFormatedDate()}</Text>
 				</TouchableOpacity>
 
-				<TouchableOpacity onPress={() => setOpen(true)}>
+				<TouchableOpacity onPress={handleOpen}>
 					<MaterialCommunityIcons
 						name="calendar-edit"
 						size={20}
@@ -79,18 +91,8 @@ export default function AppDatePicker({ onChange, value }) {
 								justifyContent: "space-between",
 							}}
 						>
-							<Button
-								title="Cancle"
-								onPress={() => {
-									onClose();
-								}}
-							/>
-							<Button
-								title="Done"
-								onPress={() => {
-									onClose();
-								}}
-							/>
+							<Button title="Cancle" onPress={onClose} />
+							<Button title="Done" onPress={onClose} />
 						</View>
 					)}
 					<DateTimePicker
@@ -99,17 +101,7 @@ export default function AppDatePicker({ onChange, value }) {
 						value={new Date(value)}
 						display={Platform.OS === "ios" ? "spinner" : "default"}
 						maximumDate={limit}
-						onChange={(e) => {
-							if (e.type === "set") {
-								let date = e.nativeEvent.timestamp;
-								if (Platform.OS === "ios") {
-									onChange(new Date(date));
-								} else {
-									onChange(date);
-									onClose();
-								}
-							}
-						}}
+						onChange={handleOnChangeEvent}
 						style={{ zIndex: 1 }}
 					/>
 				</View>

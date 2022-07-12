@@ -1,9 +1,5 @@
-import {
-	View,
-	Image,
-	StyleSheet,
-	TouchableWithoutFeedback,
-} from "react-native";
+import { View, StyleSheet, TouchableWithoutFeedback } from "react-native";
+import FastImage from "react-native-fast-image";
 import React from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -15,6 +11,7 @@ import usePlayPauseAudio from "../../../../utils/hooks/usePlayPauseAudio";
 import AppMenu from "../../../../constants/components/ui-component/AppMenu";
 import { useDispatch } from "react-redux";
 import { setRoomData } from "../../../../redux/store/action/roomAction";
+import { shareRoom } from "../../../Other/ShareApp";
 
 export default function RoomElement({
 	item,
@@ -45,7 +42,7 @@ export default function RoomElement({
 			>
 				<View style={styles.subContainer}>
 					{item?.live && (
-						<Image
+						<FastImage
 							source={require("../../../../../assets/EditDrawerIcon/live.png")}
 							style={[
 								styles.img,
@@ -53,7 +50,7 @@ export default function RoomElement({
 							]}
 						/>
 					)}
-					<Image
+					<FastImage
 						source={
 							item?.imageContent?.src
 								? { uri: profileUrl(item?.imageContent?.src) }
@@ -111,7 +108,7 @@ export default function RoomElement({
 								alignItems: "center",
 							}}
 						>
-							<Image
+							<FastImage
 								source={require("../../../../../assets/EditDrawerIcon/category.png")}
 								style={{
 									width: 24,
@@ -176,7 +173,7 @@ export default function RoomElement({
 									</Text>
 								</View>
 
-								<Image
+								<FastImage
 									source={require("../../../../../assets/EditDrawerIcon/ic_community_group.png")}
 									style={{
 										width: 20,
@@ -212,12 +209,20 @@ export default function RoomElement({
 							onPress={navigateToRoomCall}
 						/>
 					) : (
-						<AppBorderButton
-							title="Join"
-							width={80}
-							style={{ width: 80 }}
-							onPress={navigateToRoomCall}
-						/>
+						<React.Fragment>
+							<AppBorderButton
+								title="Join"
+								width={80}
+								style={{ width: 80 }}
+								onPress={navigateToRoomCall}
+							/>
+							<AppButton
+								title="share"
+								width={80}
+								style={{ width: 80 }}
+								onPress={() => shareRoom(item.chatroomId)}
+							/>
+						</React.Fragment>
 					)}
 					{/* userRoom comes from room component */}
 

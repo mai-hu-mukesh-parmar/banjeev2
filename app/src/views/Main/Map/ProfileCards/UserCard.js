@@ -1,12 +1,13 @@
 import React from "react";
 import { View, StyleSheet, Dimensions, Image } from "react-native";
-import { EvilIcons } from "@expo/vector-icons";
+
 import { Text } from "native-base";
 import color from "../../../../constants/env/color";
 import {
 	checkGender,
 	profileUrl,
 } from "../../../../utils/util-func/constantExport";
+import FastImage from "react-native-fast-image";
 
 function UserCard(props) {
 	const { avtarUrl: profileImg, gender, locationName } = props.item;
@@ -15,26 +16,7 @@ function UserCard(props) {
 		<View style={styles.container}>
 			{/* ````````````````````````````````````` AVATAR */}
 
-			<View style={{ backfaceVisibility: "visible" }}>
-				{locationName && (
-					<View
-						style={{
-							flexDirection: "row",
-							justifyContent: "center",
-							alignItems: "center",
-							width: "80%",
-							alignSelf: "center",
-						}}
-					>
-						<Text style={{ color: color.white }} numberOfLines={1}>
-							{locationName}
-						</Text>
-
-						<EvilIcons name="location" color={"white"} size={20} />
-					</View>
-				)}
-			</View>
-			<Image
+			<FastImage
 				resizeMode="cover"
 				style={styles.img}
 				source={

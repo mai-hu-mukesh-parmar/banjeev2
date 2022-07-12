@@ -1,4 +1,5 @@
-import { View, ImageBackground, Image, StyleSheet } from "react-native";
+import { View, ImageBackground, StyleSheet } from "react-native";
+import FastImage from "react-native-fast-image";
 import React, { useContext, useEffect } from "react";
 import {
   StackActions,

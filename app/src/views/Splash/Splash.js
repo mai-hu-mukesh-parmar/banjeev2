@@ -2,14 +2,14 @@ import React, { useCallback, useEffect, useState } from "react";
 import { View } from "react-native";
 import * as SplashScreen from "expo-splash-screen";
 import { getLocalStorage } from "../../utils/Cache/TempStorage";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, StackActions } from "@react-navigation/native";
 import BackGroundImg from "../../constants/components/BackGroundImg";
 import { useUserUpdate } from "../../utils/hooks/useUserUpdate";
 
 export default function Splash() {
 	const [token, setToken] = useState(null);
 	const [appIsReady, setAppIsReady] = useState(false);
-	const { navigate } = useNavigation();
+	const { navigate, dispatch } = useNavigation();
 
 	useUserUpdate(token, "Bottom");
 
@@ -21,7 +21,8 @@ export default function Splash() {
 					setToken(tokenData);
 					console.log("hey", tokenData);
 				} else {
-					navigate("SignIn");
+					// navigate("SignIn");
+					dispatch(StackActions.replace("SignIn"));
 				}
 			} catch (e) {
 				console.warn(e);

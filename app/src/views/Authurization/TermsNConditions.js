@@ -1,10 +1,11 @@
 import { useRoute } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
-import { View, StyleSheet, Image } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { WebView } from "react-native-webview";
 import { Text } from "native-base";
 import color from "../../constants/env/color";
+import FastImage from "react-native-fast-image";
 
 function TermsNConditions(props) {
 	const {
@@ -19,7 +20,7 @@ function TermsNConditions(props) {
 			colors={["rgba(237, 71, 92, 1 )", "rgba(98, 4, 160, 1 )"]}
 		>
 			<View style={styles.card}>
-				<Image
+				<FastImage
 					source={require("../../../assets/logo.png")}
 					style={styles.logo}
 				/>

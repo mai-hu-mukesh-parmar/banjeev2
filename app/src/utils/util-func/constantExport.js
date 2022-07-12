@@ -1,14 +1,14 @@
 export const profileUrl = (id) => {
 	// requires avtarUrl
 	if (id) {
-		return `https://gateway.banjee.org//services/media-service/iwantcdn/resources/${id}?actionCode=ACTION_DOWNLOAD_RESOURCE`;
+		return `https://gateway.banjee.org/services/media-service/iwantcdn/resources/${id}?actionCode=ACTION_DOWNLOAD_RESOURCE`;
 	}
 };
 
 export const listProfileUrl = (id) => {
 	// requires systemUserId
 	return (
-		"https://gateway.banjee.org//services/media-service/iwantcdn/user/" + id
+		"https://gateway.banjee.org/services/media-service/iwantcdn/user/" + id
 	);
 };
 

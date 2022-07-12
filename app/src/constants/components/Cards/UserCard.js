@@ -1,5 +1,6 @@
 import React from "react";
-import { View, StyleSheet, Dimensions, Image } from "react-native";
+import { View, StyleSheet, Dimensions } from "react-native";
+import FastImage from "react-native-fast-image";
 import AppText from "../../../Components/AppComponents/AppText";
 import color from "../../../Config/color";
 import { EvilIcons } from "@expo/vector-icons";
@@ -33,7 +34,7 @@ function UserCard(props) {
 					)}
 				</AppText>
 			</View>
-			<Image
+			<FastImage
 				resizeMode="cover"
 				style={styles.img}
 				source={

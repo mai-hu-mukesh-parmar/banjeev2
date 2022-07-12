@@ -1,11 +1,12 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
 	View,
 	StyleSheet,
-	Image,
 	TouchableWithoutFeedback,
 	ScrollView,
+	TextInput,
 } from "react-native";
+import FastImage from "react-native-fast-image";
 import * as ImagePicker from "expo-image-picker";
 import { Entypo } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -15,7 +16,7 @@ import { Video, Audio } from "expo-av";
 import { AntDesign } from "@expo/vector-icons";
 import { Radio, Text } from "native-base";
 import AppFabButton from "../../../../constants/components/ui-component/AppFabButton";
-import AppInput from "../../../../constants/components/ui-component/AppInput";
+
 import AppBorderButton from "../../../../constants/components/ui-component/AppBorderButton";
 import AppButton from "../../../../constants/components/ui-component/AppButton";
 import AppLoading from "../../../../constants/components/ui-component/AppLoading";
@@ -94,6 +95,7 @@ function CreateFeed(props) {
 			mediaTypes: ImagePicker.MediaTypeOptions.Videos,
 			allowsEditing: true,
 		});
+
 		if (!result.cancelled) {
 			let data = await uploadToCloudinary(
 				returnSource(result),
@@ -149,10 +151,9 @@ function CreateFeed(props) {
 	];
 
 	const reset_Post = () => {
-		dispatch(removeFeedData({}));
-		// setText("");
-		// setConnection(undefined);
-		// setLocation();
+		dispatch(removeFeedData());
+		dispatch(createFeedData({ connection: "PUBLIC" }));
+
 		setUploadContentData([]);
 	};
 
@@ -208,6 +209,14 @@ function CreateFeed(props) {
 			};
 		} catch (err) {
 			setApploading(false);
+
+			dispatch(
+				showToast({
+					open: true,
+					description: "size of video is too large",
+				})
+			);
+
 			console.log(
 				"--------- Catch Error --------->>",
 				JSON.parse(JSON.stringify(err))
@@ -255,7 +264,7 @@ function CreateFeed(props) {
 		switch (ele.resource_type) {
 			case "image":
 				return (
-					<Image style={styles.postImg} source={{ uri: ele.description }} />
+					<FastImage style={styles.postImg} source={{ uri: ele.description }} />
 				);
 			case "video":
 				return (
@@ -300,7 +309,7 @@ function CreateFeed(props) {
 		<View style={styles.container}>
 			<View style={{ width: "95%", alignSelf: "center" }}>
 				<View style={{ marginTop: 20 }}>
-					<AppInput
+					<TextInput
 						height={156}
 						value={text}
 						onChangeText={(e) => dispatch(createFeedData({ text: e }))}
@@ -320,7 +329,7 @@ function CreateFeed(props) {
 					{xdata?.map((item, i) => (
 						<TouchableWithoutFeedback key={i} onPress={() => item.onPress()}>
 							<View style={styles.postView}>
-								<Image source={item.icon} style={styles.smallImg} />
+								<FastImage source={item.icon} style={styles.smallImg} />
 								<Text
 									style={{ color: color.primary }}
 									onPress={() => item.onPress()}
@@ -380,12 +389,12 @@ function CreateFeed(props) {
 											</View>
 
 											{ele.mimeType === "audio/mp3" ? (
-												<Image
+												<FastImage
 													style={styles.postImg}
 													source={require("../../../../../assets/EditDrawerIcon/mp3.png")}
 												/>
 											) : (
-												<Image
+												<FastImage
 													style={styles.postImg}
 													source={{ uri: ele?.description }}
 												/>

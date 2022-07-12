@@ -1,10 +1,18 @@
-import React, { useCallback, useState } from "react";
+import React, {
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+	Fragment,
+} from "react";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import MapView, {
-  PROVIDER_IOS,
-  Marker,
-  PROVIDER_GOOGLE,
+	MAP_TYPES,
+	Marker,
+	PROVIDER_DEFAULT,
+	PROVIDER_GOOGLE,
 } from "react-native-maps";
-import { View, Image, StyleSheet } from "react-native";
+import { View, StyleSheet, SafeAreaView } from "react-native";
 import * as Location from "expo-location";
 import { updateUser } from "../../../helper/services/SettingService";
 import { getUserRegistryData } from "../../../helper/services/SplashService";
@@ -13,445 +21,303 @@ import AppLoading from "../../../constants/components/ui-component/AppLoading";
 import AppFabButton from "../../../constants/components/ui-component/AppFabButton";
 import color from "../../../constants/env/color";
 import { Text } from "native-base";
-import { profileUrl } from "../../../utils/util-func/constantExport";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  setMapRef,
-  setUserLocation,
-} from "../../../redux/store/action/MapAndProfileCardAction/mapAction";
-import { saveUserRegistry } from "../../../redux/store/action/useActions";
-import {
-  getLocalStorage,
-  getProfileLoaction,
-} from "../../../utils/Cache/TempStorage";
-import { useNavigation } from "@react-navigation/native";
-import { useUserUpdate } from "../../../utils/hooks/useUserUpdate";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import SearchMapLocation from "./MapComponents/SearchMapLocation";
-import NoLoactionFound from "./MapComponents/NoLoactionFound";
-import { getProfile } from "../../../redux/store/action/Profile/userPendingConnection";
+import { useDispatch, useSelector } from "react-redux";
+import { setMapData } from "../../../redux/store/action/mapAction";
+import RenderMarker from "./MapComponents/RenderMarker";
+import _ from "underscore";
+import {
+	listProfileUrl,
+	profileUrl,
+} from "../../../utils/util-func/constantExport";
+import { Entypo } from "@expo/vector-icons";
+import FastImage from "react-native-fast-image";
 
 const initialRegion = {
-  latitude: 23.049712651170047,
-  longitude: 72.50148585561955,
-  latitudeDelta: 0.0922,
-  longitudeDelta: 0.0421,
+	latitude: 23.049712651170047,
+	longitude: 72.50148585561955,
+	latitudeDelta: 0.0922,
+	longitudeDelta: 0.0421,
 };
 
 export default function Map() {
-  const [token, setToken] = React.useState();
-  const lref = React.useRef(null);
-  const [mref, setMref] = useState(lref);
+	const isFocused = useIsFocused();
+	const mapRef = useRef(null);
+	const markerRef = useRef(null);
 
-  useUserUpdate(token, "Map");
-  const getToken = useCallback(async () => {
-    await getLocalStorage("token")
-      .then((res) => {
-        setvisible(false);
-        setToken(res);
-      })
-      .catch((err) => console.warn(err));
-  }, []);
+	const dispatch = useDispatch();
 
-  const initialRegion = useSelector((state) => state.mapLocation);
-  const dispatch = useDispatch();
+	const { navigate } = useNavigation();
+	const {
+		registry: { systemUserId: id },
+		map,
+	} = useSelector((state) => state, _.isEqual);
 
-  // const mapRef = React.useRef(null);
+	const { userLocation: loc, searchData, banjeeUsers } = map;
+	const [visible, setvisible] = useState(true);
 
-  const { mapRef } = useSelector((state) => state.mapLocation);
+	const userHandler = useCallback((data) => {
+		updateUser(data, "PUT")
+			.then((res) => {})
+			.catch((err) => {
+				console.warn(err);
+			});
+	}, []);
 
-  // const { setUserLocation, setUserData, user, userData } =
-  // 	React.useContext(MainContext);
+	const getUser = useCallback(
+		(origin) => {
+			const { longitude, latitude } = origin;
+			getUserRegistryData(id)
+				.then((res) => {
+					if (res) {
+						userHandler({
+							...res,
+							currentLocation: { lat: latitude, lon: longitude },
+						});
+					} else {
+						userHandler({
+							systemUserId: id,
+							connections: [],
+							pendingConnections: [],
+							blockedList: [],
+							currentLocation: { lat: latitude, lon: longitude },
+						});
+					}
+				})
+				.catch((err) => {
+					console.warn(err);
+				});
+		},
+		[userHandler, id]
+	);
 
-  const user = useSelector((state) => state.user);
-  const userData = useSelector((state) => state.registry);
+	const listAllUser = useCallback(
+		({ latitude, longitude }) => {
+			let point = { lat: latitude, lon: longitude };
+			if (searchData.open) {
+				point = {
+					lat: searchData.loc.latitude,
+					lon: searchData.loc.longitude,
+				};
+			} else {
+				point = {
+					lon: longitude,
+					lat: latitude,
+				};
+			}
+			getAllUser({
+				distance: "100",
+				point,
+				page: 0,
+				pageSize: 20,
+				blockedList: null,
+				connections: null,
+				pendingConnections: null,
+			})
+				.then((res) => {
+					setvisible(false);
+					dispatch(setMapData({ banjeeUsers: res.content }));
+				})
+				.catch((err) => {
+					console.warn(err);
+				});
+		},
+		[searchData]
+	);
 
-  const [banjeeUsers, setBanjeeUsers] = React.useState([]);
-  const [visible, setvisible] = React.useState(true);
-  const [loc, setLoc] = React.useState(initialRegion);
-  const [searchData, setSearchData] = React.useState(null);
-  const markerRef = React.useRef(null);
+	const getLocation = useCallback(async () => {
+		let locationAsync = await Location.getCurrentPositionAsync({});
+		const { longitude, latitude } = locationAsync.coords;
+		const { latitudeDelta, longitudeDelta } = initialRegion;
+		if (longitude && latitude) {
+			dispatch(
+				setMapData({
+					userLocation: { longitude, latitude, latitudeDelta, longitudeDelta },
+				})
+			);
+			mapRef?.current?.animateToRegion(
+				{
+					...initialRegion,
+					latitude,
+					longitude,
+				},
+				1000
+			);
 
-  const setLocHandler = React.useCallback((data) => {
-    setLoc(data);
-  });
-  const userLoc = getProfileLoaction("location");
-  const userHandler = React.useCallback((data) => {
-    updateUser(data, "PUT")
-      .then((res) => {
-        listAllUser();
-        // setUserData(res);
-        dispatch(saveUserRegistry({ res }));
-      })
-      .catch((err) => {
-        console.warn(err);
-      });
-  }, []);
-  const getUser = React.useCallback((origin) => {
-    const { longitude, latitude } = origin;
-    getUserRegistryData(user.id)
-      .then((res) => {
-        if (res) {
-          dispatch(saveuser);
-          userHandler({
-            ...res,
-            currentLocation: { lat: latitude, lon: longitude },
-          });
-        } else {
-          userHandler({
-            systemUserId: user.id,
-            connections: [],
-            pendingConnections: [],
-            blockedList: [],
-            currentLocation: { lat: latitude, lon: longitude },
-          });
-        }
-      })
-      .catch((err) => {
-        console.warn(err);
-      });
-  }, []);
+			markerRef?.current?.animateMarkerToCoordinate(
+				{
+					...initialRegion,
+					latitude,
+					longitude,
+				},
+				1000
+			);
 
-  const getLocation = React.useCallback(async () => {
-    let locationAsync = await Location.getCurrentPositionAsync({});
-    const { longitude, latitude } = locationAsync.coords;
-    const { latitudeDelta, longitudeDelta } = initialRegion;
+			getUser({ longitude, latitude });
+			listAllUser({ longitude, latitude });
+		}
+	}, [initialRegion, getUser, listAllUser]);
 
-    if (longitude && latitude && latitudeDelta && longitudeDelta) {
-      mapRef?.animateToRegion(
-        {
-          longitude,
-          latitude,
-          latitudeDelta,
-          longitudeDelta,
-        },
-        1000
-      );
+	useEffect(() => {
+		if (isFocused) {
+			getLocation();
+		} else {
+			setvisible(false);
+		}
+	}, [getLocation, isFocused]);
 
-      useDispatch(
-        setUserLocation({ longitude, latitude, latitudeDelta, longitudeDelta })
-      );
+	return (
+		<Fragment>
+			{visible && <AppLoading visible={visible} />}
+			{!visible && (
+				<Fragment>
+					<AppFabButton
+						style={{
+							height: 60,
+							zIndex: 1,
+							position: "absolute",
+							right: 10,
+							bottom: 10,
+							width: 60,
+							borderRadius: 30,
+							backgroundColor: color.primary,
+							alignItems: "center",
+							justifyContent: "center",
+						}}
+						size={24}
+						onPress={() => navigate("ProfileCards")}
+						icon={
+							<FastImage
+								source={require("../../../../assets/EditDrawerIcon/ic_explore.png")}
+								style={{ height: 24, width: 24 }}
+							/>
+						}
+					/>
+					<AppFabButton
+						onPress={() => {
+							dispatch(
+								setMapData({ refRBSheet: { open: true, screen: "Maps" } })
+							);
+						}}
+						style={{ position: "absolute", top: 50, right: 10, zIndex: 1 }}
+						size={30}
+						icon={
+							<MaterialCommunityIcons
+								name="magnify"
+								size={24}
+								color={color.black}
+							/>
+						}
+					/>
+					<MapView
+						// liteMode={true}
+						ref={mapRef}
+						showsCompass={false}
+						maxZoomLevel={20}
+						// maxZoomLevel={13}
+						region={
+							searchData && searchData.open ? { ...searchData.loc } : { ...loc }
+						}
+						userLocationPriority="low"
+						provider={"google"}
+						style={styles.map}
+					>
+						{searchData && searchData.open ? (
+							<Marker
+								ref={markerRef}
+								coordinate={{ ...searchData.loc }}
+								style={{
+									display: "flex",
+									flexDirection: "column",
+									alignItems: "center",
+								}}
+							>
+								<Text style={{ backgroundColor: "white" }}>
+									{searchData.title}
+								</Text>
+								<Entypo name="location-pin" size={24} color="red" />
+							</Marker>
+						) : (
+							<Marker ref={markerRef} coordinate={{ ...loc }}>
+								<FastImage
+									style={{
+										width: 50,
+										height: 60,
+									}}
+									source={require("../../../../assets/EditDrawerIcon/ic_me.png")}
+								/>
+								<FastImage
+									style={{
+										width: 40,
+										height: 40,
+										position: "absolute",
+										top: 4,
+										left: 5,
+										borderRadius: 50,
+										zIndex: 1,
+									}}
+									source={{
+										uri: listProfileUrl(id),
+									}}
+								/>
+							</Marker>
+						)}
 
-      getUser({ longitude, latitude });
-      setSearchData(null);
-    }
-  }, [getUser]);
-  const { isFocused, navigate } = useNavigation();
-
-  React.useEffect(() => {
-    setMref(lref);
-    if (isFocused()) {
-      if (mref.current) {
-        alert("hey");
-        dispatch(setMapRef(mref));
-      }
-      // getLocation();
-      getToken();
-    }
-    return () => {
-      setBanjeeUsers([]);
-    };
-  }, [isFocused, getToken, mref]);
-
-  const listAllUser = React.useCallback(() => {
-    getAllUser({
-      distance: "100",
-      point: { lat: loc.latitude, lon: loc.longitude },
-      page: 0,
-      pageSize: 20,
-      blockedList: null,
-      connections: null,
-      pendingConnections: null,
-    })
-      .then((res) => {
-        setvisible(false);
-        setBanjeeUsers(res.content);
-      })
-      .catch((err) => {
-        console.warn(err);
-      });
-  }, []);
-
-  const getMySearchLocation = React.useCallback((data, refRBSheet) => {
-    console.log(data);
-    mapRef?.current?.animateToRegion(data.loc, 1000);
-    markerRef?.current?.animateMarkerToCoordinate(data.loc, 1000);
-    refRBSheet.close();
-    setTimeout(() => {
-      setSearchData(data);
-    }, 100);
-  }, []);
-
-  console.log("mapRefmapRef------------>", mref);
-
-  return (
-    <React.Fragment>
-      {visible && <AppLoading visible={visible} />}
-      {!visible && (
-        <React.Fragment>
-          <SearchMapLocation locFun={getMySearchLocation} />
-          {userLoc && <NoLoactionFound locFun={getMySearchLocation} />}
-          <AppFabButton
-            style={{
-              height: 60,
-              zIndex: 1,
-              position: "absolute",
-              right: 10,
-              bottom: 10,
-              width: 60,
-              borderRadius: 30,
-              backgroundColor: color.primary,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-            size={24}
-            onPress={() => navigate("ProfileCards")}
-            icon={
-              <Image
-                source={require("../../../../assets/EditDrawerIcon/ic_explore.png")}
-                style={{ height: 24, width: 24 }}
-              />
-            }
-          />
-          {/* searchData && searchData.open ? { ...searchData.loc } : { ...loc } */}
-          <MapView
-            // liteMode={true}
-            ref={lref}
-            showsCompass={false}
-            maxZoomLevel={20}
-            // maxZoomLevel={13}
-            region={initialRegion}
-            userLocationPriority="low"
-            provider={PROVIDER_GOOGLE}
-            style={styles.map}
-          >
-            <Marker ref={markerRef} coordinate={{ ...loc }}>
-              {searchData && searchData.open ? (
-                <View>
-                  {searchData.title && (
-                    <View
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Text style={{ backgroundColor: "white" }}>
-                        {searchData.title}
-                      </Text>
-                      <Entypo name="location-pin" size={24} color="red" />
-                    </View>
-                  )}
-                </View>
-              ) : (
-                <View>
-                  <Image
-                    style={{
-                      width: 50,
-                      height: 60,
-                    }}
-                    source={require("../../../../assets/EditDrawerIcon/ic_me.png")}
-                  />
-                </View>
-              )}
-            </Marker>
-            {banjeeUsers &&
-              banjeeUsers.length > 0 &&
-              banjeeUsers.map((user, i) => {
-                const {
-                  id,
-                  avtarUrl,
-                  existsInContact,
-                  systemUserId,
-                  currentLocation: { lon: longitude, lat: latitude },
-                } = user;
-                return (
-                  <React.Fragment key={i}>
-                    <View
-                      style={{
-                        display: "flex",
-                        position: "relative",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        zIndex: 99999,
-                      }}
-                    >
-                      {!existsInContact ? (
-                        <Marker
-                          onPress={() => {
-                            dispatch(
-                              setUserLocation({
-                                userLatitude: latitude,
-                                userLongitude: longitude,
-                              })
-                            );
-                            navigate(
-                              "ProfileCards"
-                              // , {
-                              // 	userLocation: {
-                              // 		userLatitude: latitude,
-                              // 		userLongitude: longitude,
-                              // 	},
-                              // }
-                            );
-                          }}
-                          key={id}
-                          coordinate={{
-                            longitude,
-                            latitude,
-                            latitudeDelta: 1,
-                            longitudeDelta: 1,
-                          }}
-                        >
-                          <Image
-                            style={{
-                              width: 50,
-                              height: 80,
-                              top: 0,
-                              left: 0,
-                              zIndex: 99999,
-                            }}
-                            source={require("../../../../assets/EditDrawerIcon/ic_map_blue.png")}
-                          />
-                          <Image
-                            style={{
-                              width: 40,
-                              height: 40,
-                              position: "absolute",
-                              top: 4,
-                              left: 5,
-                              borderRadius: 50,
-                              zIndex: 1,
-                            }}
-                            source={{
-                              uri: profileUrl(avtarUrl),
-                            }}
-                          />
-                        </Marker>
-                      ) : userData.systemUserId === systemUserId ? null : (
-                        <Marker
-                          onPress={() => {
-                            dispatch(getProfile({ profileId: systemUserId }));
-                            navigate("BanjeeProfile");
-                          }}
-                          // onPress={() =>
-                          // 	navigate("BanjeeProfile", {
-                          // 		item: {
-                          // 			age: age,
-                          // 			avtarUrl: avtarUrl,
-                          // 			birthDate: "",
-                          // 			chatroomId: "",
-                          // 			connectedUserOnline: online,
-                          // 			domain: null,
-                          // 			email: email,
-                          // 			firstName: name,
-                          // 			gender: gender,
-                          // 			id: systemUserId,
-                          // 			lastName: null,
-                          // 			locale: null,
-                          // 			mcc: null,
-                          // 			mobile: mobile,
-                          // 			name: null,
-                          // 			realm: null,
-                          // 			ssid: null,
-                          // 			systemUserId: systemUserId,
-                          // 			timeZoneId: null,
-                          // 			userId: id,
-                          // 			// userId: "6257f7879e27bd1e9593dda5", jigabhai ka userId hey
-                          // 			userLastSeen: null,
-                          // 			username: null,
-                          // 		},
-                          // 	})
-                          // }
-                          key={id}
-                          coordinate={{
-                            longitude,
-                            latitude,
-                            latitudeDelta: 1,
-                            longitudeDelta: 1,
-                          }}
-                        >
-                          <Image
-                            style={{
-                              width: 50,
-                              height: 80,
-                              top: 0,
-                              left: 0,
-                              zIndex: 99999,
-                            }}
-                            source={require("../../../../assets/EditDrawerIcon/ic_map_yellow.png")}
-                          />
-                          <Image
-                            style={{
-                              width: 40,
-                              height: 40,
-                              position: "absolute",
-                              top: 4,
-                              left: 5,
-                              borderRadius: 50,
-                              zIndex: 1,
-                            }}
-                            source={{
-                              uri: profileUrl(avtarUrl),
-                            }}
-                          />
-                        </Marker>
-                      )}
-                    </View>
-                    {/* <Marker
-                    key={id}
-                    coordinate={{
-                      longitude,
-                      latitude,
-                      latitudeDelta: 1,
-                      longitudeDelta: 1,
-                    }}
-                  >
-                    <UserMarker
-                      avatarId={avtarUrl}
-                      existsInContact={existsInContact}
-                    />
-                  </Marker> */}
-                  </React.Fragment>
-                );
-              })}
-          </MapView>
-          <AppFabButton
-            size={30}
-            onPress={() => {
-              getLocation();
-            }}
-            style={styles.mapIcon}
-            icon={
-              <Image
-                style={{
-                  width: 40,
-                  height: 40,
-                }}
-                source={require("../../../../assets/EditDrawerIcon/ic_loc_center.png")}
-              />
-            }
-          />
-        </React.Fragment>
-      )}
-    </React.Fragment>
-  );
+						<RenderMarker />
+					</MapView>
+					<AppFabButton
+						size={30}
+						onPress={() => {
+							getLocation();
+							dispatch(
+								setMapData({
+									searchData: {
+										loc: {
+											longitude: loc.longitude,
+											latitude: loc.latitude,
+											latitudeDelta: initialRegion.latitudeDelta,
+											longitudeDelta: initialRegion.longitudeDelta,
+										},
+										open: false,
+										title: "",
+									},
+								})
+							);
+						}}
+						style={styles.mapIcon}
+						icon={
+							<FastImage
+								style={{
+									width: 40,
+									height: 40,
+								}}
+								source={require("../../../../assets/EditDrawerIcon/ic_loc_center.png")}
+							/>
+						}
+					/>
+					<SearchMapLocation />
+				</Fragment>
+			)}
+		</Fragment>
+	);
 }
 const styles = StyleSheet.create({
-  map: {
-    width: "100%",
-    height: "100%",
-    position: "absolute",
-    top: 0,
-    left: 0,
-  },
-  mapIcon: {
-    position: "absolute",
-    bottom: 20,
-    left: "43%",
-    elevation: 0,
-    shadowOffset: {
-      height: 0,
-      width: 0,
-    },
-  },
+	map: {
+		width: "100%",
+		height: "100%",
+		position: "absolute",
+		top: 0,
+		left: 0,
+	},
+	mapIcon: {
+		position: "absolute",
+		bottom: 20,
+		left: "43%",
+		elevation: 0,
+		shadowOffset: {
+			height: 0,
+			width: 0,
+		},
+	},
 });

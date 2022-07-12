@@ -37,9 +37,10 @@ function ReportUser({ modalVisible, setModalVisible, systemUserId }) {
 			);
 		}
 	};
+	const handleModelVisible = () => setModalVisible(false);
 
 	return (
-		<TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+		<TouchableWithoutFeedback onPress={handleModelVisible}>
 			<View
 				style={{
 					position: "absolute",
@@ -99,7 +100,7 @@ function ReportUser({ modalVisible, setModalVisible, systemUserId }) {
 							}}
 						>
 							<AppButton
-								onPress={() => submitReport()}
+								onPress={submitReport}
 								style={{ width: 120, borderRadius: 20 }}
 								title={"Report"}
 							/>

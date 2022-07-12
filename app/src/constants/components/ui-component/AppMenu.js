@@ -26,7 +26,7 @@ export default function AppMenu({ menuContent, menuColor }) {
 				animationDuration={0}
 				anchor={
 					<AppFabButton
-						onPress={() => showMenu()}
+						onPress={showMenu}
 						size={20}
 						icon={
 							<MaterialCommunityIcons

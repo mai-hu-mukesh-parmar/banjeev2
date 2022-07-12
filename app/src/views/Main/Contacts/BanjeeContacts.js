@@ -1,18 +1,9 @@
 import React from "react";
-import {
-	TouchableHighlight,
-	View,
-	StyleSheet,
-	Image,
-	TouchableWithoutFeedback,
-	DevSettings,
-} from "react-native";
+import { View, StyleSheet, TouchableWithoutFeedback } from "react-native";
+import FastImage from "react-native-fast-image";
 import AppFabButton from "../../../constants/components/ui-component/AppFabButton";
 import color from "../../../constants/env/color";
-import {
-	checkGender,
-	listProfileUrl,
-} from "../../../utils/util-func/constantExport";
+import { listProfileUrl } from "../../../utils/util-func/constantExport";
 import { useNavigation } from "@react-navigation/native";
 import checkUserStatus from "./ChatComponent/checkUserStatus";
 import { SocketContext } from "../../../Context/Socket";
@@ -22,7 +13,6 @@ import { getProfile } from "../../../redux/store/action/Profile/userPendingConne
 
 function BanjeeContacts(props) {
 	const { item } = props;
-	console.warn(item, "BanjeeContacts");
 	const { navigate } = useNavigation();
 
 	const onlineStatus = useSelector((state) => state.onlineStatus);
@@ -106,6 +96,7 @@ function BanjeeContacts(props) {
 	// };
 
 	const dispatch = useDispatch();
+
 	return (
 		<View
 			style={{
@@ -130,7 +121,7 @@ function BanjeeContacts(props) {
 							source={{ uri: listProfileUrl(item?.id) }}
 						>
 							{item?.firstName?.charAt(0).toUpperCase() || ""}
-							{/* <Image source={checkGender(item.gender)} style={styles.img} /> */}
+							{/* <FastImage source={checkGender(item.gender)} style={styles.img} /> */}
 						</Avatar>
 
 						{/* ------------- ACTIVE STATUS OF USER -------------- */}
@@ -193,7 +184,7 @@ function BanjeeContacts(props) {
 								}}
 								size={20}
 								icon={
-									<Image
+									<FastImage
 										style={{ height: 20, width: 20 }}
 										source={require("../../../../assets/EditDrawerIcon/ic_video_call1.png")}
 									/>
@@ -206,7 +197,7 @@ function BanjeeContacts(props) {
 								}
 								size={20}
 								icon={
-									<Image
+									<FastImage
 										style={{ height: 20, width: 20 }}
 										source={require("../../../../assets/EditDrawerIcon/ic_call1.png")}
 									/>
@@ -221,7 +212,7 @@ function BanjeeContacts(props) {
 								}
 								size={20}
 								icon={
-									<Image
+									<FastImage
 										style={{ height: 20, width: 20 }}
 										source={require("../../../../assets/EditDrawerIcon/ic_voice.png")}
 									/>

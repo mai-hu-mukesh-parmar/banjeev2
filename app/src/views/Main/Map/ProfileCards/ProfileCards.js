@@ -16,9 +16,10 @@ function ProfileCards() {
 		}
 	}, [params]);
 
-	const { userLatitude, userLongitude } = useSelector(
-		(state) => state.mapLocation
-	);
+	// const { userLatitude, userLongitude } = useSelector(
+	// 	(state) => state.mapLocation
+	// );
+	// console.warn(userLatitude, userLongitude);
 	return (
 		<React.Fragment>
 			<LinearGradient

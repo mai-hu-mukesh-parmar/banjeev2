@@ -1,10 +1,20 @@
-import React, { useEffect } from "react";
+import React, {
+	Fragment,
+	useRef,
+	useCallback,
+	useState,
+	useEffect,
+} from "react";
 import {
 	View,
 	StyleSheet,
+	VirtualizedList,
 	TouchableWithoutFeedback,
-	Image,
+	Dimensions,
+	Keyboard,
 } from "react-native";
+import { EvilIcons } from "@expo/vector-icons";
+import FastImage from "react-native-fast-image";
 import RBSheet from "react-native-raw-bottom-sheet";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import axios from "axios";
@@ -13,12 +23,24 @@ import { Text } from "native-base";
 import color from "../../../../constants/env/color";
 import AppInput from "../../../../constants/components/ui-component/AppInput";
 import AppFabButton from "../../../../constants/components/ui-component/AppFabButton";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setMapData } from "../../../../redux/store/action/mapAction";
+import SearchMapLocationItem from "./SearchMapLocationItem";
+import { useNavigation } from "@react-navigation/native";
 
-function SearchMapLocation({ locFun }) {
-	const refRBSheet = React.useRef(null);
-	const [suggestionsList, setSuggestionsList] = React.useState([]);
-	const { mapRef } = useSelector((state) => state.mapLocation);
+function SearchMapLocation() {
+	const dispatch = useDispatch();
+	const {
+		userLocation,
+		searchData,
+		refRBSheet: sheet,
+	} = useSelector((state) => state.map);
+
+	const refRBSheet = useRef(null);
+	const { navigate } = useNavigation();
+
+	const [suggestionsList, setSuggestionsList] = useState([]);
+
 	const handleChange = (e) => {
 		const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?key=AIzaSyBqW8iaz-_qlaTMc1ynbj9f7mpfmbVUcW4&input=${e}&language=en`;
 		axios
@@ -37,44 +59,110 @@ function SearchMapLocation({ locFun }) {
 
 	const getCurrentLocation = async () => {
 		let locationAsync = await Location.getCurrentPositionAsync({});
-
-		const { longitude, latitude } = locationAsync.coords;
-		let loc = {
-			longitude: longitude,
-			latitude: latitude,
-			latitudeDelta: 0.0922,
-			longitudeDelta: 0.0421,
-		};
-		mapRef.refRBBSheet.current;
-		// locFun({ loc, title: "", open: false }, refRBSheet.current);
+		dispatch(
+			setMapData({ searchData: { ...userLocation, ...locationAsync.coords } })
+		);
+		refRBSheet.current.close();
 	};
 
-	const locHandler = React.useCallback((data) => {
-		locFun({ ...data, open: true }, refRBSheet.current);
+	const getMySearchLocation = useCallback(
+		(data) => {
+			dispatch(
+				setMapData({
+					searchData: { ...searchData, ...data },
+				})
+			);
+			refRBSheet.current.close();
+			if (sheet.screen === "Cards") {
+				console.log("hey");
+				navigate("Map");
+			}
+		},
+		[sheet]
+	);
+
+	const locHandler = useCallback((data) => {
+		getMySearchLocation({ ...data, open: true });
 	}, []);
 
-	return (
-		<React.Fragment>
-			{/* <AppFabButton
+	console.log(searchData);
+	useEffect(() => {
+		console.log("sheet", sheet);
+		if (sheet.open && refRBSheet.current) {
+			refRBSheet.current.open();
+		}
+	}, [sheet]);
+
+	const navigateLocation = ({ title, id }) => {
+		const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${id}&key=AIzaSyBqW8iaz-_qlaTMc1ynbj9f7mpfmbVUcW4`;
+		axios
+			.get(url)
+			.then((res) => {
+				let x = res.data.result.geometry.location;
+				let loc = {
+					longitude: x.lng,
+					latitude: x.lat,
+					latitudeDelta: 0.0922,
+					longitudeDelta: 0.0421,
+				};
+				locHandler({ loc, title });
+				setSuggestionsList([]);
+			})
+			.catch((err) => console.log(err));
+	};
+	const renderItem = ({ item }) => {
+		return (
+			<TouchableWithoutFeedback
 				onPress={() => {
-					refRBSheet.current.open();
+					navigateLocation(item);
 				}}
-				style={{ position: "absolute", top: 5, right: 5, zIndex: 1 }}
-				size={20}
-				icon={
-					<MaterialCommunityIcons
-						name="magnify"
-						size={24}
-						color={color.black}
+			>
+				<View style={{ flexDirection: "row", marginTop: 10 }}>
+					<EvilIcons
+						name="location"
+						color={"black"}
+						size={20}
+						style={{ marginTop: 5 }}
 					/>
-				}
-			/> */}
+
+					<View style={{ marginLeft: 10 }}>
+						<Text
+							numberOfLines={1}
+							style={{ fontWeight: "bold" }}
+							onPress={() => {
+								Keyboard.dismiss((e) => console.warn(e));
+								navigateLocation(item);
+							}}
+						>
+							{item.title.split(",")[0]}
+						</Text>
+
+						<Text
+							numberOfLines={2}
+							style={{ fontSize: 16 }}
+							onPress={() => {
+								navigateLocation(item);
+							}}
+						>
+							{item.title}
+						</Text>
+					</View>
+				</View>
+			</TouchableWithoutFeedback>
+		);
+	};
+
+	return (
+		<Fragment>
 			<RBSheet
 				customStyles={{
 					container: { borderRadius: 10 },
 				}}
 				height={500}
 				width={"100%"}
+				onClose={() => {
+					dispatch(setMapData({ refRBSheet: { ...sheet, open: false } }));
+				}}
 				ref={refRBSheet}
 				dragFromTopOnly={true}
 				closeOnDragDown={true}
@@ -94,18 +182,20 @@ function SearchMapLocation({ locFun }) {
 							color={color.black}
 						/>
 
-						<View style={{ position: "absolute", marginTop: -10 }}>
+						<View
+							style={{ position: "absolute", marginTop: 10, width: "100%" }}
+						>
 							{/* TEXT INPUT */}
 
 							<AppInput
-								style={{ paddingLeft: 40 }}
+								style={{ paddingLeft: 40, width: "100%" }}
 								placeholder={"Search Location"}
 								onChangeText={handleChange}
 							/>
 
 							<TouchableWithoutFeedback onPress={getCurrentLocation}>
 								<View style={styles.grp}>
-									<Image
+									<FastImage
 										style={styles.img}
 										source={require("../../../../../assets/EditDrawerIcon/ic_loc_center.png")}
 									/>
@@ -117,18 +207,18 @@ function SearchMapLocation({ locFun }) {
 									</Text>
 								</View>
 							</TouchableWithoutFeedback>
-							{suggestionsList.length > 0 && (
-								<SearchMapLocationItem
-									suggestionsList={suggestionsList}
-									locHandler={locHandler}
-									setSuggestionsList={setSuggestionsList}
-								/>
-							)}
+							<VirtualizedList
+								getItemCount={(data) => data.length}
+								getItem={(data, index) => data[index]}
+								showsVerticalScrollIndicator={false}
+								data={suggestionsList}
+								renderItem={renderItem}
+							/>
 						</View>
 					</View>
 				</View>
 			</RBSheet>
-		</React.Fragment>
+		</Fragment>
 	);
 }
 
@@ -136,7 +226,7 @@ const styles = StyleSheet.create({
 	container: {
 		height: "100%",
 		zIndex: 9,
-		width: "95%",
+		width: Dimensions.get("window").width,
 		alignSelf: "center",
 	},
 	icon: {

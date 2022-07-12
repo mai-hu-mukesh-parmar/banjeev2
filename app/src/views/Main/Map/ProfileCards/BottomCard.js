@@ -11,6 +11,7 @@ import { Text } from "native-base";
 import ReportUser from "../../../../constants/components/Cards/ReportUser";
 import color from "../../../../constants/env/color";
 import usePlayPauseAudio from "../../../../utils/hooks/usePlayPauseAudio";
+import FastImage from "react-native-fast-image";
 
 export default function BottomCard(props) {
 	const {
@@ -145,7 +146,7 @@ export default function BottomCard(props) {
 					/>
 					<View style={{ height: 30, width: "60%" }}>
 						{icons === "pause" && (
-							<Image
+							<FastImage
 								source={require("../../../../../assets/Animations/wave.gif")}
 								style={styles.gif}
 							/>
@@ -156,7 +157,7 @@ export default function BottomCard(props) {
 						onPress={() => setModalVisible(!modalVisible)}
 						style={styles.icons}
 						icon={
-							<Image
+							<FastImage
 								style={{ height: 20, width: 20, tintColor: color.primary }}
 								source={require("../../../../../assets/EditDrawerIcon/ic_flag.png")}
 							/>
@@ -190,7 +191,7 @@ export default function BottomCard(props) {
 							}}
 							style={styles.fabButton}
 							icon={
-								<Image
+								<FastImage
 									style={{ height: 20, width: 20 }}
 									source={require("../../../../../assets/EditDrawerIcon/ic_add_contact.png")}
 								/>
@@ -205,7 +206,7 @@ export default function BottomCard(props) {
 								props.next();
 							}}
 							icon={
-								<Image
+								<FastImage
 									style={{ height: 20, width: 20 }}
 									source={require("../../../../../assets/EditDrawerIcon/ic_close.png")}
 								/>
