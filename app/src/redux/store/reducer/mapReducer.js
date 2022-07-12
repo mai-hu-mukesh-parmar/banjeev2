@@ -18,6 +18,8 @@ const initialState = {
 			longitudeDelta: 0.0421,
 		},
 	},
+
+	refRBSheet: { open: false, screen: "map" },
 };
 
 export default function mapReducer(state = initialState, action) {

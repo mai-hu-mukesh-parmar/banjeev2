@@ -11,6 +11,7 @@ import { Text } from "native-base";
 import color from "../../../../constants/env/color";
 import { getLocalStorage } from "../../../../utils/Cache/TempStorage";
 import { returnSource } from "../../../../utils/util-func/uploadToImage";
+import FastImage from "react-native-fast-image";
 
 export default function UpdateAvatar({ navigation, route }) {
 	const userData = useSelector((state) => state.registry);
@@ -110,7 +111,7 @@ export default function UpdateAvatar({ navigation, route }) {
 						styles.shadow,
 					]}
 				>
-					<Image
+					<FastImage
 						style={{ height: 230, width: "100%" }}
 						source={
 							userImg

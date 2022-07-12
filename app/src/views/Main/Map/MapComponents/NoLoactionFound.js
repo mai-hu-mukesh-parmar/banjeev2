@@ -1,11 +1,15 @@
 import { Text } from "native-base";
-import React from "react";
+import React, { useEffect } from "react";
 import { View, StyleSheet, Image } from "react-native";
+import FastImage from "react-native-fast-image";
+import { useDispatch } from "react-redux";
 import AppBorderButton from "../../../../constants/components/ui-component/AppBorderButton";
 import color from "../../../../constants/env/color";
+import { setMapData } from "../../../../redux/store/action/mapAction";
 import SearchMapLocation from "./SearchMapLocation";
 
-function NoLoactionFound({ locFun }) {
+function NoLoactionFound() {
+	const dispatch = useDispatch();
 	return (
 		<React.Fragment>
 			<View
@@ -49,7 +53,7 @@ function NoLoactionFound({ locFun }) {
 							borderRadius: 13,
 						}}
 					/>
-					<Image
+					<FastImage
 						source={require("../../../../../assets/EditDrawerIcon/dog.png")}
 						style={{ width: 144, height: 148 }}
 					/>
@@ -66,7 +70,7 @@ function NoLoactionFound({ locFun }) {
 					/>
 				</View>
 
-				<View style={{ width: 231, padding: 20 }}>
+				<View style={{ width: "80%", padding: 20 }}>
 					<Text style={{ textAlign: "center", color: color.white }}>
 						There are no more banjees available at this location!
 					</Text>
@@ -77,19 +81,23 @@ function NoLoactionFound({ locFun }) {
 							marginTop: 20,
 						}}
 					>
-						Please select different locations to explore more
+						Please select different locations to explore more.
 					</Text>
 				</View>
 				<View style={{ alignSelf: "center" }}>
 					<AppBorderButton
 						width={194}
 						title="Search more Locations"
-						onPress={() => refRBSheet.current.open()}
+						onPress={() =>
+							dispatch(
+								setMapData({ refRBSheet: { open: true, screen: "Cards" } })
+							)
+						}
 					/>
 				</View>
 			</View>
 
-			<SearchMapLocation locFun={locFun} />
+			<SearchMapLocation />
 		</React.Fragment>
 	);
 }

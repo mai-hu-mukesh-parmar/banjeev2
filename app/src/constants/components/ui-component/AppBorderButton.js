@@ -18,9 +18,9 @@ function AppBorderButton({ onPress, width, title }) {
 	});
 
 	return (
-		<TouchableWithoutFeedback onPress={() => onPress()}>
+		<TouchableWithoutFeedback onPress={onPress}>
 			<View style={styles.container}>
-				<Text onPress={() => onPress()} style={{ color: color.primary }}>
+				<Text onPress={onPress} style={{ color: color.primary }}>
 					{title}
 				</Text>
 			</View>

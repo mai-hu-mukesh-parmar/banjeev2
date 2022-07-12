@@ -1,11 +1,20 @@
-import React, { Fragment, useRef, useCallback, useState } from "react";
+import React, {
+	Fragment,
+	useRef,
+	useCallback,
+	useState,
+	useEffect,
+} from "react";
 import {
 	View,
 	StyleSheet,
+	VirtualizedList,
 	TouchableWithoutFeedback,
-	Image,
 	Dimensions,
+	Keyboard,
 } from "react-native";
+import { EvilIcons } from "@expo/vector-icons";
+import FastImage from "react-native-fast-image";
 import RBSheet from "react-native-raw-bottom-sheet";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import axios from "axios";
@@ -16,12 +25,20 @@ import AppInput from "../../../../constants/components/ui-component/AppInput";
 import AppFabButton from "../../../../constants/components/ui-component/AppFabButton";
 import { useDispatch, useSelector } from "react-redux";
 import { setMapData } from "../../../../redux/store/action/mapAction";
+import SearchMapLocationItem from "./SearchMapLocationItem";
+import { useNavigation } from "@react-navigation/native";
 
-function SearchMapLocation({ locFun }) {
+function SearchMapLocation() {
 	const dispatch = useDispatch();
-	const { userLocation, searchData } = useSelector((state) => state.map);
+	const {
+		userLocation,
+		searchData,
+		refRBSheet: sheet,
+	} = useSelector((state) => state.map);
 
 	const refRBSheet = useRef(null);
+	const { navigate } = useNavigation();
+
 	const [suggestionsList, setSuggestionsList] = useState([]);
 
 	const handleChange = (e) => {
@@ -43,47 +60,109 @@ function SearchMapLocation({ locFun }) {
 	const getCurrentLocation = async () => {
 		let locationAsync = await Location.getCurrentPositionAsync({});
 		dispatch(
-			setMapData({ userLocation: { ...userLocation, ...locationAsync.coords } })
+			setMapData({ searchData: { ...userLocation, ...locationAsync.coords } })
 		);
 		refRBSheet.current.close();
 	};
 
-	const getMySearchLocation = useCallback((data) => {
-		dispatch(
-			setMapData({
-				userLocation: { ...userLocation, ...data.loc },
-				searchData: { ...searchData, ...data },
-			})
-		);
-		refRBSheet.current.close();
-	}, []);
+	const getMySearchLocation = useCallback(
+		(data) => {
+			dispatch(
+				setMapData({
+					searchData: { ...searchData, ...data },
+				})
+			);
+			refRBSheet.current.close();
+			if (sheet.screen === "Cards") {
+				console.log("hey");
+				navigate("Map");
+			}
+		},
+		[sheet]
+	);
 
 	const locHandler = useCallback((data) => {
 		getMySearchLocation({ ...data, open: true });
 	}, []);
 
+	console.log(searchData);
+	useEffect(() => {
+		console.log("sheet", sheet);
+		if (sheet.open && refRBSheet.current) {
+			refRBSheet.current.open();
+		}
+	}, [sheet]);
+
+	const navigateLocation = ({ title, id }) => {
+		const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${id}&key=AIzaSyBqW8iaz-_qlaTMc1ynbj9f7mpfmbVUcW4`;
+		axios
+			.get(url)
+			.then((res) => {
+				let x = res.data.result.geometry.location;
+				let loc = {
+					longitude: x.lng,
+					latitude: x.lat,
+					latitudeDelta: 0.0922,
+					longitudeDelta: 0.0421,
+				};
+				locHandler({ loc, title });
+				setSuggestionsList([]);
+			})
+			.catch((err) => console.log(err));
+	};
+	const renderItem = ({ item }) => {
+		return (
+			<TouchableWithoutFeedback
+				onPress={() => {
+					navigateLocation(item);
+				}}
+			>
+				<View style={{ flexDirection: "row", marginTop: 10 }}>
+					<EvilIcons
+						name="location"
+						color={"black"}
+						size={20}
+						style={{ marginTop: 5 }}
+					/>
+
+					<View style={{ marginLeft: 10 }}>
+						<Text
+							numberOfLines={1}
+							style={{ fontWeight: "bold" }}
+							onPress={() => {
+								Keyboard.dismiss((e) => console.warn(e));
+								navigateLocation(item);
+							}}
+						>
+							{item.title.split(",")[0]}
+						</Text>
+
+						<Text
+							numberOfLines={2}
+							style={{ fontSize: 16 }}
+							onPress={() => {
+								navigateLocation(item);
+							}}
+						>
+							{item.title}
+						</Text>
+					</View>
+				</View>
+			</TouchableWithoutFeedback>
+		);
+	};
+
 	return (
 		<Fragment>
-			<AppFabButton
-				onPress={() => {
-					refRBSheet.current.open();
-				}}
-				style={{ position: "absolute", top: 35, right: 5, zIndex: 999 }}
-				size={20}
-				icon={
-					<MaterialCommunityIcons
-						name="magnify"
-						size={24}
-						color={color.black}
-					/>
-				}
-			/>
 			<RBSheet
 				customStyles={{
 					container: { borderRadius: 10 },
 				}}
 				height={500}
 				width={"100%"}
+				onClose={() => {
+					dispatch(setMapData({ refRBSheet: { ...sheet, open: false } }));
+				}}
 				ref={refRBSheet}
 				dragFromTopOnly={true}
 				closeOnDragDown={true}
@@ -103,18 +182,20 @@ function SearchMapLocation({ locFun }) {
 							color={color.black}
 						/>
 
-						<View style={{ position: "absolute", marginTop: -10 }}>
+						<View
+							style={{ position: "absolute", marginTop: 10, width: "100%" }}
+						>
 							{/* TEXT INPUT */}
 
 							<AppInput
-								style={{ paddingLeft: 40 }}
+								style={{ paddingLeft: 40, width: "100%" }}
 								placeholder={"Search Location"}
 								onChangeText={handleChange}
 							/>
 
 							<TouchableWithoutFeedback onPress={getCurrentLocation}>
 								<View style={styles.grp}>
-									<Image
+									<FastImage
 										style={styles.img}
 										source={require("../../../../../assets/EditDrawerIcon/ic_loc_center.png")}
 									/>
@@ -126,13 +207,13 @@ function SearchMapLocation({ locFun }) {
 									</Text>
 								</View>
 							</TouchableWithoutFeedback>
-							{suggestionsList.length > 0 && (
-								<SearchMapLocationItem
-									suggestionsList={suggestionsList}
-									locHandler={locHandler}
-									setSuggestionsList={setSuggestionsList}
-								/>
-							)}
+							<VirtualizedList
+								getItemCount={(data) => data.length}
+								getItem={(data, index) => data[index]}
+								showsVerticalScrollIndicator={false}
+								data={suggestionsList}
+								renderItem={renderItem}
+							/>
 						</View>
 					</View>
 				</View>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, Image, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Formik } from "formik";
 import { Box } from "native-base";
 
@@ -23,6 +23,7 @@ import DropDownPicker from "react-native-dropdown-picker";
 import AppButton from "../../constants/components/ui-component/AppButton";
 import AppInput from "../../constants/components/ui-component/AppInput";
 // import ToastMessage from '../../Components/ToastMessage';
+import FastImage from "react-native-fast-image";
 
 function SignIn({ navigation }) {
 	const [open, setOpen] = useState(false);
@@ -56,6 +57,17 @@ function SignIn({ navigation }) {
 		return () => {};
 	}, []);
 
+	const navigateToTearmsAndConditions = () =>
+		navigation.navigate("termsAndConditions", {
+			url: "https://www.banjee.org/tnc",
+			label: "Tearms & Conditions",
+		});
+
+	const navigateToPrivacyPolicy = () =>
+		navigation.navigate("termsAndConditions", {
+			url: "https://www.banjee.org/privacypolicy",
+			label: "Privacy Policy",
+		});
 	return (
 		<BackGroundImg>
 			<Formik
@@ -98,7 +110,7 @@ function SignIn({ navigation }) {
 								>
 									Sign Up
 								</Text>
-								<Image
+								<FastImage
 									source={require("../../../assets/logo.png")}
 									style={[
 										{ height: 80, width: 80, marginBottom: 18 },
@@ -173,7 +185,7 @@ function SignIn({ navigation }) {
 											height: 48,
 										}}
 										w="180"
-										onBlur={() => setTouched()}
+										onBlur={setTouched}
 										// style={{width: '70%', paddingLeft: 10, borderWidth: 0}}
 										onChangeText={(num) => setFieldValue("number", num)}
 										value={values.number}
@@ -202,12 +214,7 @@ function SignIn({ navigation }) {
 							>
 								By clicking next,You agree to our
 								<Text
-									onPress={() =>
-										navigation.navigate("termsAndConditions", {
-											url: "https://www.banjee.org/tnc",
-											label: "Tearms & Conditions",
-										})
-									}
+									onPress={navigateToTearmsAndConditions}
 									style={{
 										fontSize: 14,
 										fontStyle: "italic",
@@ -218,12 +225,7 @@ function SignIn({ navigation }) {
 								</Text>
 								and
 								<Text
-									onPress={() =>
-										navigation.navigate("termsAndConditions", {
-											url: "https://www.banjee.org/privacypolicy",
-											label: "Privacy Policy",
-										})
-									}
+									onPress={navigateToPrivacyPolicy}
 									style={{
 										fontSize: 14,
 										fontStyle: "italic",

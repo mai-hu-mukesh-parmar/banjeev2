@@ -1,10 +1,6 @@
 import React from "react";
-import {
-	View,
-	StyleSheet,
-	Image,
-	TouchableWithoutFeedback,
-} from "react-native";
+import { View, StyleSheet, TouchableWithoutFeedback } from "react-native";
+import FastImage from "react-native-fast-image";
 import AppFabButton from "../../../constants/components/ui-component/AppFabButton";
 import color from "../../../constants/env/color";
 import { listProfileUrl } from "../../../utils/util-func/constantExport";
@@ -125,7 +121,7 @@ function BanjeeContacts(props) {
 							source={{ uri: listProfileUrl(item?.id) }}
 						>
 							{item?.firstName?.charAt(0).toUpperCase() || ""}
-							{/* <Image source={checkGender(item.gender)} style={styles.img} /> */}
+							{/* <FastImage source={checkGender(item.gender)} style={styles.img} /> */}
 						</Avatar>
 
 						{/* ------------- ACTIVE STATUS OF USER -------------- */}
@@ -188,7 +184,7 @@ function BanjeeContacts(props) {
 								}}
 								size={20}
 								icon={
-									<Image
+									<FastImage
 										style={{ height: 20, width: 20 }}
 										source={require("../../../../assets/EditDrawerIcon/ic_video_call1.png")}
 									/>
@@ -201,7 +197,7 @@ function BanjeeContacts(props) {
 								}
 								size={20}
 								icon={
-									<Image
+									<FastImage
 										style={{ height: 20, width: 20 }}
 										source={require("../../../../assets/EditDrawerIcon/ic_call1.png")}
 									/>
@@ -216,7 +212,7 @@ function BanjeeContacts(props) {
 								}
 								size={20}
 								icon={
-									<Image
+									<FastImage
 										style={{ height: 20, width: 20 }}
 										source={require("../../../../assets/EditDrawerIcon/ic_voice.png")}
 									/>

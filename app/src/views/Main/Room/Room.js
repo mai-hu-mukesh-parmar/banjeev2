@@ -4,12 +4,12 @@ import React from "react";
 import {
 	View,
 	StyleSheet,
-	Image,
 	VirtualizedList,
 	Animated,
 	Dimensions,
 	ScrollView,
 } from "react-native";
+import FastImage from "react-native-fast-image";
 import { useDispatch, useSelector } from "react-redux";
 import AppButton from "../../../constants/components/ui-component/AppButton";
 import {
@@ -134,7 +134,7 @@ function Room(props) {
                 }}
               > */}
 						<Text fontSize={24}>Hey There!!</Text>
-						<Image
+						<FastImage
 							source={require("../../../../assets/EditDrawerIcon/dummy_delete_user.png")}
 							style={{
 								height: 120,

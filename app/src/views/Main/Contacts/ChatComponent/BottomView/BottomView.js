@@ -2,12 +2,12 @@ import React from "react";
 import {
 	View,
 	StyleSheet,
-	Image,
 	Animated,
 	Easing,
 	ScrollView,
 	TouchableOpacity,
 } from "react-native";
+import FastImage from "react-native-fast-image";
 import AppFabButton from "../../../../../constants/components/ui-component/AppFabButton";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import color from "../../../../../constants/env/color";
@@ -306,7 +306,7 @@ function BottomView({
 								}}
 								size={22.5}
 								icon={
-									<Image
+									<FastImage
 										source={require("../../../../../../assets/EditDrawerIcon/ic_send_message_round.png")}
 										style={{ height: 45, width: 45 }}
 									/>
@@ -337,7 +337,7 @@ function BottomView({
 									refRBSheet?.current?.open();
 								}}
 								icon={
-									<Image
+									<FastImage
 										source={require("../../../../../../assets/EditDrawerIcon/ic_distructive.png")}
 										style={{ height: 45, width: 45 }}
 									/>

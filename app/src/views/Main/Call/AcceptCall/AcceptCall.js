@@ -1,4 +1,5 @@
-import { View, ImageBackground, Image, StyleSheet } from "react-native";
+import { View, ImageBackground, StyleSheet } from "react-native";
+import FastImage from "react-native-fast-image";
 import React, { useContext, useEffect } from "react";
 import {
 	StackActions,
@@ -163,7 +164,7 @@ export default function AcceptCall() {
 						}}
 						onPress={joinCall}
 						icon={
-							<Image
+							<FastImage
 								source={require("../../../../../assets/EditDrawerIcon/ic_call.png")}
 								style={[styles.callImg, { transform: [{ rotate: "10deg" }] }]}
 							/>
@@ -206,7 +207,7 @@ export default function AcceptCall() {
 							goBack();
 						}}
 						icon={
-							<Image
+							<FastImage
 								source={require("../../../../../assets/EditDrawerIcon/ic_call.png")}
 								style={[styles.callImg, { transform: [{ rotate: "130deg" }] }]}
 							/>

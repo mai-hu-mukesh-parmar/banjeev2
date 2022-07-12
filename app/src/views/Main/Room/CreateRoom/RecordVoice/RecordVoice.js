@@ -1,13 +1,6 @@
 import React from "react";
-import {
-	View,
-	StyleSheet,
-	Image,
-	Platform,
-	StatusBar,
-	Linking,
-} from "react-native";
-
+import { View, StyleSheet, Platform, StatusBar, Linking } from "react-native";
+import FastImage from "react-native-fast-image";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { Audio } from "expo-av";

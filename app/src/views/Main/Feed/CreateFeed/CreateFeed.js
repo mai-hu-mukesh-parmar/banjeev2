@@ -2,11 +2,11 @@ import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
 	View,
 	StyleSheet,
-	Image,
 	TouchableWithoutFeedback,
 	ScrollView,
 	TextInput,
 } from "react-native";
+import FastImage from "react-native-fast-image";
 import * as ImagePicker from "expo-image-picker";
 import { Entypo } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -264,7 +264,7 @@ function CreateFeed(props) {
 		switch (ele.resource_type) {
 			case "image":
 				return (
-					<Image style={styles.postImg} source={{ uri: ele.description }} />
+					<FastImage style={styles.postImg} source={{ uri: ele.description }} />
 				);
 			case "video":
 				return (
@@ -329,7 +329,7 @@ function CreateFeed(props) {
 					{xdata?.map((item, i) => (
 						<TouchableWithoutFeedback key={i} onPress={() => item.onPress()}>
 							<View style={styles.postView}>
-								<Image source={item.icon} style={styles.smallImg} />
+								<FastImage source={item.icon} style={styles.smallImg} />
 								<Text
 									style={{ color: color.primary }}
 									onPress={() => item.onPress()}
@@ -389,12 +389,12 @@ function CreateFeed(props) {
 											</View>
 
 											{ele.mimeType === "audio/mp3" ? (
-												<Image
+												<FastImage
 													style={styles.postImg}
 													source={require("../../../../../assets/EditDrawerIcon/mp3.png")}
 												/>
 											) : (
-												<Image
+												<FastImage
 													style={styles.postImg}
 													source={{ uri: ele?.description }}
 												/>

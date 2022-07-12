@@ -13,10 +13,10 @@ import React, {
 import {
 	View,
 	StyleSheet,
-	Image,
 	ImageBackground,
 	TouchableWithoutFeedback,
 } from "react-native";
+import FastImage from "react-native-fast-image";
 import { Text } from "native-base";
 import AppFabButton from "../../../../constants/components/ui-component/AppFabButton";
 import { profileUrl } from "../../../../utils/util-func/constantExport";
@@ -530,7 +530,7 @@ function VoiceCall(props) {
 					colors={["#e6252024", "#252024"]}
 					style={styles.gradient}
 				>
-					<Image
+					<FastImage
 						source={{
 							uri: profileUrl(
 								systemUserId === params.initiator.id
@@ -617,7 +617,7 @@ function VoiceCall(props) {
 						<View
 							style={[styles.callBackground, { backgroundColor: "#f8394f" }]}
 						>
-							<Image
+							<FastImage
 								source={require("../../../../../assets/EditDrawerIcon/ic_call.png")}
 								style={[styles.callImg, { transform: [{ rotate: "130deg" }] }]}
 							/>
@@ -723,7 +723,7 @@ function VoiceCall(props) {
 								// await connectSocket(socket);
 							}}
 							icon={
-								<Image
+								<FastImage
 									source={require("../../../../../assets/EditDrawerIcon/ic_call.png")}
 									style={[
 										styles.callImg,

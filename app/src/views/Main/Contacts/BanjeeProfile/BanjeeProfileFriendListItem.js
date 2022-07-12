@@ -1,12 +1,8 @@
 import { useNavigation } from "@react-navigation/native";
 import { Audio } from "expo-av";
 import React from "react";
-import {
-	View,
-	StyleSheet,
-	TouchableWithoutFeedback,
-	Image,
-} from "react-native";
+import { View, StyleSheet, TouchableWithoutFeedback } from "react-native";
+import FastImage from "react-native-fast-image";
 import * as Location from "expo-location";
 import { Avatar, Text } from "native-base";
 import { otherBanjee_service } from "../../../../helper/services/OtherBanjee";
@@ -211,7 +207,7 @@ function BanjeeProfileFriendListItem({ item }) {
 									ele.onPress();
 								}}
 								size={iconSize}
-								icon={<Image source={ele.img} style={styles.iconImg} />}
+								icon={<FastImage source={ele.img} style={styles.iconImg} />}
 							/>
 						))}
 					</View>
@@ -233,7 +229,7 @@ function BanjeeProfileFriendListItem({ item }) {
 							}}
 							size={iconSize}
 							icon={
-								<Image
+								<FastImage
 									source={
 										icons === "pause" && item.voiceIntroSrc === userAudio
 											? require("../../../../../assets/EditDrawerIcon/ic_pause.png")
@@ -250,7 +246,7 @@ function BanjeeProfileFriendListItem({ item }) {
 								onPress={() => {}}
 								size={iconSize}
 								icon={
-									<Image
+									<FastImage
 										source={require("../../../../../assets/EditDrawerIcon/ic_add_friend_black.png")}
 										style={[styles.iconImg, { tintColor: "grey" }]}
 									/>
@@ -263,7 +259,7 @@ function BanjeeProfileFriendListItem({ item }) {
 								}}
 								size={iconSize}
 								icon={
-									<Image
+									<FastImage
 										source={require("../../../../../assets/EditDrawerIcon/ic_add_friend_black.png")}
 										style={styles.iconImg}
 									/>
@@ -300,7 +296,7 @@ function BanjeeProfileFriendListItem({ item }) {
 					}}
 				>
 					<View style={styles.subView}>
-						{/* <Image
+						{/* <FastImage
               onError={({ nativeEvent: { error } }) => {
                 setImageError(error);
               }}
@@ -318,7 +314,7 @@ function BanjeeProfileFriendListItem({ item }) {
 							source={{ uri: listProfileUrl(item?.systemUserId) }}
 						>
 							{item.name.charAt(0).toUpperCase()}
-							{/* <Image source={checkGender(item.gender)} style={styles.img} /> */}
+							{/* <FastImage source={checkGender(item.gender)} style={styles.img} /> */}
 						</Avatar>
 						{item.type === "YOU"
 							? null

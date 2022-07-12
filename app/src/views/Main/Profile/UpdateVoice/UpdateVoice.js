@@ -4,7 +4,7 @@ import { View, StyleSheet, Image } from "react-native";
 import { useSelector } from "react-redux";
 import color from "../../../../constants/env/color";
 import { profileUrl } from "../../../../utils/util-func/constantExport";
-
+import FastImage from "react-native-fast-image";
 import PlayVoice from "./PlayVoice";
 
 function UpdateVoice() {
@@ -26,7 +26,7 @@ function UpdateVoice() {
 		<React.Fragment>
 			{voiceIntroSrc ? (
 				<View style={styles.container}>
-					<Image
+					<FastImage
 						style={styles.img}
 						source={
 							avtarUrl

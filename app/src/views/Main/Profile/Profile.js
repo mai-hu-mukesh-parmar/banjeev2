@@ -6,13 +6,12 @@ import {
 	View,
 	StyleSheet,
 	SafeAreaView,
-	Image,
 	ScrollView,
 	TouchableWithoutFeedback,
 	ImageBackground,
 	VirtualizedList,
 } from "react-native";
-
+import FastImage from "react-native-fast-image";
 import { useSelector } from "react-redux";
 import AppFabButton from "../../../constants/components/ui-component/AppFabButton";
 import color from "../../../constants/env/color";
@@ -117,7 +116,7 @@ function Profile(props) {
 					size={22}
 					onPress={() => navigate("UpdateAvatar")}
 					icon={
-						<Image
+						<FastImage
 							source={require("../../../../assets/EditDrawerIcon/ic_edit_profile.png")}
 							style={{ tintColor: color.white, height: 20, width: 22 }}
 						/>
@@ -174,7 +173,7 @@ function Profile(props) {
 				size={22}
 				onPress={() => navigate("UpdateAvatar")}
 				icon={
-					<Image
+					<FastImage
 						source={require("../../../../assets/EditDrawerIcon/ic_edit_profile.png")}
 						style={{ tintColor: color.white, height: 20, width: 22 }}
 					/>
@@ -185,7 +184,7 @@ function Profile(props) {
 
 	const profile = (
 		<React.Fragment>
-			<Image
+			<FastImage
 				onError={({ nativeEvent: { error } }) => {
 					setImageError(error);
 				}}
@@ -232,7 +231,7 @@ function Profile(props) {
 								size={22}
 								icon={
 									<View style={styles.icon}>
-										<Image
+										<FastImage
 											source={ele.icon}
 											style={{ height: 24, width: 24 }}
 										/>

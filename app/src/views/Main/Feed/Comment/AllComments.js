@@ -3,10 +3,10 @@ import React from "react";
 import {
 	View,
 	StyleSheet,
-	Image,
 	Dimensions,
 	TouchableWithoutFeedback,
 } from "react-native";
+import FastImage from "react-native-fast-image";
 import { useSelector } from "react-redux";
 import color from "../../../../constants/env/color";
 import {
@@ -44,7 +44,7 @@ function AllComments({
 		<TouchableWithoutFeedback onLongPress={deleteComment}>
 			<View style={{ zIndex: 9999 }}>
 				<View style={styles.container}>
-					<Image
+					<FastImage
 						onError={({ nativeEvent: { error } }) => {
 							setImageError(error);
 						}}
@@ -133,7 +133,7 @@ function AllComments({
 										marginTop: 10,
 									}}
 								>
-									<Image
+									<FastImage
 										source={{
 											uri: profileUrl(ele?.createdByUser?.avtarUrl),
 										}}

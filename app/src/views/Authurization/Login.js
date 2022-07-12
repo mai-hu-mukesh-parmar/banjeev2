@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Image, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Formik } from "formik";
 import { Icon, Text } from "native-base";
 import axios from "axios";
@@ -17,6 +17,7 @@ import {
 	removeUserProfile,
 	removeUserRegistry,
 } from "../../redux/store/action/useActions";
+import FastImage from "react-native-fast-image";
 
 function Login({ route, navigation }) {
 	const [show, setShow] = React.useState(false);
@@ -67,6 +68,16 @@ function Login({ route, navigation }) {
 		}
 	};
 
+	const handleShow = () => setShow(!show);
+
+	const handleNavigateLogin = () =>
+		navigation.navigate("Otp", {
+			countryCode,
+			number,
+			directLogin: "directLogin",
+			type: "LOGIN",
+		});
+
 	return (
 		<React.Fragment>
 			{visible && <AppLoading visible={visible} />}
@@ -79,7 +90,7 @@ function Login({ route, navigation }) {
 						<Card>
 							{/* `````````````````````` LOGO */}
 							<View style={{ alignItems: "center" }}>
-								<Image
+								<FastImage
 									source={require("../../../assets/logo.png")}
 									style={styles.img}
 								/>
@@ -99,7 +110,7 @@ function Login({ route, navigation }) {
 										size={5}
 										mr="2"
 										color="muted.400"
-										onPress={() => setShow(!show)}
+										onPress={handleShow}
 									/>
 								}
 								autoCapitalize="none"
@@ -115,20 +126,13 @@ function Login({ route, navigation }) {
 								title={"Proceed"}
 							/>
 
-							<Image
+							<FastImage
 								source={require("../../../assets/OR.png")}
 								style={{ height: 16, width: "100%", marginTop: 10 }}
 							/>
 							<AppButton
 								style={{ marginTop: 10, width: "100%" }}
-								onPress={() =>
-									navigation.navigate("Otp", {
-										countryCode,
-										number,
-										directLogin: "directLogin",
-										type: "LOGIN",
-									})
-								}
+								onPress={handleNavigateLogin}
 								title={"Send an OTP"}
 							/>
 						</Card>

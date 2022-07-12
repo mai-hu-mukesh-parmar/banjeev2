@@ -1,13 +1,12 @@
 import {
 	View,
-	Image,
 	TouchableWithoutFeedback,
 	Animated,
 	VirtualizedList,
 	StyleSheet,
 } from "react-native";
 import React, { Fragment, useCallback, useEffect } from "react";
-
+import FastImage from "react-native-fast-image";
 import { getFeed } from "../../../helper/services/PostFeed";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -44,6 +43,7 @@ export default function FeedScreen() {
 	const diffClamp = Animated.diffClamp(scrollY, 0, 70);
 	const translateY = diffClamp.interpolate({
 		inputRange: [0, 70],
+		useNativeDriver: true,
 		outputRange: [0, 70],
 	});
 	const allFeed = useCallback(async () => {
@@ -132,7 +132,7 @@ export default function FeedScreen() {
 							height: "100%",
 						}}
 					>
-						<Image
+						<FastImage
 							source={require("../../../../assets/EditDrawerIcon/banjee_feed.png")}
 							style={{ width: 130, height: 30 }}
 							resizeMode="contain"
@@ -250,6 +250,58 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		borderRadius: 50,
 	},
+	filterView: {
+		height: 34,
+		position: "absolute",
+		bottom: 20,
+		flexDirection: "row",
+		width: 256,
+		alignSelf: "center",
+		alignItems: "center",
+		zIndex: 9,
+		justifyContent: "center",
+	},
+	subView: {
+		width: 120,
+		borderWidth: 1,
+		borderColor: "#666e7b",
+		backgroundColor: "rgba(0,0,0,0.5)",
+		height: "100%",
+		alignItems: "center",
+		justifyContent: "center",
+		borderRadius: 50,
+		zIndex: 99,
+	},
+	moreText: {
+		flexDirection: "row",
+		width: "95%",
+		alignSelf: "center",
+		marginLeft: 20,
+		alignItems: "center",
+	},
+	mainView: {
+		width: "100%",
+		alignSelf: "flex-end",
+		marginBottom: 17,
+		backgroundColor: "white",
+		paddingBottom: 15,
+	},
+	grid: {
+		paddingLeft: "5%",
+		width: "100%",
+		flexDirection: "row",
+		height: 56,
+		alignItems: "center",
+	},
+	header: {
+		flexDirection: "row",
+		height: "100%",
+		width: "87%",
+		borderBottomColor: color.greyText,
+		justifyContent: "space-between",
+		marginLeft: 20,
+	},
+
 	mainView: {
 		width: "100%",
 		alignSelf: "flex-end",

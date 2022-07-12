@@ -96,6 +96,15 @@ PODS:
   - GoogleMaps/Base (6.1.1)
   - GoogleMaps/Maps (6.1.1):
     - GoogleMaps/Base
+  - libwebp (1.2.1):
+    - libwebp/demux (= 1.2.1)
+    - libwebp/mux (= 1.2.1)
+    - libwebp/webp (= 1.2.1)
+  - libwebp/demux (1.2.1):
+    - libwebp/webp
+  - libwebp/mux (1.2.1):
+    - libwebp/demux
+  - libwebp/webp (1.2.1)
   - Permission-AppTrackingTransparency (3.4.0):
     - RNPermissions
   - Permission-BluetoothPeripheral (3.4.0):
@@ -468,6 +477,10 @@ PODS:
     - React-Core
   - RNDateTimePicker (3.5.2):
     - React-Core
+  - RNFastImage (8.5.11):
+    - React-Core
+    - SDWebImage (~> 5.11.1)
+    - SDWebImageWebPCoder (~> 0.8.4)
   - RNGestureHandler (2.5.0):
     - React-Core
   - RNPermissions (3.4.0):
@@ -506,6 +519,12 @@ PODS:
     - React-Core
   - RNSVG (12.3.0):
     - React-Core
+  - SDWebImage (5.11.1):
+    - SDWebImage/Core (= 5.11.1)
+  - SDWebImage/Core (5.11.1)
+  - SDWebImageWebPCoder (0.8.5):
+    - libwebp (~> 1.0)
+    - SDWebImage/Core (~> 5.10)
   - UMTaskManagerInterface (7.1.1):
     - ExpoModulesCore
   - Yoga (1.14.0)
@@ -532,6 +551,8 @@ DEPENDENCIES:
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/React/FBReactNativeSpec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
+  - Google-Maps-iOS-Utils
+  - GoogleMaps
   - Permission-AppTrackingTransparency (from `../node_modules/react-native-permissions/ios/AppTrackingTransparency`)
   - Permission-BluetoothPeripheral (from `../node_modules/react-native-permissions/ios/BluetoothPeripheral`)
   - Permission-Calendars (from `../node_modules/react-native-permissions/ios/Calendars`)
@@ -591,6 +612,7 @@ DEPENDENCIES:
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
   - "RNCPushNotificationIOS (from `../node_modules/@react-native-community/push-notification-ios`)"
   - "RNDateTimePicker (from `../node_modules/@react-native-community/datetimepicker`)"
+  - RNFastImage (from `../node_modules/react-native-fast-image`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
@@ -606,6 +628,9 @@ SPEC REPOS:
     - fmt
     - Google-Maps-iOS-Utils
     - GoogleMaps
+    - libwebp
+    - SDWebImage
+    - SDWebImageWebPCoder
 
 EXTERNAL SOURCES:
   boost:
@@ -764,6 +789,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/push-notification-ios"
   RNDateTimePicker:
     :path: "../node_modules/@react-native-community/datetimepicker"
+  RNFastImage:
+    :path: "../node_modules/react-native-fast-image"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
   RNPermissions:
@@ -807,6 +834,7 @@ SPEC CHECKSUMS:
   glog: 476ee3e89abb49e07f822b48323c51c57124b572
   Google-Maps-iOS-Utils: 3343332b18dfd5be8f1f44edd7d481ace3da4d9a
   GoogleMaps: 94e6e0851beece6678af9f508f4918b7a7c61722
+  libwebp: 98a37e597e40bfdb4c911fc98f2c53d0b12d05fc
   Permission-AppTrackingTransparency: c77e8473bb57a54c8f85b5c57438df85ce72c2f5
   Permission-BluetoothPeripheral: 3146ac2226e243e050bd15e7fa6fca052cdeca87
   Permission-Calendars: 1238465c8911f9deddf21afc1a68189399af0af1
@@ -864,15 +892,18 @@ SPEC CHECKSUMS:
   RNCMaskedView: 0e1bc4bfa8365eba5fbbb71e07fbdc0555249489
   RNCPushNotificationIOS: 87b8d16d3ede4532745e05b03c42cff33a36cc45
   RNDateTimePicker: 7658208086d86d09e1627b5c34ba0cf237c60140
+  RNFastImage: 1f2cab428712a4baaf78d6169eaec7f622556dd7
   RNGestureHandler: bad495418bcbd3ab47017a38d93d290ebd406f50
   RNPermissions: eac721f71748c4472d6e876038270b75397d6ee7
   RNReanimated: 5c8c17e26787fd8984cd5accdc70fef2ca70aafd
   RNScreens: aa9a97835afbbdc18a4757870b2b59b7d9fae16a
   RNShare: 4406f61af043027b695c3a0b8f39e2c2bdacde12
   RNSVG: 302bfc9905bd8122f08966dc2ce2d07b7b52b9f8
+  SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
+  SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   UMTaskManagerInterface: 3184c93ecc290bd422c6e344badc89b601e9c29b
   Yoga: 99652481fcd320aefa4a7ef90095b95acd181952
 
-PODFILE CHECKSUM: c72b4bc6cd6cbe4df597981d95583f1ded1318b9
+PODFILE CHECKSUM: c734a18728bfc4a8d0fdc1c4149630f4447debdb
 
 COCOAPODS: 1.11.3

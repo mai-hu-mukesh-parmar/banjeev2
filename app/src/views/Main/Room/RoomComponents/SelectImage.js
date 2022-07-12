@@ -1,12 +1,8 @@
 import { LinearGradient } from "expo-linear-gradient";
 
 import React from "react";
-import {
-	View,
-	StyleSheet,
-	Image,
-	TouchableWithoutFeedback,
-} from "react-native";
+import { View, StyleSheet, TouchableWithoutFeedback } from "react-native";
+import FastImage from "react-native-fast-image";
 import { useSelector } from "react-redux";
 import { profileUrl } from "../../../../utils/util-func/constantExport";
 import ImageModal from "../../../Others/ImageModal";
@@ -15,7 +11,7 @@ function SelectImage({ imageModal, setImageModal }) {
 	const { imageContent } = useSelector((state) => state.room); //src from api and url for selected image
 	return (
 		<View style={{ position: "relative", marginTop: 24 }}>
-			<Image
+			<FastImage
 				style={{ height: 120, width: 120, borderRadius: 60 }}
 				source={
 					imageContent
@@ -37,7 +33,7 @@ function SelectImage({ imageModal, setImageModal }) {
 				style={styles.gradient2}
 			>
 				<TouchableWithoutFeedback onPress={() => setImageModal(true)}>
-					<Image
+					<FastImage
 						style={{ height: 24, width: 24 }}
 						source={require("../../../../../assets/EditDrawerIcon/ic_white_camera.png")}
 					/>
