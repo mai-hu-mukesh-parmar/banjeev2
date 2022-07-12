@@ -8,25 +8,28 @@ import NavigationView from "./app/src/routes/NavigationView";
 import AuthSocket from "./app/src/Socket/Socket";
 import { SocketContext, socket } from "./app/src/Context/Socket";
 import SocketEvents from "./app/src/Socket/SocketEvents";
-
+import { LogBox } from "react-native";
+LogBox.ignoreLogs([
+  "ViewPropTypes will be removed from React Native. Migrate to ViewPropTypes exported from 'deprecated-react-native-prop-types'",
+]);
 const App = () => {
-	console.log(Dimensions.get("screen").width);
+  console.log(Dimensions.get("screen").width);
 
-	return (
-		<Provider store={store}>
-			<SocketContext.Provider value={socket}>
-				<AuthSocket>
-					<NavigationContainer>
-						<SocketEvents>
-							<NativeBaseProvider>
-								<NavigationView />
-							</NativeBaseProvider>
-						</SocketEvents>
-					</NavigationContainer>
-				</AuthSocket>
-			</SocketContext.Provider>
-		</Provider>
-	);
+  return (
+    <Provider store={store}>
+      <SocketContext.Provider value={socket}>
+        <AuthSocket>
+          <NavigationContainer>
+            <SocketEvents>
+              <NativeBaseProvider>
+                <NavigationView />
+              </NativeBaseProvider>
+            </SocketEvents>
+          </NavigationContainer>
+        </AuthSocket>
+      </SocketContext.Provider>
+    </Provider>
+  );
 };
 
 export default App;
