@@ -19,11 +19,13 @@ export default function AudioTypes({ src }) {
 				flexDirection: "row",
 				alignItems: "center",
 				position: "relative",
-				height: 60,
+				flex: 1,
+				justifyContent: "center",
+				width: "95%",
 			}}
 		>
 			<FastImage
-				style={{ width: "100%", borderRadius: 4, height: "100%" }}
+				style={{ width: "100%", borderRadius: 4, height: 60 }}
 				source={require("../../../../../assets/EditDrawerIcon/feedAudioBg.png")}
 			/>
 			<View

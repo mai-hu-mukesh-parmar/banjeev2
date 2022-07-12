@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet, Dimensions } from "react-native";
+import { View, StyleSheet, Dimensions, SafeAreaView } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { AutocompleteDropdown } from "react-native-autocomplete-dropdown";
 import { Text } from "native-base";
@@ -10,10 +10,6 @@ import { createFeedData } from "../../../../redux/store/action/createFeedAction"
 import AppFabButton from "../../../../constants/components/ui-component/AppFabButton";
 import color from "../../../../constants/env/color";
 import { useNavigation } from "@react-navigation/native";
-// import {
-// 	Autocomplete,
-// 	withKeyboardAwareScrollView,
-// } from "react-native-dropdown-autocomplete";
 
 function SearchLocation(props) {
 	const { setOptions, goBack, navigate } = useNavigation();
@@ -63,96 +59,74 @@ function SearchLocation(props) {
 	};
 
 	return (
-		<LinearGradient
-			style={styles.container}
-			start={{ x: 1, y: 0 }}
-			end={{ x: 0, y: 0 }}
-			colors={["#ED475C", "#A93294"]}
-		>
-			<AppFabButton
-				onPress={() => goBack()}
-				size={24}
-				icon={
-					<MaterialCommunityIcons
-						size={24}
-						name="arrow-left"
-						color={color.white}
-					/>
-				}
-			/>
-			{/* <AppTextInput autoComplete={true} onChangeText={handleChange} /> */}
-
-			<View style={styles.container}>
-				{/* <Autocomplete
-					handleSelectItem={(item, index) => console.warn(item)}
-					onChangeText={handleChange}
-					fetchData={
-						(item) => console.warn(item, "item")
-						// <Text
-						// 	style={{ color: "black", padding: 15 }}
-						// 	onPress={() => selectedItem(item)}
-						// >
-						// 	{item.title}
-						// </Text>
+		<SafeAreaView>
+			<LinearGradient
+				style={styles.container}
+				start={{ x: 1, y: 0 }}
+				end={{ x: 0, y: 0 }}
+				colors={["#ED475C", "#A93294"]}
+			>
+				<AppFabButton
+					onPress={() => goBack()}
+					size={24}
+					icon={
+						<MaterialCommunityIcons
+							size={24}
+							name="arrow-left"
+							color={color.white}
+						/>
 					}
-					valueExtractor={(item) => item.id}
-				/> */}
-
-				<AutocompleteDropdown
-					suggestionsListMaxHeight={Dimensions.get("window").height * 0.5}
-					dataSet={suggestionsList}
-					textInputProps={{
-						placeholder: "Enter Your Location",
-						autoCorrect: false,
-						autoCapitalize: "none",
-						style: {
-							borderRadius: 25,
-							backgroundColor: "white",
-							color: "black",
-							borderWidth: 1,
-							paddingLeft: 18,
-						},
-					}}
-					onChangeText={handleChange}
-					loading={loading}
-					useFilter={false} // prevent rerender twice
-					inputHeight={40}
-					containerStyle={{ width: "85%" }}
-					inputContainerStyle={{
-						width: "100%",
-						backgroundColor: "transparent",
-					}}
-					showChevron={false}
-					rightButtonsContainerStyle={{
-						color: "black",
-						backgroundColor: "transparent",
-					}}
-					renderItem={(item, text) => (
-						<Text
-							style={{ color: "black", padding: 15 }}
-							onPress={() => selectedItem(item)}
-						>
-							{item.title}
-						</Text>
-					)}
-					suggestionsListContainerStyle={{
-						color: "black",
-					}}
 				/>
+				{/* <AppTextInput autoComplete={true} onChangeText={handleChange} /> */}
 
-				{/* <AppTextInput
-              style={{
-                marginTop: -20,
-                marginBottom: 20,
-                borderRadius: 20,
-                height: 40,
-              }}
-              autoComplete={true}
-              onChangeText={handleChange}
-              placeholder={"Search Location"}
-            /> */}
-			</View>
-		</LinearGradient>
+				<View>
+					<AutocompleteDropdown
+						// suggestionsListMaxHeight={Dimensions.get("screen").height * 0.5}
+						containerStyle={{
+							// display: "flex",
+							width: Dimensions.get("screen").width - 70,
+							alignItems: "flex-start",
+							backgroundColor: "transparent",
+						}}
+						suggestionsListContainerStyle={{
+							position: "absolute",
+							bottom: -Dimensions.get("screen").height * 0.3,
+						}}
+						dataSet={suggestionsList}
+						textInputProps={{
+							placeholder: "Enter Your Location",
+							autoCorrect: false,
+							autoCapitalize: "none",
+							style: {
+								borderRadius: 25,
+								color: "black",
+								borderWidth: 1,
+								paddingLeft: 18,
+							},
+						}}
+						rightButtonsContainerStyle={{
+							color: "black",
+							backgroundColor: "transparent",
+						}}
+						onChangeText={handleChange}
+						loading={loading}
+						useFilter={false} // prevent rerender twice
+						inputHeight={40}
+						showChevron={false}
+						renderItem={(item, text) => (
+							<View style={{}}>
+								<Text
+									style={{ color: "black", padding: 15 }}
+									// onPress={() => selectedItem(item)}
+								>
+									{item.title}
+								</Text>
+							</View>
+						)}
+					/>
+				</View>
+			</LinearGradient>
+		</SafeAreaView>
 	);
 }
 
