@@ -25,7 +25,6 @@ import AppInput from "../../../../constants/components/ui-component/AppInput";
 import AppFabButton from "../../../../constants/components/ui-component/AppFabButton";
 import { useDispatch, useSelector } from "react-redux";
 import { setMapData } from "../../../../redux/store/action/mapAction";
-import SearchMapLocationItem from "./SearchMapLocationItem";
 import { useNavigation } from "@react-navigation/native";
 
 function SearchMapLocation() {
@@ -53,7 +52,7 @@ function SearchMapLocation() {
 				setSuggestionsList(x);
 			})
 			.catch((err) => {
-				console.log(err);
+				console.warn(err);
 			});
 	};
 
@@ -72,11 +71,10 @@ function SearchMapLocation() {
 					searchData: { ...searchData, ...data },
 				})
 			);
+
+			navigate("Map");
+
 			refRBSheet.current.close();
-			if (sheet.screen === "Cards") {
-				console.log("hey");
-				navigate("Map");
-			}
 		},
 		[sheet]
 	);
@@ -85,9 +83,7 @@ function SearchMapLocation() {
 		getMySearchLocation({ ...data, open: true });
 	}, []);
 
-	console.log(searchData);
 	useEffect(() => {
-		console.log("sheet", sheet);
 		if (sheet.open && refRBSheet.current) {
 			refRBSheet.current.open();
 		}
@@ -108,7 +104,7 @@ function SearchMapLocation() {
 				locHandler({ loc, title });
 				setSuggestionsList([]);
 			})
-			.catch((err) => console.log(err));
+			.catch((err) => console.warn(err));
 	};
 	const renderItem = ({ item }) => {
 		return (
@@ -156,7 +152,7 @@ function SearchMapLocation() {
 		<Fragment>
 			<RBSheet
 				customStyles={{
-					container: { borderRadius: 10 },
+					container: { borderRadius: 10, padding: 5 },
 				}}
 				height={500}
 				width={"100%"}
