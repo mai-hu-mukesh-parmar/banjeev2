@@ -323,7 +323,7 @@ const styles = StyleSheet.create({
   icon: {
     transform: [{ rotate: "90deg" }],
     position: "absolute",
-    top: 15,
+    top: 0,
     zIndex: 1,
     left: 20,
   },

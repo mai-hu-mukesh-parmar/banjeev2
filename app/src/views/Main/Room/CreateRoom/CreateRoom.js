@@ -17,10 +17,7 @@ import AppButton from "../../../../constants/components/ui-component/AppButton";
 import { Avatar, Text } from "native-base";
 import SelectImage from "../RoomComponents/SelectImage";
 import RoomTitle from "../RoomComponents/RoomTitle";
-import {
-	checkGender,
-	listProfileUrl,
-} from "../../../../utils/util-func/constantExport";
+import { listProfileUrl } from "../../../../utils/util-func/constantExport";
 import { setRoomData } from "../../../../redux/store/action/roomAction";
 
 function CreateRoom(props) {
@@ -39,9 +36,11 @@ function CreateRoom(props) {
 		imageContent,
 		connectedUsers,
 		editRoom,
+		audioTitle,
 		...room
 	} = useSelector((state) => state.room);
 
+	console.warn(room);
 	const dispatch = useDispatch();
 	const { setOptions, navigate } = useNavigation();
 	const { params } = useRoute();
@@ -50,15 +49,11 @@ function CreateRoom(props) {
 
 	const [imageModal, setImageModal] = React.useState(false); //Select Image
 
-	const [roomUri, setRoomUri] = React.useState(
-		room?.imageContent?.src ?? false
-	);
-
-	const [userCount, setUserCount] = React.useState([]);
-
 	const [activeBtn, setActiveBtn] = React.useState(true);
 
-	const [audioUri, setAudioUri] = React.useState(room?.content?.src ?? null);
+	const [audioUri] = React.useState(
+		room?.content?.src ? room?.content?.src : audioTitle
+	);
 	React.useEffect(() => {
 		return setOptions({
 			headerTitle: () => (
@@ -77,11 +72,10 @@ function CreateRoom(props) {
 			),
 		});
 	}, [editRoom]);
-	console.warn(room, "connectedUserLength");
 	React.useEffect(() => {
-		if (params?.audio) {
-			setAudioUri(params?.audio);
-		}
+		// if (params?.audio) {
+		// 	setAudioUri(params?.audio);
+		// }
 
 		setActiveBtn(
 			groupName?.length > 0 && communityType && categoryId && subCategoryId
@@ -95,6 +89,7 @@ function CreateRoom(props) {
 		subCategoryId,
 		categoryId,
 		imageContent,
+		audioTitle,
 		audioUri,
 	]);
 
@@ -113,12 +108,13 @@ function CreateRoom(props) {
 		},
 		{
 			title: "Add Voice Intro about the topic",
-			subTitle: audioUri ? "Change Voice Intro" : "Select Intro",
+			subTitle: (room?.content?.src ? room?.content?.src : audioTitle)
+				? "Change Voice Intro"
+				: "Select Intro",
 			img: require("../../../../../assets/EditDrawerIcon/ic_mic.png"),
 			onPress: () => navigate("RecordVoice"),
 		},
 	];
-
 	return (
 		<ScrollView showsVerticalScrollIndicator={false}>
 			<View style={styles.container}>
@@ -154,7 +150,10 @@ function CreateRoom(props) {
 													? color.gradient
 													: "grey" && i === 1 && groupName
 													? color.gradient
-													: i === 2 && audioUri
+													: i === 2 &&
+													  (room?.content?.src
+															? room?.content?.src
+															: audioTitle)
 													? color.gradient
 													: "grey",
 										},
@@ -292,22 +291,7 @@ function CreateRoom(props) {
 							disabled={!activeBtn}
 							style={{ marginTop: 24, marginBottom: 34, width: 230 }}
 							title={!editRoom ? "Create Room" : "Update Room"}
-							onPress={() =>
-								navigate("FilterCreateRoom", {
-									data: {
-										editRoom: room,
-										categoryName,
-										categoryId,
-										subCategoryId,
-										groupName,
-										roomUri,
-										communityType,
-										params,
-										audioUri,
-										userCount,
-									},
-								})
-							}
+							onPress={() => navigate("FilterCreateRoom")}
 						/>
 					)
 				) : (

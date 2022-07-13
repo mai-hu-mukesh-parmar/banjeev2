@@ -25,6 +25,7 @@ import FeedProfile from "./FeedSkeleton/FeedProfile";
 import FeedHeader from "./FeedSkeleton/FeedHeader";
 import FeedContent from "./FeedSkeleton/FeedContent";
 import FeedFooter from "./FeedSkeleton/FeedFooter";
+import AppLoading from "../../../constants/components/ui-component/AppLoading";
 
 export default function FeedScreen() {
 	const isFocused = useIsFocused();
@@ -35,7 +36,14 @@ export default function FeedScreen() {
 	const { checkPermission } = usePermission();
 
 	const {
-		feed: { otherPostId, screen, feed: data, page, loadingData },
+		feed: {
+			otherPostId,
+			screen,
+			feed: data,
+			page,
+			loadingData,
+			refreshingData,
+		},
 	} = useSelector((state) => state);
 
 	const scrollY = new Animated.Value(100);
@@ -47,7 +55,11 @@ export default function FeedScreen() {
 		outputRange: [0, 70],
 	});
 	const allFeed = useCallback(async () => {
-		dispatch(saveFeedAction({ loadingData: true }));
+		if (page === 0) {
+			dispatch(saveFeedAction({ refreshingData: true }));
+		} else {
+			dispatch(saveFeedAction({ loadingData: true }));
+		}
 
 		await checkPermission("STORAGE");
 		getFeed({
@@ -75,6 +87,7 @@ export default function FeedScreen() {
 			visibility: null,
 		})
 			.then((res) => {
+				dispatch(saveFeedAction({ refreshingData: false }));
 				dispatch(saveFeedAction({ loadingData: false }));
 
 				if (res?.length > 0) {
@@ -147,8 +160,6 @@ export default function FeedScreen() {
 		setHeader();
 		if (isFocused) {
 			allFeed();
-		} else {
-			// setData([]);
 		}
 	}, [allFeed, setHeader, isFocused]);
 
@@ -193,7 +204,7 @@ export default function FeedScreen() {
 					initialNumToRender={10}
 					removeClippedSubviews={true}
 					updateCellsBatchingPeriod={50}
-					refreshing={loadingData}
+					refreshing={refreshingData}
 					viewabilityConfig={{
 						itemVisiblePercentThreshold: 100,
 					}}
@@ -204,6 +215,25 @@ export default function FeedScreen() {
 					onEndReached={onEndReached}
 				/>
 			</View>
+
+			{loadingData && (
+				<View
+					style={{
+						bottom: 8,
+						position: "absolute",
+						justifyContent: "center",
+						flexDirection: "row",
+						width: "100%",
+					}}
+				>
+					{/* <Text>Loading data...</Text> */}
+					<AppLoading
+						style={{ marginRight: 15 }}
+						visible={loadingData}
+						size="small"
+					/>
+				</View>
+			)}
 
 			<View style={styles.filterView}>
 				<Animated.View style={{ transform: [{ translateY: translateY }] }}>

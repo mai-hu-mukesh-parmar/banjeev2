@@ -349,8 +349,8 @@ export default function VideoCall() {
 
 		return () => {
 			InCallManager.stop();
-			// pc.removeStream(userStream);
-			// pc.close();
+			pc.removeStream(userStream);
+			pc.close();
 		};
 	}, [
 		socket,
