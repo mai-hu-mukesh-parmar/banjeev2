@@ -101,7 +101,6 @@ export default function BottomCard(props) {
 			toUserId: systemUserId,
 			voiceIntroSrc,
 		};
-		console.log("payload ---> ", JSON.stringify(payload, null, 2));
 		delete payload.fromUser.authorities;
 
 		FriendRequest(payload)
@@ -109,10 +108,8 @@ export default function BottomCard(props) {
 				let notificationRingtone = require("../../../../../assets/ringtones/sendFriendRequestTone.mp3");
 
 				let { sound } = await Audio.Sound.createAsync(notificationRingtone);
-				console.log("playing sound");
 
 				await sound.playAsync();
-				console.log("audio played");
 
 				dispatch(
 					showToast({

@@ -9,7 +9,7 @@ import Profile from "../../views/Main/Profile/Profile";
 import Map from "../../views/Main/Map/Map";
 import color from "../../constants/env/color";
 import FeedScreen from "../../views/Main/Feed/FeedScreen";
-
+import { EvilIcons } from "@expo/vector-icons";
 function BottomNavigation(props) {
 	const Tab = createBottomTabNavigator();
 
@@ -124,9 +124,11 @@ function BottomNavigation(props) {
 				options={{
 					headerShown: false,
 					tabBarIcon: () => (
-						<FastImage
-							source={require("../../../assets/EditDrawerIcon/ic_location.png")}
-							style={{ height: 24, width: 24, tintColor: "#ffffff" }}
+						<EvilIcons
+							name="location"
+							color={"white"}
+							size={30}
+							style={{ marginTop: 5 }}
 						/>
 					),
 				}}

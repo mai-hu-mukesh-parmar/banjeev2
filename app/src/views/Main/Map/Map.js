@@ -6,13 +6,8 @@ import React, {
 	Fragment,
 } from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import MapView, {
-	MAP_TYPES,
-	Marker,
-	PROVIDER_DEFAULT,
-	PROVIDER_GOOGLE,
-} from "react-native-maps";
-import { View, StyleSheet, SafeAreaView } from "react-native";
+import MapView, { Marker } from "react-native-maps";
+import { StyleSheet } from "react-native";
 import * as Location from "expo-location";
 import { updateUser } from "../../../helper/services/SettingService";
 import { getUserRegistryData } from "../../../helper/services/SplashService";
@@ -27,10 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setMapData } from "../../../redux/store/action/mapAction";
 import RenderMarker from "./MapComponents/RenderMarker";
 import _ from "underscore";
-import {
-	listProfileUrl,
-	profileUrl,
-} from "../../../utils/util-func/constantExport";
+import { listProfileUrl } from "../../../utils/util-func/constantExport";
 import { Entypo } from "@expo/vector-icons";
 import FastImage from "react-native-fast-image";
 
@@ -93,19 +85,7 @@ export default function Map() {
 	);
 
 	const listAllUser = useCallback(
-		({ latitude, longitude }) => {
-			let point = { lat: latitude, lon: longitude };
-			if (searchData.open) {
-				point = {
-					lat: searchData.loc.latitude,
-					lon: searchData.loc.longitude,
-				};
-			} else {
-				point = {
-					lon: longitude,
-					lat: latitude,
-				};
-			}
+		(point) => {
 			getAllUser({
 				distance: "100",
 				point,
@@ -136,31 +116,44 @@ export default function Map() {
 					userLocation: { longitude, latitude, latitudeDelta, longitudeDelta },
 				})
 			);
-			mapRef?.current?.animateToRegion(
-				{
-					...initialRegion,
-					latitude,
-					longitude,
-				},
-				1000
-			);
-
-			markerRef?.current?.animateMarkerToCoordinate(
-				{
-					...initialRegion,
-					latitude,
-					longitude,
-				},
-				1000
-			);
 
 			getUser({ longitude, latitude });
-			listAllUser({ longitude, latitude });
+			let point = { lat: latitude, lon: longitude };
+			if (searchData.open) {
+				point = {
+					lat: searchData.loc.latitude,
+					lon: searchData.loc.longitude,
+				};
+			} else {
+				point = {
+					lon: longitude,
+					lat: latitude,
+				};
+			}
+			listAllUser(point);
+			// mapRef?.current?.animateToRegion(
+			// 	{
+			// 		...initialRegion,
+			// 		latitude,
+			// 		longitude,
+			// 	},
+			// 	0
+			// );
+
+			// markerRef?.current?.animateMarkerToCoordinate(
+			// 	{
+			// 		...initialRegion,
+			// 		latitude,
+			// 		longitude,
+			// 	},
+			// 	0
+			// );
 		}
-	}, [initialRegion, getUser, listAllUser]);
+	}, [initialRegion, getUser, listAllUser, searchData]);
 
 	useEffect(() => {
 		if (isFocused) {
+			setvisible(true);
 			getLocation();
 		} else {
 			setvisible(false);
@@ -169,136 +162,128 @@ export default function Map() {
 
 	return (
 		<Fragment>
-			{visible && <AppLoading visible={visible} />}
-			{!visible && (
-				<Fragment>
-					<AppFabButton
-						style={{
-							height: 60,
-							zIndex: 1,
-							position: "absolute",
-							right: 10,
-							bottom: 10,
-							width: 60,
-							borderRadius: 30,
-							backgroundColor: color.primary,
-							alignItems: "center",
-							justifyContent: "center",
-						}}
+			<AppFabButton
+				style={{
+					height: 60,
+					zIndex: 1,
+					position: "absolute",
+					right: 10,
+					bottom: 10,
+					width: 60,
+					borderRadius: 30,
+					backgroundColor: color.primary,
+					alignItems: "center",
+					justifyContent: "center",
+				}}
+				size={24}
+				onPress={() => navigate("ProfileCards")}
+				icon={
+					<FastImage
+						source={require("../../../../assets/EditDrawerIcon/ic_explore.png")}
+						style={{ height: 24, width: 24 }}
+					/>
+				}
+			/>
+			<AppFabButton
+				onPress={() => {
+					dispatch(setMapData({ refRBSheet: { open: true, screen: "Maps" } }));
+				}}
+				style={{ position: "absolute", top: 50, right: 10, zIndex: 1 }}
+				size={30}
+				icon={
+					<MaterialCommunityIcons
+						name="magnify"
 						size={24}
-						onPress={() => navigate("ProfileCards")}
-						icon={
-							<FastImage
-								source={require("../../../../assets/EditDrawerIcon/ic_explore.png")}
-								style={{ height: 24, width: 24 }}
-							/>
-						}
+						color={color.black}
 					/>
-					<AppFabButton
-						onPress={() => {
-							dispatch(
-								setMapData({ refRBSheet: { open: true, screen: "Maps" } })
-							);
+				}
+			/>
+			<MapView
+				// liteMode={true}
+				ref={mapRef}
+				showsCompass={false}
+				maxZoomLevel={20}
+				// maxZoomLevel={13}
+				region={
+					searchData && searchData.open ? { ...searchData.loc } : { ...loc }
+				}
+				userLocationPriority="low"
+				provider={"google"}
+				onRegionChange={() => {}}
+				style={styles.map}
+			>
+				{searchData && searchData.open ? (
+					<Marker
+						ref={markerRef}
+						coordinate={{ ...searchData.loc }}
+						style={{
+							display: "flex",
+							flexDirection: "column",
+							alignItems: "center",
 						}}
-						style={{ position: "absolute", top: 50, right: 10, zIndex: 1 }}
-						size={30}
-						icon={
-							<MaterialCommunityIcons
-								name="magnify"
-								size={24}
-								color={color.black}
-							/>
-						}
-					/>
-					<MapView
-						// liteMode={true}
-						ref={mapRef}
-						showsCompass={false}
-						maxZoomLevel={20}
-						// maxZoomLevel={13}
-						region={
-							searchData && searchData.open ? { ...searchData.loc } : { ...loc }
-						}
-						userLocationPriority="low"
-						provider={"google"}
-						style={styles.map}
 					>
-						{searchData && searchData.open ? (
-							<Marker
-								ref={markerRef}
-								coordinate={{ ...searchData.loc }}
-								style={{
-									display: "flex",
-									flexDirection: "column",
-									alignItems: "center",
-								}}
-							>
-								<Text style={{ backgroundColor: "white" }}>
-									{searchData.title}
-								</Text>
-								<Entypo name="location-pin" size={24} color="red" />
-							</Marker>
-						) : (
-							<Marker ref={markerRef} coordinate={{ ...loc }}>
-								<FastImage
-									style={{
-										width: 50,
-										height: 60,
-									}}
-									source={require("../../../../assets/EditDrawerIcon/ic_me.png")}
-								/>
-								<FastImage
-									style={{
-										width: 40,
-										height: 40,
-										position: "absolute",
-										top: 4,
-										left: 5,
-										borderRadius: 50,
-										zIndex: 1,
-									}}
-									source={{
-										uri: listProfileUrl(id),
-									}}
-								/>
-							</Marker>
-						)}
+						<Text style={{ backgroundColor: "white" }}>{searchData.title}</Text>
+						<Entypo name="location-pin" size={24} color="red" />
+					</Marker>
+				) : (
+					<Marker ref={markerRef} coordinate={{ ...loc }}>
+						<FastImage
+							style={{
+								width: 50,
+								height: 60,
+							}}
+							source={require("../../../../assets/EditDrawerIcon/ic_me.png")}
+						/>
+						<FastImage
+							style={{
+								width: 40,
+								height: 40,
+								position: "absolute",
+								top: 4,
+								left: 5,
+								borderRadius: 50,
+								zIndex: 1,
+							}}
+							source={{
+								uri: listProfileUrl(id),
+							}}
+						/>
+					</Marker>
+				)}
 
-						<RenderMarker />
-					</MapView>
-					<AppFabButton
-						size={30}
-						onPress={() => {
-							getLocation();
-							dispatch(
-								setMapData({
-									searchData: {
-										loc: {
-											longitude: loc.longitude,
-											latitude: loc.latitude,
-											latitudeDelta: initialRegion.latitudeDelta,
-											longitudeDelta: initialRegion.longitudeDelta,
-										},
-										open: false,
-										title: "",
-									},
-								})
-							);
+				<RenderMarker />
+			</MapView>
+			<AppFabButton
+				size={30}
+				onPress={() => {
+					getLocation();
+					dispatch(
+						setMapData({
+							searchData: {
+								loc: {
+									longitude: loc.longitude,
+									latitude: loc.latitude,
+									latitudeDelta: initialRegion.latitudeDelta,
+									longitudeDelta: initialRegion.longitudeDelta,
+								},
+								open: false,
+								title: "",
+							},
+						})
+					);
+				}}
+				style={styles.mapIcon}
+				icon={
+					<FastImage
+						style={{
+							width: 40,
+							height: 40,
 						}}
-						style={styles.mapIcon}
-						icon={
-							<FastImage
-								style={{
-									width: 40,
-									height: 40,
-								}}
-								source={require("../../../../assets/EditDrawerIcon/ic_loc_center.png")}
-							/>
-						}
+						source={require("../../../../assets/EditDrawerIcon/ic_loc_center.png")}
 					/>
-					<SearchMapLocation />
-				</Fragment>
-			)}
+				}
+			/>
+			<SearchMapLocation />
 		</Fragment>
 	);
 }
