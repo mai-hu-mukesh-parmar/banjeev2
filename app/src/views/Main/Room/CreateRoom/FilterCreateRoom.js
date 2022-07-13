@@ -28,23 +28,6 @@ function FilterCreateRoom(props) {
 		allUseVoiceFilters,
 		onlyAudioRoom,
 	} = useSelector((state) => state.room);
-	console.warn(
-		allCanSwitchVideo,
-		allCanReact,
-		allCanSpeak,
-		allCanAddBanjees,
-		recordSession,
-		seekPermission,
-		allUseVoiceFilters,
-		onlyAudioRoom
-	);
-	// const {
-	// 	params: {
-	// 		update,
-	// 		data,
-	// 		data: { editRoom, userCount },
-	// 	},
-	// } = useRoute();
 
 	const { setOptions, navigate } = useNavigation();
 	const [disable, setDisable] = React.useState(false);
@@ -122,7 +105,9 @@ function FilterCreateRoom(props) {
 						? roomdata?.content
 						: {
 								aspectRatio: null,
-								base64Content: roomdata?.audioUri?.audioBase64,
+								base64Content: roomdata.audioBase64
+									? roomdata.audioBase64
+									: roomdata?.content?.src,
 								caption: null,
 								description: null,
 								height: 0,
@@ -134,8 +119,8 @@ function FilterCreateRoom(props) {
 								sizeInBytes: 0,
 								src: null,
 								subTitle: null,
-								tags: null,
-								title: roomdata.audioUri.url,
+								tags: roomdata?.audioTitle ? roomdata?.audioTitle : null,
+								title: null,
 								type: null,
 								width: 0,
 						  },
@@ -210,7 +195,7 @@ function FilterCreateRoom(props) {
 				connectionReq: null, //remaining
 				content: {
 					aspectRatio: null,
-					base64Content: null,
+					base64Content: roomdata?.audioBase64,
 					caption: null,
 					description: null,
 					height: 0,
@@ -223,7 +208,7 @@ function FilterCreateRoom(props) {
 					src: null,
 					subTitle: null,
 					tags: null,
-					title: null,
+					title: roomdata?.audioTitle,
 					type: null,
 					width: 0,
 				},
@@ -287,17 +272,17 @@ function FilterCreateRoom(props) {
 							style={styles.profile}
 							source={{ uri: listProfileUrl(systemUserId) }}
 						>
-							{username.charAt(0).toUpperCase() || ""}
+							{username?.charAt(0).toUpperCase() || ""}
 							{/* <FastImage source={checkGender(item.gender)} style={styles.img} /> */}
 						</Avatar>
-						<FastImage
+						{/* <FastImage
 							source={
 								// userData.avatarUrl
 								{ uri: listProfileUrl(systemUserId) }
 								// : require("../../assets/EditDrawerIcon/neutral_placeholder.png")
 							}
 							style={styles.profile}
-						/>
+						/> */}
 					</View>
 					<Text>{roomdata.editRoom ? "Update Room" : "Create Room"}</Text>
 				</View>
@@ -456,8 +441,6 @@ const styles = StyleSheet.create({
 		height: 40,
 		width: 40,
 		borderRadius: 20,
-		borderColor: color.primary,
-		borderWidth: 1,
 	},
 	container: {
 		width: "75%",

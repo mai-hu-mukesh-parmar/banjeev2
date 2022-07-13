@@ -98,7 +98,8 @@ function Room(props) {
 		listOurRoom(data)
 			.then((res) => {
 				setRefresh(false);
-				setMyRoom(res.content ? res.content : res.empty);
+				console.warn(res);
+				setMyRoom(res.content);
 			})
 			.catch((err) => {
 				console.warn(err);
@@ -111,7 +112,7 @@ function Room(props) {
 	return (
 		<React.Fragment>
 			<View style={styles.container}>
-				{myRoom ? (
+				{myRoom.length === 0 ? (
 					// <ScrollView>
 					<View
 						style={{

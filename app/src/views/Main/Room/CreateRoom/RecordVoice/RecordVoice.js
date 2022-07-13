@@ -15,6 +15,7 @@ import AppButton from "../../../../../constants/components/ui-component/AppButto
 import color from "../../../../../constants/env/color";
 import usePermission from "../../../../../utils/hooks/usePermission";
 import { showToast } from "../../../../../redux/store/action/toastAction";
+import { setRoomData } from "../../../../../redux/store/action/roomAction";
 
 function RecordVoice(props) {
 	const { checkPermission } = usePermission();
@@ -56,12 +57,21 @@ function RecordVoice(props) {
 	const saveIntro = async () => {
 		const options = { encoding: FileSystem.EncodingType.Base64 };
 		const audioBase64 = await FileSystem.readAsStringAsync(audio, options);
-		navigate("CreateRoom", {
-			audio: {
-				audioBase64: audioBase64,
-				url: audio.split("/")[audio.split("/").length - 1],
-			},
-		});
+		navigate(
+			"CreateRoom"
+			// , {
+			// 	audio: {
+			// 		audioBase64: audioBase64,
+			// 		url: audio.split("/")[audio.split("/").length - 1],
+			// 	},
+			// }
+		);
+		dispatch(
+			setRoomData({
+				audioTitle: audio.split("/")[audio.split("/").length - 1],
+				audioBase64,
+			})
+		);
 	};
 	// `````````````````````````````` START RECORDING
 
