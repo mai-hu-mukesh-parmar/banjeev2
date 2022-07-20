@@ -165,7 +165,7 @@ export default function AcceptCall() {
             }}
             onPress={joinCall}
             icon={
-              <Image
+              <FastImage
                 source={require("../../../../../assets/EditDrawerIcon/ic_call.png")}
                 style={[styles.callImg, { transform: [{ rotate: "10deg" }] }]}
               />
@@ -208,7 +208,7 @@ export default function AcceptCall() {
               goBack();
             }}
             icon={
-              <Image
+              <FastImage
                 source={require("../../../../../assets/EditDrawerIcon/ic_call.png")}
                 style={[styles.callImg, { transform: [{ rotate: "130deg" }] }]}
               />

@@ -28,6 +28,7 @@ function SocketEvent({ children }) {
       getUsername().then((user_name) => {
         console.log("user_name", user_name);
         console.log("call data ----->>", data);
+
         if (data?.initiator?.id !== user_name) {
           navigate("AcceptCall", { ...data });
           InCallManager.startRingtone("_BUNDLE_");

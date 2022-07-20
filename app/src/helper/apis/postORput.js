@@ -91,11 +91,13 @@ let executePost = (url, actionCode, payload, method, header) => {
           if (statusCode === 0 || statusCode === 200 || status === 200) {
             resolve(data);
           } else {
+            console.warn(response.data, "...............");
             reject(response.data);
           }
         }
       })
       .catch((err) => {
+        console.warn(err, "err.......");
         reject(err);
       });
   });
