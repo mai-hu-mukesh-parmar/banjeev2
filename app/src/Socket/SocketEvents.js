@@ -2,38 +2,37 @@ import { useNavigation } from "@react-navigation/native";
 import jwtDecode from "jwt-decode";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { SocketContext } from "../Context/Socket";
 import InCallManager from "react-native-incall-manager";
 import { getLocalStorage } from "../utils/Cache/TempStorage";
 
 function SocketEvent({ children }) {
-  const socket = React.useContext(SocketContext);
-  const dispatch = useDispatch();
-  const { systemUserId } = useSelector((state) => state.registry);
+	const dispatch = useDispatch();
+	const { systemUserId } = useSelector((state) => state.registry);
+	const socket = useSelector((state) => state.socket);
 
-  const { navigate } = useNavigation();
+	const { navigate } = useNavigation();
 
-  React.useEffect(() => {
-    socket.emit("ONLINE_STATUS_RECEIVER", systemUserId);
-    socket.on("ON_JOIN", (data) => {
-      if (data?.initiator?.id === systemUserId) {
-        if (data?.callType === "Video") {
-          navigate("VideoCall", { ...data });
-        } else {
-          navigate("VoiceCall", { ...data });
-        }
-      }
-    });
-    socket.on("RINGING", (data) => {
-      console.warn("------- RINGING", data);
-      InCallManager.startRingtone("_BUNDLE_");
-      if (data?.initiator?.id !== systemUserId) {
-        navigate("AcceptCall", { ...data });
-      }
-    });
-  }, [socket]);
+	React.useEffect(() => {
+		socket.emit("ONLINE_STATUS_RECEIVER", systemUserId);
+		socket.on("ON_JOIN", (data) => {
+			if (data?.initiator?.id === systemUserId) {
+				if (data?.callType === "Video") {
+					navigate("VideoCall", { ...data });
+				} else {
+					navigate("VoiceCall", { ...data });
+				}
+			}
+		});
+		socket.on("RINGING", (data) => {
+			console.warn("------- RINGING", data);
+			InCallManager.startRingtone("_BUNDLE_");
+			if (data?.initiator?.id !== systemUserId) {
+				navigate("AcceptCall", { ...data });
+			}
+		});
+	}, [socket]);
 
-  return <React.Fragment>{children}</React.Fragment>;
+	return <React.Fragment>{children}</React.Fragment>;
 }
 
 export default SocketEvent;
@@ -52,7 +51,7 @@ export default SocketEvent;
 // import { getLocalStorage } from "../utils/Cache/TempStorage";
 
 // function SocketEvent({ children }) {
-// 	const socket = React.useContext(SocketContext);
+// 	const socket = useSelector((state) => state.socket);
 // 	const dispatch = useDispatch();
 // 	const { systemUserId } = useSelector((state) => state.registry);
 

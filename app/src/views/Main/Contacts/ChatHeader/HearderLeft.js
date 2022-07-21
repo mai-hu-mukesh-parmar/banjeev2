@@ -14,11 +14,12 @@ import checkUserStatus from "../ChatComponent/checkUserStatus";
 
 import { SocketContext } from "../../../../Context/Socket";
 import color from "../../../../constants/env/color";
+import { useSelector } from "react-redux";
 
 export default function HearderLeft({ chatUser }) {
 	const { goBack } = useNavigation();
 	const [imageError, setImageError] = React.useState();
-	const socket = React.useContext(SocketContext);
+	const socket = useSelector((state) => state.socket);
 	// const socket = useSelector((state) => state?.socket);
 
 	const [onlineStatus, setOnlineStatus] = React.useState();

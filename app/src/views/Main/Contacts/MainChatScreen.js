@@ -12,7 +12,6 @@ import AppLoading from "../../../constants/components/ui-component/AppLoading";
 import { profileUrl } from "../../../utils/util-func/constantExport";
 import { Audio } from "expo-av";
 import * as FileSystem from "expo-file-system";
-import { SocketContext } from "../../../Context/Socket";
 import ConfirmModal from "./ChatComponent/ConfirmModal";
 import { BlockUser } from "../../../helper/services/Service";
 import { unfriend } from "../../../helper/services/UnfriendService";
@@ -29,7 +28,7 @@ function MainChatScreen() {
 
 	const storeChat = useSelector((state) => state.chatMessage);
 
-	const socket = React.useContext(SocketContext);
+	const socket = useSelector((state) => state.socket);
 
 	const {
 		params: { item: user },

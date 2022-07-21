@@ -7,22 +7,15 @@ import { useSelector } from "react-redux";
 
 function GetSocketNot({ children }) {
 	const { systemUserId } = useSelector((state) => state.registry);
-	console.warn(systemUserId);
+	console.warn("systemUserId from get notificarion", systemUserId);
 
-	const socket = React.useContext(SocketContext);
+	const socket = useSelector((state) => state.socket);
 
 	const sendNotification = (message) => {
 		PushNotification.localNotification({
 			title: message.sender.firstName,
 			message: message.content.title,
 		});
-	};
-
-	const getToken = (message) => {
-		console.warn("message.sender.id", message.sender.id);
-		if (systemUserId !== message.sender.id) {
-			sendNotification(message);
-		}
 	};
 
 	const sendNotificationCall = (message) => {
@@ -42,12 +35,16 @@ function GetSocketNot({ children }) {
 
 	socket.on("CHAT_MESSAGE", (message) => {
 		console.log("Recieve Notification...");
-		getToken(message);
+		console.warn("message.sender.id", message.sender.id);
+		if (systemUserId !== message.sender.id) {
+			sendNotification(message);
+		}
 	});
 
 	socket.on("ON_JOIN", (data) => {
 		sendNotificationCall(data);
 	});
+
 	// socket.on("CANCELED", (data) => {
 	// 	console.log("disconnect");
 	// 	callDisconnectNotification(data);

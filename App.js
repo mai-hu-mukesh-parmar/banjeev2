@@ -20,20 +20,18 @@ const App = () => {
 
 	return (
 		<Provider store={store}>
-			<SocketContext.Provider value={socket}>
-				<AuthSocket>
-					<Firebase />
-					<GetNotification>
-						<NavigationContainer>
-							<SocketEvents>
-								<NativeBaseProvider>
-									<NavigationView />
-								</NativeBaseProvider>
-							</SocketEvents>
-						</NavigationContainer>
-					</GetNotification>
-				</AuthSocket>
-			</SocketContext.Provider>
+			<AuthSocket>
+				{/* <Firebase />
+				<GetNotification> */}
+				<NavigationContainer>
+					{/* <SocketEvents> */}
+					<NativeBaseProvider>
+						<NavigationView />
+					</NativeBaseProvider>
+					{/* </SocketEvents> */}
+				</NavigationContainer>
+				{/* </GetNotification> */}
+			</AuthSocket>
 		</Provider>
 	);
 };
