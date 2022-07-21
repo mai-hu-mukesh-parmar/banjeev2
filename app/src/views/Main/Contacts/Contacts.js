@@ -67,6 +67,7 @@ function MyBanjee(props) {
 	}, [page, systemUserId]);
 
 	React.useEffect(() => {
+    if (isFocused()) {
 		listContact();
 
 		setOptions({
