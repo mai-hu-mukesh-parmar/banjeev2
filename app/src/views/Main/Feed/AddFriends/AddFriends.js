@@ -3,7 +3,7 @@ import React, { Fragment } from "react";
 import { View, StyleSheet, FlatList } from "react-native";
 import color from "../../../../constants/env/color";
 import { useNavigation } from "@react-navigation/native";
-import { useSelector } from "react-redux";
+import { shallowEqual, useSelector } from "react-redux";
 import { getAllUser } from "../../../../helper/services/WelcomeService";
 import AddFriendItem from "./AddFriendItem";
 import LiveRoom from "../LiveRooms/LiveRoom";
@@ -11,16 +11,15 @@ import LiveRoom from "../LiveRooms/LiveRoom";
 function AddFriends(props) {
   const [data, setData] = React.useState([]);
   const { navigate } = useNavigation();
-  const {
-    currentLocation: { lat, lon },
-  } = useSelector((state) => state.registry);
+  const { registry } = useSelector((state) => state, shallowEqual);
 
   React.useEffect(() => {
-    if (lat && lon) {
+    if (registry?.currentLocation) {
+      const { currentLocation } = registry;
       getAllUser({
         cards: true,
         distance: "50",
-        point: { lat: lat, lon: lon },
+        point: { lat: currentLocation?.lat, lon: currentLocation?.lon },
         page: 0,
         pageSize: 20,
       })
@@ -29,7 +28,7 @@ function AddFriends(props) {
         })
         .catch((err) => console.log("add friend ", err));
     }
-  }, [lat, lon]);
+  }, [registry]);
 
   const renderItem = ({ item, index }) => {
     return <AddFriendItem item={item} index={index} />;

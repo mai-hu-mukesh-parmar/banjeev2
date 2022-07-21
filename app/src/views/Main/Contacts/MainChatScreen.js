@@ -297,6 +297,7 @@ function MainChatScreen() {
 		socket.on("CHAT_MESSAGE_DELETED", msgDeleteHandler);
 		socket.on("DESTRUCTIVE_MESSAGE", onDistructiveMessageReceiver);
 		socket.on("CHAT_MESSAGE_SEEN", msgSeenHandler);
+		return () => {};
 	}, [systemUserId, socket, onChatMessageRecive, msgDeleteHandler]);
 
 	function renderItem({ item }) {
