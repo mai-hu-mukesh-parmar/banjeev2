@@ -28,7 +28,7 @@ function SelectBanjee() {
 
   const { registry, room } = useSelector((state) => state);
   const { systemUserId } = registry;
-  const { allUser, connectedUsers, connectedUserLength } = room;
+  const { allUser, connectedUsers, addMemberInCall } = room;
 
   const [selectedUserArray, setSelectedUserArray] = useState(connectedUsers);
 
@@ -80,8 +80,10 @@ function SelectBanjee() {
         connectedUserLength: false,
       })
     );
-    if (params?.addUser) {
-      navigate("RoomVideoCall", { singleUser });
+
+    if (addMemberInCall) {
+      dispatch(setRoomData({ newMembers: singleUser }));
+      navigate("RoomVideoCall");
     } else {
       navigate("CreateRoom");
     }
@@ -102,7 +104,7 @@ function SelectBanjee() {
         setSingleUser={setSingleUser}
         singleUser={singleUser}
         item={item}
-        isRoom={params.addUser}
+        // isRoom={params.addUser}
         setSelectedUserArray={setSelectedUserArray}
         selectedUserArray={selectedUserArray}
       />

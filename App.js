@@ -1,8 +1,8 @@
 import { NavigationContainer } from "@react-navigation/native";
-import { NativeBaseProvider, useToast } from "native-base";
-import React from "react";
+import { NativeBaseProvider } from "native-base";
+import React, { Fragment } from "react";
 import { Dimensions } from "react-native";
-import { Provider } from "react-redux";
+import { Provider, useDispatch } from "react-redux";
 import store from "./app/src/redux/store";
 import NavigationView from "./app/src/routes/NavigationView";
 import AuthSocket from "./app/src/Socket/Socket";
@@ -14,6 +14,7 @@ import GetNotification from "./app/src/Socket/GetNotification";
 LogBox.ignoreLogs([
 	"ViewPropTypes will be removed from React Native. Migrate to ViewPropTypes exported from 'deprecated-react-native-prop-types'",
 ]);
+
 const App = () => {
 	// console.log(Dimensions.get("screen").width);
 

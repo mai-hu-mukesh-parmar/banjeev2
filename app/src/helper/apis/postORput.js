@@ -41,13 +41,13 @@ let postApiCall = (url, actionCode, payload, method, header) => {
       };
     }
 
-    console.log(
-      `${method}\n${url}\n${JSON.stringify(body, null, 2)}\n${JSON.stringify(
-        { headers: modifiedHeader },
-        null,
-        2
-      )}`
-    );
+    // console.log(
+    //   `${method}\n${url}\n${JSON.stringify(body, null, 2)}\n${JSON.stringify(
+    //     { headers: modifiedHeader },
+    //     null,
+    //     2
+    //   )}`
+    // );
 
     methodType(method)(url, body, { headers: modifiedHeader })
       .then((response) => {
@@ -91,11 +91,13 @@ let executePost = (url, actionCode, payload, method, header) => {
           if (statusCode === 0 || statusCode === 200 || status === 200) {
             resolve(data);
           } else {
+            console.warn(response.data, "...............");
             reject(response.data);
           }
         }
       })
       .catch((err) => {
+        console.warn(err, "err.......");
         reject(err);
       });
   });

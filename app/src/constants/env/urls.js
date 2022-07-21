@@ -7,10 +7,10 @@ let urls = {
   LOGIN: services.AUTH,
   BASIC_AUTH: "Basic aXRwbDppd2FudHVubGltaXRlZA==",
   ASSETS: {
-    ASSETS: services.ASSETS + "assets/filter",
+    ASSETS: services.BANJEE_ASSET + "/assets/filter",
     CATEGORY: services.BANJEE_ASSET + "/category/filter",
     SUB_CATEGORY: services.BANJEE_ASSET + "/sub-category/filter",
-    CREATE_SUB_CATEGORY: services.ASSETS + "sub-category",
+    CREATE_SUB_CATEGORY: services.BANJEE_ASSET + "/sub-category",
   },
   CDN: {
     UPLOAD_SEND: services.CDN_SERVICE + "upload/send",

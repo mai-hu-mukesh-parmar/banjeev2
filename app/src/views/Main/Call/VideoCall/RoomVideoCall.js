@@ -3,11 +3,11 @@ import React from "react";
 import { PermissionsAndroid, Platform, View } from "react-native";
 import FastImage from "react-native-fast-image";
 import RtcEngine, {
-	ChannelProfile,
-	ClientRole,
-	RtcEngineContext,
-	RtcLocalView,
-	RtcRemoteView,
+  ChannelProfile,
+  ClientRole,
+  RtcEngineContext,
+  RtcLocalView,
+  RtcRemoteView,
 } from "react-native-agora";
 import axios from "axios";
 import { useSelector } from "react-redux";
@@ -22,409 +22,413 @@ import VideoCallScreen from "./RoomVideoCallUtils/VideoCallScreen";
 import FeedbackScreen from "./RoomVideoCallUtils/FeedbackScreen";
 
 export default function RoomVideoCall() {
-	const { setOptions, goBack } = useNavigation();
-	const socket = React.useContext(SocketContext);
+  const { setOptions, goBack } = useNavigation();
+  const socket = React.useContext(SocketContext);
 
-	React.useEffect(() => {
-		console.log("SocketStatus", socket.connected);
+  React.useEffect(() => {
+    console.log("SocketStatus", socket.connected);
 
-		socket.on("Room Video Call Error", (error) => {
-			console.log("error--------->room erroe", error);
-		});
-		socket.on("connect_error", (error) => {
-			console.log("connect_error------------connect err", error);
-		});
+    socket.on("Room Video Call Error", (error) => {
+      console.log("error--------->room erroe", error);
+    });
+    socket.on("connect_error", (error) => {
+      console.log("connect_error------------connect err", error);
+    });
 
-		socket.on("reconnect", (attempt) => {
-			console.log("attempt err", attempt);
-		});
-	}, [socket]);
+    socket.on("reconnect", (attempt) => {
+      console.log("attempt err", attempt);
+    });
+  }, [socket]);
 
-	const {
-		systemUserId,
-		name,
-		currentUser: { mobile, firstName },
-		currentUser,
-		avtarUrl,
-	} = useSelector((state) => state.registry);
+  const {
+    systemUserId,
+    name,
+    currentUser: { mobile, firstName },
+    currentUser,
+    avtarUrl,
+  } = useSelector((state) => state.registry);
 
-	const { params } = useRoute();
-	const [room, setRoom] = React.useState(params?.room);
-	const [userCount, setUserCount] = React.useState(0);
-	React.useEffect(() => {
-		if (params?.room) {
-			setRoom(params?.room);
-		}
-		if (params?.checkUser) {
-			AddMemberInGroup({
-				chatroomId: room?.chatroomId,
-				groupId: room?.id,
-				toUserId: params?.checkUser?.[0]?.id,
-			})
-				.then((res) => {
-					setUserCount(userCount + 1);
-				})
-				.catch((err) => {
-					console.log("err", err);
-				});
-		}
-	}, [params]);
+  const { newMembers, addMemberInCall } = useSelector((state) => state.room);
+  const { params } = useRoute();
+  const [room, setRoom] = React.useState(params?.room);
+  const [userCount, setUserCount] = React.useState(0);
 
-	const getUid = React.useCallback(() => {
-		if (mobile.length > 7) {
-			let reverseMobile = mobile.split("").reverse();
-			let newMobile = reverseMobile.slice(0, 7);
-			return parseInt(newMobile.reverse().join(""));
-		} else {
-			return parseInt(mobile);
-		}
-	}, [mobile]);
+  React.useEffect(() => {
+    if (params?.room) {
+      setRoom(params?.room);
+    }
 
-	const getUserUid = React.useCallback(
-		(userMobile) => {
-			if (userMobile.length > 7) {
-				let reverseMobile = userMobile.split("").reverse();
-				let newMobile = reverseMobile.slice(0, 7);
-				return parseInt(newMobile.reverse().join(""));
-			} else {
-				return parseInt(userMobile);
-			}
-		},
-		[mobile]
-	);
+    if (newMembers) {
+      //   console.warn(newMember, "newMember");
+      AddMemberInGroup({
+        chatroomId: room?.chatroomId,
+        groupId: room?.id,
+        toUserId: newMembers?.id,
+      })
+        .then((res) => {
+          setUserCount(userCount + 1);
+        })
+        .catch((err) => {
+          console.log("err", err);
+        });
+    }
+  }, [params, newMembers]);
 
-	const [config, setConfig] = React.useState({
-		appId: "444b62a2786342678d99ace84ace53c5",
-		token: null,
-		channelId: room?.chatroomId,
-		uid: getUid(),
-		stringUid: "0",
-	});
+  const getUid = React.useCallback(() => {
+    if (mobile.length > 7) {
+      let reverseMobile = mobile.split("").reverse();
+      let newMobile = reverseMobile.slice(0, 7);
+      return parseInt(newMobile.reverse().join(""));
+    } else {
+      return parseInt(mobile);
+    }
+  }, [mobile]);
 
-	let [_engine, setEngine] = React.useState();
-	const [state, setState] = React.useState({
-		channelId: room?.chatroomId,
-		isJoined: false,
-		remoteUid: [],
-		switchCamera: true,
-		switchRender: true,
-	});
-	const [currentView, setCurrentView] = React.useState("members");
-	const [actionState, setActionState] = React.useState({
-		video: true,
-		mic: true,
-		voice: false,
-		camera: true,
-	});
-	const [groupActionState, setGroupActionState] = React.useState({});
-	const [feedbackData, setFeedbackData] = React.useState([]);
-	const [raisHandTimer, setRaisHandTimer] = React.useState(false);
-	const [emojiTimer, setEmojiTimer] = React.useState(false);
+  const getUserUid = React.useCallback(
+    (userMobile) => {
+      if (userMobile.length > 7) {
+        let reverseMobile = userMobile.split("").reverse();
+        let newMobile = reverseMobile.slice(0, 7);
+        return parseInt(newMobile.reverse().join(""));
+      } else {
+        return parseInt(userMobile);
+      }
+    },
+    [mobile]
+  );
 
-	const _initEngine = React.useCallback(async () => {
-		if (_engine) {
-			_addListeners();
-			await _engine.enableVideo();
-			await _engine.startPreview();
-			await _engine.setChannelProfile(ChannelProfile.LiveBroadcasting);
-			await _engine.setClientRole(ClientRole.Broadcaster);
-			_joinChannel();
-		} else {
-			let engine = await RtcEngine.createWithContext(
-				new RtcEngineContext(config.appId)
-			);
-			setEngine(engine);
-		}
-	}, [_engine, _joinChannel]);
+  const [config, setConfig] = React.useState({
+    appId: "444b62a2786342678d99ace84ace53c5",
+    token: null,
+    channelId: room?.chatroomId,
+    uid: getUid(),
+    stringUid: "0",
+  });
 
-	const _addListeners = React.useCallback(() => {
-		_engine?.addListener("Warning", (warningCode) => {
-			console.info("Warning", warningCode);
-		});
-		_engine?.addListener("Error", (errorCode) => {
-			console.info("Error", errorCode);
-		});
-		_engine?.addListener("JoinChannelSuccess", (channel, uid, elapsed) => {
-			console.info("JoinChannelSuccess", channel, uid, elapsed);
-			setState((prev) => ({ ...prev, isJoined: true }));
-		});
-		_engine?.addListener("UserJoined", (uid, elapsed) => {
-			console.info("UserJoined", uid, elapsed);
+  let [_engine, setEngine] = React.useState();
+  const [state, setState] = React.useState({
+    channelId: room?.chatroomId,
+    isJoined: false,
+    remoteUid: [],
+    switchCamera: true,
+    switchRender: true,
+  });
+  const [currentView, setCurrentView] = React.useState("members");
+  const [actionState, setActionState] = React.useState({
+    video: true,
+    mic: true,
+    voice: false,
+    camera: true,
+  });
+  const [groupActionState, setGroupActionState] = React.useState({});
+  const [feedbackData, setFeedbackData] = React.useState([]);
+  const [raisHandTimer, setRaisHandTimer] = React.useState(false);
+  const [emojiTimer, setEmojiTimer] = React.useState(false);
 
-			setState((prev) => ({ ...prev, remoteUid: [...prev.remoteUid, uid] }));
-		});
-		_engine?.addListener("UserOffline", (uid, reason) => {
-			setState((prev) => ({
-				...prev,
-				remoteUid: prev.remoteUid.filter((value) => value !== uid),
-			}));
-		});
-		_engine?.addListener("LeaveChannel", (stats) => {
-			setState((prev) => ({ ...prev, isJoined: false, remoteUid: [] }));
-		});
-	}, [_engine]);
+  const _initEngine = React.useCallback(async () => {
+    if (_engine) {
+      _addListeners();
+      await _engine.enableVideo();
+      await _engine.startPreview();
+      await _engine.setChannelProfile(ChannelProfile.LiveBroadcasting);
+      await _engine.setClientRole(ClientRole.Broadcaster);
+      _joinChannel();
+    } else {
+      let engine = await RtcEngine.createWithContext(
+        new RtcEngineContext(config.appId)
+      );
+      setEngine(engine);
+    }
+  }, [_engine, _joinChannel]);
 
-	const _joinChannel = async () => {
-		if (Platform.OS === "android") {
-			await PermissionsAndroid.requestMultiple([
-				PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-				PermissionsAndroid.PERMISSIONS.CAMERA,
-			]);
-		}
-		await _engine?.joinChannel(config.token, state.channelId, null, config.uid);
-	};
+  const _addListeners = React.useCallback(() => {
+    _engine?.addListener("Warning", (warningCode) => {
+      console.info("Warning", warningCode);
+    });
+    _engine?.addListener("Error", (errorCode) => {
+      console.info("Error", errorCode);
+    });
+    _engine?.addListener("JoinChannelSuccess", (channel, uid, elapsed) => {
+      console.info("JoinChannelSuccess", channel, uid, elapsed);
+      setState((prev) => ({ ...prev, isJoined: true }));
+    });
+    _engine?.addListener("UserJoined", (uid, elapsed) => {
+      console.info("UserJoined", uid, elapsed);
 
-	const _leaveChannel = async () => {
-		await _engine?.leaveChannel();
-		goBack();
-	};
+      setState((prev) => ({ ...prev, remoteUid: [...prev.remoteUid, uid] }));
+    });
+    _engine?.addListener("UserOffline", (uid, reason) => {
+      setState((prev) => ({
+        ...prev,
+        remoteUid: prev.remoteUid.filter((value) => value !== uid),
+      }));
+    });
+    _engine?.addListener("LeaveChannel", (stats) => {
+      setState((prev) => ({ ...prev, isJoined: false, remoteUid: [] }));
+    });
+  }, [_engine]);
 
-	const getToken = React.useCallback(() => {
-		console.warn(
-			`https://agora.banjee.org/rtc/${
-				room?.chatroomId
-			}/publisher/uid/${getUid()}/`
-		);
-		axios
-			.get(
-				`https://agora.banjee.org/rtc/${
-					room?.chatroomId
-				}/publisher/uid/${getUid()}/`
-			)
-			.then((res) => {
-				setConfig((prev) => ({ ...prev, token: res.data.rtcToken }));
+  const _joinChannel = async () => {
+    if (Platform.OS === "android") {
+      await PermissionsAndroid.requestMultiple([
+        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+      ]);
+    }
+    await _engine?.joinChannel(config.token, state.channelId, null, config.uid);
+  };
 
-				setTimeout(() => {
-					_initEngine();
-				}, 2000);
-			})
-			.catch((err) => {
-				console.warn("----------------->", JSON.stringify(err, null, 2));
-			});
-	}, [_initEngine, getUid]);
+  const _leaveChannel = async () => {
+    await _engine?.leaveChannel();
+    goBack();
+  };
 
-	const getRoomStatusApiCall = React.useCallback(async () => {
-		if (room) {
-			try {
-				const result = await axios.get(
-					"https://gateway.banjee.org/services/message-broker/api/live-group/" +
-						room?.chatroomId
-				);
-				if (result && result.data && result.data.onCall) {
-					socket.emit("SIGNALLING_SERVER", {
-						roomId: room?.chatroomId,
-						fromUserId: currentUser?.id,
-						initiator: {
-							...currentUser,
-							avtarImageUrl: avtarUrl,
-							firstName: firstName ? firstName : name,
-							username: name,
-						},
-						eventType: result.data.onCall.length > 0 ? "ENTER" : "JOIN",
-						iceCandidate: null,
-						offer: null,
-						answer: null,
-						mediaStream: null,
-						responseMessage: "Room joined succesfully",
-						callDuration: null,
-						callType: "group",
-						groupName: null,
-						toAvatarSrc: null,
-						groupMemberCounts: 0,
-						groupCreatorId: null,
-						addToCall: false,
-					});
-				}
-			} catch (err) {
-				console.log("errr", err);
-			}
-		}
-	}, [room]);
+  const getToken = React.useCallback(() => {
+    console.warn(
+      `https://agora.banjee.org/rtc/${
+        room?.chatroomId
+      }/publisher/uid/${getUid()}/`
+    );
+    axios
+      .get(
+        `https://agora.banjee.org/rtc/${
+          room?.chatroomId
+        }/publisher/uid/${getUid()}/`
+      )
+      .then((res) => {
+        setConfig((prev) => ({ ...prev, token: res.data.rtcToken }));
 
-	React.useEffect(() => {
-		getToken();
-		getRoomStatusApiCall();
-		setOptions({
-			headerTitle: "",
-			headerLeft: () => (
-				<Header
-					chatroomId={room?.chatroomId}
-					groupName={room?.groupName}
-					roomUserCount={room?.connectedUsers?.length}
-					userCount={userCount}
-					goBack={goBack}
-					_leaveChannel={_leaveChannel}
-					profileUrlSrc={room?.imageContent?.src}
-				/>
-			),
-		});
-		return () => {
-			_engine?.destroy();
-		};
-	}, [getToken, userCount, getRoomStatusApiCall]);
+        setTimeout(() => {
+          _initEngine();
+        }, 2000);
+      })
+      .catch((err) => {
+        console.warn("----------------->", JSON.stringify(err, null, 2));
+      });
+  }, [_initEngine, getUid]);
 
-	React.useEffect(() => {
-		socket.on("VIDEO_MUTE", (result) => {
-			console.log("socket video_mute recive");
-			setGroupActionState((prev) => ({
-				...prev,
-				[getUserUid(result.initiator.mobile)]: {
-					...prev[getUserUid(result.initiator.mobile)],
-					video: true,
-					avtarImageUrl: result.initiator.avtarImageUrl,
-					name: result?.initiator?.firstName
-						? result?.initiator?.firstName
-						: result?.initiator?.username
-						? result?.initiator?.username
-						: "",
-					userObj: result,
-				},
-			}));
-		});
-		socket.on("VIDEO_UNMUTE", (result) => {
-			console.log("socket video_unmute recive");
-			setGroupActionState((prev) => ({
-				...prev,
-				[getUserUid(result.initiator.mobile)]: {
-					...prev[getUserUid(result.initiator.mobile)],
-					video: false,
-					avtarImageUrl: result.initiator.avtarImageUrl,
-					name: result?.initiator?.firstName
-						? result?.initiator?.firstName
-						: result?.initiator?.username
-						? result?.initiator?.username
-						: "",
-					userObj: result,
-				},
-			}));
-		});
-		socket.on("MUTE", (result) => {
-			console.log("socket audio_mute recive");
-			setGroupActionState((prev) => ({
-				...prev,
-				[getUserUid(result.initiator.mobile)]: {
-					...prev[getUserUid(result.initiator.mobile)],
-					audio: true,
-					avtarImageUrl: result.initiator.avtarImageUrl,
-					name: result?.initiator?.firstName
-						? result?.initiator?.firstName
-						: result?.initiator?.username
-						? result?.initiator?.username
-						: "",
-					userObj: result,
-				},
-			}));
-		});
-		socket.on("UNMUTE", (result) => {
-			console.log("socket audio_unmute recive");
-			setGroupActionState((prev) => ({
-				...prev,
-				[getUserUid(result.initiator.mobile)]: {
-					...prev[getUserUid(result.initiator.mobile)],
-					audio: false,
-					avtarImageUrl: result.initiator.avtarImageUrl,
-					name: result?.initiator?.firstName
-						? result?.initiator?.firstName
-						: result?.initiator?.username
-						? result?.initiator?.username
-						: "",
-					userObj: result,
-				},
-			}));
-		});
-		socket.on("RAISE_HAND", (result) => {
-			console.log("socket raise_hand recive");
-			setRaisHandTimer(true);
-			setGroupActionState((prev) => ({
-				...prev,
-				[getUserUid(result.initiator.mobile)]: {
-					...prev[getUserUid(result.initiator.mobile)],
-					avtarImageUrl: result.initiator.avtarImageUrl,
-					name: result?.initiator?.firstName
-						? result?.initiator?.firstName
-						: result?.initiator?.username
-						? result?.initiator?.username
-						: "",
-					raiseHand: true,
-					userObj: result,
-				},
-			}));
-			setTimeout(() => {
-				setRaisHandTimer(false);
-			}, 5000);
-		});
-		socket.on("CHAT_MESSAGE", (result) => {
-			console.log("socket chat_message recive");
-			if (
-				result.content.mimeType === "image/gif" &&
-				result.roomId === room?.chatroomId
-			) {
-				setEmojiTimer(true);
-				setGroupActionState((prev) => ({
-					...prev,
-					[getUserUid(result.sender.mobile)]: {
-						...prev[getUserUid(result.sender.mobile)],
-						emoji: result.content.src,
-						userObj: result,
-					},
-				}));
-				setTimeout(() => {
-					setEmojiTimer(false);
-				}, 5000);
-				setFeedbackData((prev) => [
-					...prev,
-					{
-						userId: result.sender.id,
-						createdOn: result.createdOn,
-						userName: result?.sender?.firstName
-							? result?.sender?.firstName
-							: result?.sender?.username,
-						avtarImageUrl: result?.sender?.avtarImageUrl,
-						content: result?.content,
-					},
-				]);
-			}
-		});
-	}, []);
+  const getRoomStatusApiCall = React.useCallback(async () => {
+    if (room) {
+      try {
+        const result = await axios.get(
+          "https://gateway.banjee.org/services/message-broker/api/live-group/" +
+            room?.chatroomId
+        );
+        if (result && result.data && result.data.onCall) {
+          socket.emit("SIGNALLING_SERVER", {
+            roomId: room?.chatroomId,
+            fromUserId: currentUser?.id,
+            initiator: {
+              ...currentUser,
+              avtarImageUrl: avtarUrl,
+              firstName: firstName ? firstName : name,
+              username: name,
+            },
+            eventType: result.data.onCall.length > 0 ? "ENTER" : "JOIN",
+            iceCandidate: null,
+            offer: null,
+            answer: null,
+            mediaStream: null,
+            responseMessage: "Room joined succesfully",
+            callDuration: null,
+            callType: "group",
+            groupName: null,
+            toAvatarSrc: null,
+            groupMemberCounts: 0,
+            groupCreatorId: null,
+            addToCall: false,
+          });
+        }
+      } catch (err) {
+        console.log("errr", err);
+      }
+    }
+  }, [room]);
 
-	if (state.isJoined) {
-		return (
-			// <AuthSocket>
-			<View
-				style={{
-					flex: 1,
-					flexDirection: "row",
-				}}
-			>
-				{currentView === "members" ? (
-					<VideoCallScreen
-						state={state}
-						_engine={_engine}
-						actionState={actionState}
-						groupActionState={groupActionState}
-						emojiTimer={emojiTimer}
-						raisHandTimer={raisHandTimer}
-					/>
-				) : (
-					<FeedbackScreen
-						feedbackData={feedbackData}
-						systemUserId={systemUserId}
-					/>
-				)}
-				<ActionsCard
-					_engine={_engine}
-					room={room}
-					currentView={currentView}
-					setCurrentView={setCurrentView}
-					actionState={actionState}
-					setActionState={setActionState}
-				/>
-			</View>
-			// </AuthSocket>
-		);
-	} else {
-		return <AppLoading visible={!state.isJoined} />;
-	}
+  React.useEffect(() => {
+    getToken();
+    getRoomStatusApiCall();
+    setOptions({
+      headerTitle: "",
+      headerLeft: () => (
+        <Header
+          chatroomId={room?.chatroomId}
+          groupName={room?.groupName}
+          roomUserCount={room?.connectedUsers?.length}
+          userCount={userCount}
+          goBack={goBack}
+          _leaveChannel={_leaveChannel}
+          profileUrlSrc={room?.imageContent?.src}
+        />
+      ),
+    });
+    return () => {
+      _engine?.destroy();
+    };
+  }, [getToken, userCount, getRoomStatusApiCall]);
+
+  React.useEffect(() => {
+    socket.on("VIDEO_MUTE", (result) => {
+      console.log("socket video_mute recive");
+      setGroupActionState((prev) => ({
+        ...prev,
+        [getUserUid(result.initiator.mobile)]: {
+          ...prev[getUserUid(result.initiator.mobile)],
+          video: true,
+          avtarImageUrl: result.initiator.avtarImageUrl,
+          name: result?.initiator?.firstName
+            ? result?.initiator?.firstName
+            : result?.initiator?.username
+            ? result?.initiator?.username
+            : "",
+          userObj: result,
+        },
+      }));
+    });
+    socket.on("VIDEO_UNMUTE", (result) => {
+      console.log("socket video_unmute recive");
+      setGroupActionState((prev) => ({
+        ...prev,
+        [getUserUid(result.initiator.mobile)]: {
+          ...prev[getUserUid(result.initiator.mobile)],
+          video: false,
+          avtarImageUrl: result.initiator.avtarImageUrl,
+          name: result?.initiator?.firstName
+            ? result?.initiator?.firstName
+            : result?.initiator?.username
+            ? result?.initiator?.username
+            : "",
+          userObj: result,
+        },
+      }));
+    });
+    socket.on("MUTE", (result) => {
+      console.log("socket audio_mute recive");
+      setGroupActionState((prev) => ({
+        ...prev,
+        [getUserUid(result.initiator.mobile)]: {
+          ...prev[getUserUid(result.initiator.mobile)],
+          audio: true,
+          avtarImageUrl: result.initiator.avtarImageUrl,
+          name: result?.initiator?.firstName
+            ? result?.initiator?.firstName
+            : result?.initiator?.username
+            ? result?.initiator?.username
+            : "",
+          userObj: result,
+        },
+      }));
+    });
+    socket.on("UNMUTE", (result) => {
+      console.log("socket audio_unmute recive");
+      setGroupActionState((prev) => ({
+        ...prev,
+        [getUserUid(result.initiator.mobile)]: {
+          ...prev[getUserUid(result.initiator.mobile)],
+          audio: false,
+          avtarImageUrl: result.initiator.avtarImageUrl,
+          name: result?.initiator?.firstName
+            ? result?.initiator?.firstName
+            : result?.initiator?.username
+            ? result?.initiator?.username
+            : "",
+          userObj: result,
+        },
+      }));
+    });
+    socket.on("RAISE_HAND", (result) => {
+      console.log("socket raise_hand recive");
+      setRaisHandTimer(true);
+      setGroupActionState((prev) => ({
+        ...prev,
+        [getUserUid(result.initiator.mobile)]: {
+          ...prev[getUserUid(result.initiator.mobile)],
+          avtarImageUrl: result.initiator.avtarImageUrl,
+          name: result?.initiator?.firstName
+            ? result?.initiator?.firstName
+            : result?.initiator?.username
+            ? result?.initiator?.username
+            : "",
+          raiseHand: true,
+          userObj: result,
+        },
+      }));
+      setTimeout(() => {
+        setRaisHandTimer(false);
+      }, 5000);
+    });
+    socket.on("CHAT_MESSAGE", (result) => {
+      console.log("socket chat_message recive");
+      if (
+        result.content.mimeType === "image/gif" &&
+        result.roomId === room?.chatroomId
+      ) {
+        setEmojiTimer(true);
+        setGroupActionState((prev) => ({
+          ...prev,
+          [getUserUid(result.sender.mobile)]: {
+            ...prev[getUserUid(result.sender.mobile)],
+            emoji: result.content.src,
+            userObj: result,
+          },
+        }));
+        setTimeout(() => {
+          setEmojiTimer(false);
+        }, 5000);
+        setFeedbackData((prev) => [
+          ...prev,
+          {
+            userId: result.sender.id,
+            createdOn: result.createdOn,
+            userName: result?.sender?.firstName
+              ? result?.sender?.firstName
+              : result?.sender?.username,
+            avtarImageUrl: result?.sender?.avtarImageUrl,
+            content: result?.content,
+          },
+        ]);
+      }
+    });
+  }, []);
+
+  if (state.isJoined) {
+    return (
+      // <AuthSocket>
+      <View
+        style={{
+          flex: 1,
+          flexDirection: "row",
+        }}
+      >
+        {currentView === "members" ? (
+          <VideoCallScreen
+            state={state}
+            _engine={_engine}
+            actionState={actionState}
+            groupActionState={groupActionState}
+            emojiTimer={emojiTimer}
+            raisHandTimer={raisHandTimer}
+          />
+        ) : (
+          <FeedbackScreen
+            feedbackData={feedbackData}
+            systemUserId={systemUserId}
+          />
+        )}
+        <ActionsCard
+          _engine={_engine}
+          room={room}
+          currentView={currentView}
+          setCurrentView={setCurrentView}
+          actionState={actionState}
+          setActionState={setActionState}
+        />
+      </View>
+      // </AuthSocket>
+    );
+  } else {
+    return <AppLoading visible={!state.isJoined} />;
+  }
 }
 
 // const _switchCamera = () => {

@@ -42,12 +42,10 @@ export default function ProfilePost() {
         visibility: null,
       })
         .then((res) => {
-          console.warn(res, "res.content.length ");
           setRefresh(false);
           if (res.content && res.content.length > 0) {
+            console.warn("first");
             setData((prev) => [...prev, ...res.content]);
-          } else {
-            setData(res.empty);
           }
         })
         .catch((err) => console.log(err)),
@@ -74,7 +72,7 @@ export default function ProfilePost() {
 
   return (
     <Fragment>
-      {data ? (
+      {data.length === 0 ? (
         <View
           style={{
             height: Dimensions.get("screen").height,
@@ -87,7 +85,8 @@ export default function ProfilePost() {
         </View>
       ) : (
         <VirtualizedList
-          data={data.map((ele) => ({ ...ele, key: Math.random() }))}
+          data={data}
+          // data={data.map((ele) => ({ ...ele, key: Math.random() }))}
           renderItem={renderItem}
           keyExtractor={(data) => data.key}
           getItemCount={(data) => data.length}
@@ -99,7 +98,7 @@ export default function ProfilePost() {
           }}
           refreshing={refresh}
           // onScroll={(e) => scrollY.setValue(e.nativeEvent.contentOffset.y)}
-          onEndReachedThreshold={25}
+          onEndReachedThreshold={0.1}
           onEndReached={() => setPage((prev) => prev + 1)}
         />
       )}

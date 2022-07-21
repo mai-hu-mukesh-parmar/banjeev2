@@ -144,7 +144,8 @@ export default function AcceptCall() {
           <Text style={styles.name}>
             {params?.targetUser?.userName
               ? params?.targetUser?.userName
-              : params?.targetUser?.firstName}
+              : params?.targetUser?.firstName}{" "}
+            Accept call
           </Text>
 
           <Text style={styles.subText}>Calling....</Text>
@@ -165,7 +166,7 @@ export default function AcceptCall() {
             }}
             onPress={joinCall}
             icon={
-              <Image
+              <FastImage
                 source={require("../../../../../assets/EditDrawerIcon/ic_call.png")}
                 style={[styles.callImg, { transform: [{ rotate: "10deg" }] }]}
               />
@@ -208,7 +209,7 @@ export default function AcceptCall() {
               goBack();
             }}
             icon={
-              <Image
+              <FastImage
                 source={require("../../../../../assets/EditDrawerIcon/ic_call.png")}
                 style={[styles.callImg, { transform: [{ rotate: "130deg" }] }]}
               />

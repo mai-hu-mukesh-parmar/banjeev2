@@ -4,47 +4,52 @@ import { PinchGestureHandler, State } from "react-native-gesture-handler";
 import AppLoading from "../../../constants/components/ui-component/AppLoading";
 
 const FeedZoom = ({ imageUri }) => {
-	const scale = new Animated.Value(1);
+  const scale = new Animated.Value(1);
 
-	const onPinchEvent = Animated.event(
-		[
-			{
-				nativeEvent: { scale: scale },
-			},
-		],
-		{
-			useNativeDriver: true,
-		}
-	);
+  const onPinchEvent = Animated.event(
+    [
+      {
+        nativeEvent: { scale: scale },
+      },
+    ],
+    {
+      useNativeDriver: true,
+    }
+  );
 
-	const onPinchStateChange = (event) => {
-		if (event.nativeEvent.oldState === State.ACTIVE) {
-			Animated.spring(scale, {
-				toValue: 1,
-				useNativeDriver: true,
-			}).start();
-		}
-	};
+  const onPinchStateChange = (event) => {
+    if (event.nativeEvent.oldState === State.ACTIVE) {
+      Animated.spring(scale, {
+        toValue: 1,
+        useNativeDriver: true,
+      }).start();
+    }
+  };
 
-	onLoadStart = () => <AppLoading visible={true} />;
-	return (
-		<PinchGestureHandler
-			onGestureEvent={onPinchEvent}
-			onHandlerStateChange={onPinchStateChange}
-		>
-			<Animated.Image
-				source={{ uri: imageUri }}
-				onLoadStart={onLoadStart}
-				style={{
-					width: 320,
-					height: 320,
-					alignSelf: "center",
-					transform: [{ scale: scale }],
-				}}
-				resizeMode="contain"
-			/>
-		</PinchGestureHandler>
-	);
+  onLoadStart = () => <AppLoading visible={true} />;
+  return (
+    <PinchGestureHandler
+      onGestureEvent={onPinchEvent}
+      onHandlerStateChange={onPinchStateChange}
+    >
+      <Animated.Image
+        source={{ uri: imageUri }}
+        onLoadStart={onLoadStart}
+        resizeMethod="scale"
+        style={{
+          // width: 320,
+          width: "95%",
+          borderWidth: 1,
+
+          //   aspectRatio: 1,
+          height: "90%",
+          alignSelf: "center",
+          transform: [{ scale: scale }],
+        }}
+        resizeMode="cover"
+      />
+    </PinchGestureHandler>
+  );
 };
 
 export default FeedZoom;
