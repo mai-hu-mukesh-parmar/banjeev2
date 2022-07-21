@@ -1,42 +1,67 @@
 import { useNavigation } from "@react-navigation/native";
 import jwtDecode from "jwt-decode";
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import {
+  connect,
+  shallowEqual,
+  useDispatch,
+  useSelector,
+  createSelectorHook,
+} from "react-redux";
 import { SocketContext } from "../Context/Socket";
 import InCallManager from "react-native-incall-manager";
 import { getLocalStorage } from "../utils/Cache/TempStorage";
+import _ from "underscore";
+import { getUserRegistry } from "../redux/store/action/useActions";
 
 function SocketEvent({ children }) {
   const socket = React.useContext(SocketContext);
   const dispatch = useDispatch();
-  const { systemUserId } = useSelector((state) => state.registry);
+  const [systemUserId, setSystemUserId] = React.useState("");
 
   const { navigate } = useNavigation();
 
-  React.useEffect(() => {
-    socket.emit("ONLINE_STATUS_RECEIVER", systemUserId);
-    socket.on("ON_JOIN", (data) => {
-      if (data?.initiator?.id === systemUserId) {
-        if (data?.callType === "Video") {
-          navigate("VideoCall", { ...data });
+  const manageSocket = React.useCallback(() => {
+    if (systemUserId) {
+      socket.emit("ONLINE_STATUS_RECEIVER", systemUserId);
+      socket.on("ON_JOIN", (data) => {
+        if (data?.callType) {
+          socket.emit("SIGNALLING_SERVER", {
+            ...data,
+            eventType: "JOIN",
+          });
         } else {
-          navigate("VoiceCall", { ...data });
+          socket.emit("SIGNALLING_SERVER", {
+            ...data,
+            eventType: "JOIN",
+          });
         }
-      }
-    });
-    socket.on("RINGING", (data) => {
-      console.warn("------- RINGING", data);
-      InCallManager.startRingtone("_BUNDLE_");
-      if (data?.initiator?.id !== systemUserId) {
-        navigate("AcceptCall", { ...data });
-      }
-    });
-  }, [socket]);
+        if (systemUserId !== data?.initiator?.id) {
+          InCallManager.startRingtone("_BUNDLE_");
+          navigate("AcceptCall", { ...data });
+        }
+      });
+      socket.on("RINGING", (data) => {
+        if (systemUserId === data?.initiator?.id) {
+          if (data?.callType === "Video") {
+            navigate("VideoCall", { ...data });
+          } else {
+            navigate("VoiceCall", { ...data });
+          }
+        }
+      });
+    }
+  }, [socket, systemUserId]);
+
+  React.useEffect(() => {
+    const data = dispatch(getUserRegistry());
+    console.log(data);
+  }, [dispatch]);
 
   return <React.Fragment>{children}</React.Fragment>;
 }
 
-export default SocketEvent;
+export default React.memo(SocketEvent);
 
 // import { useNavigation } from "@react-navigation/native";
 // import jwtDecode from "jwt-decode";

@@ -6,6 +6,7 @@ import { useNavigation, StackActions } from "@react-navigation/native";
 import BackGroundImg from "../../constants/components/BackGroundImg";
 import { useUserUpdate } from "../../utils/hooks/useUserUpdate";
 import usePermission from "../../utils/hooks/usePermission";
+import AppLoading from "../../constants/components/ui-component/AppLoading";
 
 export default function Splash() {
   const [token, setToken] = useState(null);
@@ -22,7 +23,7 @@ export default function Splash() {
         if (tokenData) {
           setToken(tokenData);
           checkPermission("LOCATION");
-          console.log("hey", tokenData);
+          // navigate("Bottom")
         } else {
           // navigate("SignIn");
           dispatch(StackActions.replace("SignIn"));
@@ -54,6 +55,7 @@ export default function Splash() {
       onLayout={onLayoutRootView}
     >
       <BackGroundImg />
+      <AppLoading visible={true} />
     </View>
   );
 }
