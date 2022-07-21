@@ -41,13 +41,13 @@ let postApiCall = (url, actionCode, payload, method, header) => {
       };
     }
 
-    // console.log(
-    //   `${method}\n${url}\n${JSON.stringify(body, null, 2)}\n${JSON.stringify(
-    //     { headers: modifiedHeader },
-    //     null,
-    //     2
-    //   )}`
-    // );
+    console.log(
+      `${method}\n${url}\n${JSON.stringify(body, null, 2)}\n${JSON.stringify(
+        { headers: modifiedHeader },
+        null,
+        2
+      )}`
+    );
 
     methodType(method)(url, body, { headers: modifiedHeader })
       .then((response) => {

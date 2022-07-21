@@ -26,13 +26,13 @@ let httpRequest = (url, actionCode, payload, method, header) => {
         ...header,
       };
     }
-    // console.log(
-    //   `${method}\n${url}\n${JSON.stringify(
-    //     { headers: modifiedHeader },
-    //     null,
-    //     2
-    //   )}`
-    // );
+    console.log(
+      `${method}\n${url}\n${JSON.stringify(
+        { headers: modifiedHeader },
+        null,
+        2
+      )}`
+    );
     methodType(method)(url, { headers: modifiedHeader })
       .then((response) => {
         resolve(response);
