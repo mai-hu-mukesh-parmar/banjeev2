@@ -35,10 +35,9 @@ import {
 import AppFabButton from "../../../../constants/components/ui-component/AppFabButton";
 import InCallManager from "react-native-incall-manager";
 import { MaterialIcons, Feather } from "@expo/vector-icons";
-import { useSelector } from "react-redux";
+import { useSelector, shallowEqual } from "react-redux";
 import { SocketContext } from "../../../../Context/Socket";
 import { showToast } from "../../../../redux/store/action/toastAction";
-
 const urls = [
   "stun:bn-turn1.xirsys.com",
   "turn:bn-turn1.xirsys.com:3478?transport=udp",
@@ -62,17 +61,16 @@ const configuration = {
 };
 
 export default function VideoCall() {
+  const [pc] = useState(new RTCPeerConnection(configuration));
   const { params } = useRoute();
   const { canGoBack, dispatch } = useNavigation();
   const { pop } = StackActions;
 
   const socket = React.useContext(SocketContext);
 
-  const { systemUserId, currentUser, avtarUrl } = useSelector(
+  const { systemUserId, currentUser, avtarUrl, name } = useSelector(
     (state) => state.registry
   );
-
-  const [pc] = React.useState(new RTCPeerConnection(configuration));
 
   // const [socket] = useState(
   // 	io
@@ -206,11 +204,9 @@ export default function VideoCall() {
 
   const createOffer = useCallback(
     (data) => {
-      console.warn("first", data);
-
-      if (systemUserId === data?.initiator?.id) {
-        //   if (systemUserId === data?.initiator?.id) {
-        pc.createOffer({
+      if (systemUserId !== data?.initiator?.id) {
+        // if (systemUserId === data.toUserId) {
+        pc?.createOffer({
           offerToReceiveAudio: true,
           offerToReceiveVideo: true,
         })
@@ -244,8 +240,10 @@ export default function VideoCall() {
             });
           })
           .catch((err) => {
-            console.log("Create Offer ", err);
+            console.warn("Create Offer error ", err);
           });
+      } else {
+        console.warn("Im caller", systemUserId, data?.initiator?.id);
       }
     },
     [systemUserId, pc, socket, currentUser, avtarUrl, params]
@@ -253,6 +251,7 @@ export default function VideoCall() {
 
   const createAnswer = useCallback(
     async (data) => {
+      console.warn("create answer", data);
       if (systemUserId !== data?.initiator?.id) {
         await pc.setRemoteDescription(
           new RTCSessionDescription({ type: "offer", sdp: data.offer })
@@ -263,7 +262,7 @@ export default function VideoCall() {
           offerToReceiveVideo: true,
         })
           .then(async (answer) => {
-            console.warn("create offer");
+            console.warn("create offer...............");
             await pc.setLocalDescription(new RTCSessionDescription(answer));
             socket.emit("SIGNALLING_SERVER", {
               roomId: params.roomId,
@@ -332,8 +331,12 @@ export default function VideoCall() {
 
   const callFunc = useCallback(async () => {
     addMediaSteam();
-
-    if (systemUserId === params.targetUser.id) {
+    console.log(
+      "systemUserId !== params.targetUser.id",
+      systemUserId,
+      params.targetUser.id
+    );
+    if (systemUserId !== params.targetUser.id) {
       sendReady();
     }
 
@@ -342,6 +345,7 @@ export default function VideoCall() {
     InCallManager.start({ media: "video" });
 
     socket.on("READY", (data) => {
+      console.log("ON READY", data);
       createOffer(data);
     });
 
@@ -360,13 +364,13 @@ export default function VideoCall() {
     pc.onicecandidate = icecandidateHandler;
     pc.onaddstream = streamHandler;
   }, [
-    socket,
     sendReady,
     addMediaSteam,
     createOffer,
     icecandidateHandler,
     streamHandler,
     pc,
+    params,
   ]);
 
   useEffect(() => {
@@ -398,6 +402,7 @@ export default function VideoCall() {
     // pc.onicecandidate = icecandidateHandler;
     // pc.onaddstream = streamHandler;
     callFunc();
+
     return () => {
       InCallManager.stop();
       pc.removeStream(userStream);
