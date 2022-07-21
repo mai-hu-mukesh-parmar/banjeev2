@@ -17,7 +17,7 @@
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
                BuildableName = "banjeev2.app"
                BlueprintName = "banjeev2"
-               ReferencedContainer = "container:banjeev2.xcodeproj">
+               ReferencedContainer = "container:banjeeV2.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,15 +35,15 @@
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
                BuildableName = "banjeev2Tests.xctest"
                BlueprintName = "banjeev2Tests"
-               ReferencedContainer = "container:banjeev2.xcodeproj">
+               ReferencedContainer = "container:banjeeV2.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
-      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
-      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      selectedDebuggerIdentifier = ""
+      selectedLauncherIdentifier = "Xcode.IDEFoundation.Launcher.PosixSpawn"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"
@@ -57,7 +57,7 @@
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
             BuildableName = "banjeev2.app"
             BlueprintName = "banjeev2"
-            ReferencedContainer = "container:banjeev2.xcodeproj">
+            ReferencedContainer = "container:banjeeV2.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -74,7 +74,7 @@
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
             BuildableName = "banjeev2.app"
             BlueprintName = "banjeev2"
-            ReferencedContainer = "container:banjeev2.xcodeproj">
+            ReferencedContainer = "container:banjeeV2.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
