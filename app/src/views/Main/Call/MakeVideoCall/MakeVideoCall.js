@@ -120,6 +120,30 @@ export default function MakeVideoCall() {
         groupCreatorId: null,
         addToCall: false,
       });
+      socket.emit("SIGNALLING_SERVER", {
+        roomId: params.chatroomId,
+        fromUserId: systemUserId,
+        initiator: {
+          ...currentUser,
+          avtarImageUrl: avtarUrl,
+          firstName: name,
+        },
+        targetUser: { ...params, avtarImageUrl: params?.avtarUrl },
+        toUserId: params.id,
+        eventType: "RINGING",
+        iceCandidate: null,
+        offer: null,
+        answer: null,
+        mediaStream: null,
+        responseMessage: "Room Joined",
+        callDuration: "00",
+        callType: "Video",
+        groupName: null,
+        toAvatarSrc: null,
+        groupMemberCounts: 0,
+        groupCreatorId: null,
+        addToCall: false,
+      });
     } else {
       socket.emit("SIGNALLING_SERVER", {
         roomId: params.chatroomId,
@@ -145,13 +169,37 @@ export default function MakeVideoCall() {
         groupCreatorId: null,
         addToCall: false,
       });
+      socket.emit("SIGNALLING_SERVER", {
+        roomId: params.chatroomId,
+        fromUserId: systemUserId,
+        initiator: {
+          ...currentUser,
+          avtarImageUrl: avtarUrl,
+          firstName: name,
+        },
+        targetUser: { ...params, avtarImageUrl: params?.avtarUrl },
+        toUserId: params.id,
+        eventType: "RINGING",
+        iceCandidate: null,
+        offer: null,
+        answer: null,
+        mediaStream: null,
+        responseMessage: "Room Joined",
+        callDuration: "00",
+        callType: "Voice",
+        groupName: null,
+        toAvatarSrc: null,
+        groupMemberCounts: 0,
+        groupCreatorId: null,
+        addToCall: false,
+      });
     }
     // 	});
     // });
   }, []);
 
   return (
-    <>
+    <View style={{ flex: 1 }}>
       <ImageBackground
         onError={({ nativeEvent: { error } }) => setImageError(error)}
         resizeMode="cover"
@@ -166,7 +214,8 @@ export default function MakeVideoCall() {
         <View style={styles.subView}>
           <View>
             <Text style={styles.name}>
-              {params?.userName ? params.userName : params?.firstName}
+              {params?.userName ? params.userName : params?.firstName} Make
+              video call
             </Text>
 
             <Text style={styles.subText}>Calling....</Text>
@@ -184,7 +233,7 @@ export default function MakeVideoCall() {
           />
         </View>
       </ImageBackground>
-    </>
+    </View>
   );
 }
 
@@ -194,10 +243,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 50,
+    paddingTop: 30,
     marginBottom: 30,
   },
-  name: { fontSize: 30, alignSelf: "center", color: "white" },
+  name: { fontSize: 20, alignSelf: "center", color: "white" },
   subText: {
     fontSize: 16,
     alignSelf: "center",

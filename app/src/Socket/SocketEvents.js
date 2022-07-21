@@ -13,33 +13,23 @@ function SocketEvent({ children }) {
 
   const { navigate } = useNavigation();
 
-  const getUsername = React.useCallback(async () => {
-    const gToken = await getLocalStorage("token");
-    const { user_name } = jwtDecode(gToken);
-    return user_name;
-  });
-
-  const user_name = getUsername();
-
   React.useEffect(() => {
-    socket.emit("ONLINE_STATUS_RECEIVER", user_name);
+    socket.emit("ONLINE_STATUS_RECEIVER", systemUserId);
     socket.on("ON_JOIN", (data) => {
-      console.log(user_name);
-      getUsername().then((user_name) => {
-        console.log("user_name", user_name);
-        console.log("call data ----->>", data);
-
-        if (data?.initiator?.id !== user_name) {
-          navigate("AcceptCall", { ...data });
-          InCallManager.startRingtone("_BUNDLE_");
-        } else if (data?.initiator?.id === user_name) {
-          if (data?.callType === "Video") {
-            navigate("VideoCall", { ...data });
-          } else {
-            navigate("VoiceCall", { ...data });
-          }
+      if (data?.initiator?.id === systemUserId) {
+        if (data?.callType === "Video") {
+          navigate("VideoCall", { ...data });
+        } else {
+          navigate("VoiceCall", { ...data });
         }
-      });
+      }
+    });
+    socket.on("RINGING", (data) => {
+      console.warn("------- RINGING", data);
+      InCallManager.startRingtone("_BUNDLE_");
+      if (data?.initiator?.id !== systemUserId) {
+        navigate("AcceptCall", { ...data });
+      }
     });
   }, [socket]);
 
