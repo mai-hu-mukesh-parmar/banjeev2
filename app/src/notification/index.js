@@ -62,25 +62,25 @@ function Firebase(props) {
 		});
 	}, []);
 
-	// const getNotification = React.useCallback(() => {
-	messaging().setBackgroundMessageHandler((payload) => {
-		sendNotificationCall();
-		console.log("Message handled in the background!", payload);
-	});
-	messaging().onMessage((remoteMessage) => {
-		console.warn("A new FCM message arrived!", JSON.stringify(remoteMessage));
-	});
-	messaging().onNotificationOpenedApp(async (remoteMessage) => {
-		sendNotificationCall();
-		console.log("Message handled in the background!", remoteMessage);
-	});
-	messaging()
-		.getInitialNotification()
-		.then((remoteMessage) => {
+	const getNotification = React.useCallback(() => {
+		messaging().setBackgroundMessageHandler((payload) => {
+			sendNotificationCall();
+			console.log("Message handled in the background!", payload);
+		});
+		messaging().onMessage((remoteMessage) => {
+			console.warn("A new FCM message arrived!", JSON.stringify(remoteMessage));
+		});
+		messaging().onNotificationOpenedApp(async (remoteMessage) => {
 			sendNotificationCall();
 			console.log("Message handled in the background!", remoteMessage);
 		});
-	// }, [sendNotificationCall]);
+		messaging()
+			.getInitialNotification()
+			.then((remoteMessage) => {
+				sendNotificationCall();
+				console.log("Message handled in the background!", remoteMessage);
+			});
+	}, [sendNotificationCall]);
 
 	const getToken = React.useCallback(() => {
 		firebase
@@ -89,10 +89,10 @@ function Firebase(props) {
 			.then((token) => {
 				console.log("Firebase token ------>>>", token);
 				firebaseRegistry(token);
-				// getNotification();
+				getNotification();
 			})
 			.catch((error) => console.log("Fire base ", error));
-	}, [firebaseRegistry]);
+	}, [firebaseRegistry, getNotification]);
 
 	const requestUserPermission = React.useCallback(async () => {
 		const authStatus = await messaging().requestPermission();

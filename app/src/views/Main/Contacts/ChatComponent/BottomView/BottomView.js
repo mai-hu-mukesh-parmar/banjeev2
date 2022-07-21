@@ -37,7 +37,7 @@ function BottomView({
 		avtarUrl,
 		currentUser: { mobile, email, username, userName, firstName },
 	} = useSelector((state) => state.registry);
-	const socket = React.useContext(SocketContext);
+	const socket = useSelector((state) => state.socket);
 	const refRBSheet = React.useRef(null);
 	const [audio, setAudio] = React.useState("");
 	const [audioTime, setAudioTime] = React.useState(0);

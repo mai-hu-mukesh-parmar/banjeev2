@@ -1,12 +1,13 @@
 import { useNavigation } from "@react-navigation/native";
 import jwtDecode from "jwt-decode";
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
-  connect,
-  shallowEqual,
-  useDispatch,
-  useSelector,
-  createSelectorHook,
+	connect,
+	shallowEqual,
+	useDispatch,
+	useSelector,
+	createSelectorHook,
 } from "react-redux";
 import { SocketContext } from "../Context/Socket";
 import InCallManager from "react-native-incall-manager";
@@ -15,50 +16,50 @@ import _ from "underscore";
 import { getUserRegistry } from "../redux/store/action/useActions";
 
 function SocketEvent({ children }) {
-  const socket = React.useContext(SocketContext);
-  const dispatch = useDispatch();
-  const [systemUserId, setSystemUserId] = React.useState("");
+	const dispatch = useDispatch();
+	const { systemUserId } = useSelector((state) => state.registry);
+	const socket = useSelector((state) => state.socket);
 
-  const { navigate } = useNavigation();
+	const { navigate } = useNavigation();
 
-  const manageSocket = React.useCallback(() => {
-    if (systemUserId) {
-      socket.emit("ONLINE_STATUS_RECEIVER", systemUserId);
-      socket.on("ON_JOIN", (data) => {
-        if (data?.callType) {
-          socket.emit("SIGNALLING_SERVER", {
-            ...data,
-            eventType: "JOIN",
-          });
-        } else {
-          socket.emit("SIGNALLING_SERVER", {
-            ...data,
-            eventType: "JOIN",
-          });
-        }
-        if (systemUserId !== data?.initiator?.id) {
-          InCallManager.startRingtone("_BUNDLE_");
-          navigate("AcceptCall", { ...data });
-        }
-      });
-      socket.on("RINGING", (data) => {
-        if (systemUserId === data?.initiator?.id) {
-          if (data?.callType === "Video") {
-            navigate("VideoCall", { ...data });
-          } else {
-            navigate("VoiceCall", { ...data });
-          }
-        }
-      });
-    }
-  }, [socket, systemUserId]);
+	const manageSocket = React.useCallback(() => {
+		if (systemUserId) {
+			socket.emit("ONLINE_STATUS_RECEIVER", systemUserId);
+			socket.on("ON_JOIN", (data) => {
+				if (data?.callType) {
+					socket.emit("SIGNALLING_SERVER", {
+						...data,
+						eventType: "JOIN",
+					});
+				} else {
+					socket.emit("SIGNALLING_SERVER", {
+						...data,
+						eventType: "JOIN",
+					});
+				}
+				if (systemUserId !== data?.initiator?.id) {
+					InCallManager.startRingtone("_BUNDLE_");
+					navigate("AcceptCall", { ...data });
+				}
+			});
+			socket.on("RINGING", (data) => {
+				if (systemUserId === data?.initiator?.id) {
+					if (data?.callType === "Video") {
+						navigate("VideoCall", { ...data });
+					} else {
+						navigate("VoiceCall", { ...data });
+					}
+				}
+			});
+		}
+	}, [socket, systemUserId]);
 
-  React.useEffect(() => {
-    const data = dispatch(getUserRegistry());
-    console.log(data);
-  }, [dispatch]);
+	React.useEffect(() => {
+		const data = dispatch(getUserRegistry());
+		console.log(data);
+	}, [dispatch]);
 
-  return <React.Fragment>{children}</React.Fragment>;
+	return <React.Fragment>{children}</React.Fragment>;
 }
 
 export default React.memo(SocketEvent);
@@ -77,7 +78,7 @@ export default React.memo(SocketEvent);
 // import { getLocalStorage } from "../utils/Cache/TempStorage";
 
 // function SocketEvent({ children }) {
-// 	const socket = React.useContext(SocketContext);
+// 	const socket = useSelector((state) => state.socket);
 // 	const dispatch = useDispatch();
 // 	const { systemUserId } = useSelector((state) => state.registry);
 
