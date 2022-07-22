@@ -9,7 +9,7 @@ import Profile from "../../views/Main/Profile/Profile";
 import Map from "../../views/Main/Map/Map";
 import color from "../../constants/env/color";
 import FeedScreen from "../../views/Main/Feed/FeedScreen";
-import { EvilIcons } from "@expo/vector-icons";
+
 function BottomNavigation(props) {
 	const Tab = createBottomTabNavigator();
 
@@ -61,8 +61,8 @@ function BottomNavigation(props) {
 								width: "100%",
 								position: "absolute",
 								bottom: -5,
-								borderTopStartRadius: 10,
-								borderTopEndRadius: 10,
+								// borderTopStartRadius: 10,
+								// borderTopEndRadius: 10,
 								borderTopWidth: 0,
 							}}
 							start={{ x: 0, y: 0 }}
@@ -107,7 +107,7 @@ function BottomNavigation(props) {
 									height: 6,
 									width: 6,
 									borderRadius: 4,
-									backgroundColor: "white",
+									backgroundColor: color.white,
 									alignSelf: "center",
 									bottom: -4,
 									position: "absolute",
@@ -124,11 +124,9 @@ function BottomNavigation(props) {
 				options={{
 					headerShown: false,
 					tabBarIcon: () => (
-						<EvilIcons
-							name="location"
-							color={"white"}
-							size={30}
-							style={{ marginTop: 5 }}
+						<FastImage
+							source={require("../../../assets/EditDrawerIcon/ic_explore.png")}
+							style={{ height: 24, width: 24, tintColor: color.white }}
 						/>
 					),
 				}}
@@ -152,12 +150,11 @@ function BottomNavigation(props) {
 				component={Profile}
 				options={{
 					headerTitle: "",
-
 					headerTransparent: true,
 					headerBackgroundContainerStyle: {
 						backgroundColor: "rgba(0,0,0,0.4)",
 					},
-					headerTintColor: "white",
+					headerTintColor: color.white,
 					headerShadowVisible: true,
 					tabBarIcon: () => (
 						<FastImage
