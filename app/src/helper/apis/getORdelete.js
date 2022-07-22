@@ -34,10 +34,6 @@ let httpRequest = (url, actionCode, payload, method, header) => {
 				2
 			)}`
 		);
-<<<<<<< HEAD
-
-=======
->>>>>>> 32c64e3f027082e6e610255d55f171b1a17b5d4f
 		methodType(method)(url, { headers: modifiedHeader })
 			.then((response) => {
 				resolve(response);
@@ -61,20 +57,14 @@ let executeGet = (url, actionCode, payload, method, header) => {
 				let { statusCode, data, status } = response.data;
 				if (statusCode === 0 || statusCode === 200 || status === 200) {
 					resolve(data);
-<<<<<<< HEAD
-=======
 				} else if (statusCode === 500) {
 					console.warn(" network error....................");
->>>>>>> 32c64e3f027082e6e610255d55f171b1a17b5d4f
 				} else {
 					reject(response.data);
 				}
 			})
 			.catch((err) => {
-<<<<<<< HEAD
-=======
 				// toast.show({ description: "No internet connection " });
->>>>>>> 32c64e3f027082e6e610255d55f171b1a17b5d4f
 				reject(err);
 			});
 	});
