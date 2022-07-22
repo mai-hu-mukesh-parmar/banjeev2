@@ -1,7 +1,7 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { NativeBaseProvider } from "native-base";
 import React, { Fragment } from "react";
-import { Dimensions } from "react-native";
+import { Dimensions, Text, View } from "react-native";
 import { Provider, useDispatch } from "react-redux";
 import store from "./app/src/redux/store";
 import NavigationView from "./app/src/routes/NavigationView";

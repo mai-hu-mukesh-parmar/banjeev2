@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "331158602062",
+    "project_id": "banjee-1c4f5",
+    "storage_bucket": "banjee-1c4f5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:331158602062:android:da2c2188c6b8a3fcb91e1f",
+        "android_client_info": {
+          "package_name": "com.banjee.customer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "331158602062-ab6c70qh18lk96ddb2bm86ndf3mi6bdt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.banjee.customer",
+            "certificate_hash": "43645de87dfefa4b59aec200fc3cc292ee5d7bcc"
+          }
+        },
+        {
+          "client_id": "331158602062-g2506j56v9s16fuvpgmqbn4h2r7dj455.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.banjee.customer",
+            "certificate_hash": "fe5685df98e4ffdf2784b51c559800b1ee15f598"
+          }
+        },
+        {
+          "client_id": "331158602062-jo4iciefl9l7cajcaorard6g7b01kh1l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoKeaviRDF2-Kq7k7U64-cWIIsKzi4gHA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "331158602062-jo4iciefl9l7cajcaorard6g7b01kh1l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

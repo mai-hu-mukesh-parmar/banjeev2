@@ -1,12 +1,12 @@
 {
-	"expo": {
-		"name": "banjeev2",
-		"slug": "banjeev2",
-		"version": "1.0.0",
-		"assetBundlePatterns": ["**/*"],
-		"ios": {
-			"googleServicesFile": "./ios/GoogleService-Info.plist"
-		},
-		"plugins": ["@react-native-firebase/app"]
-	}
+  "expo": {
+    "name": "banjee",
+    "slug": "banjee",
+    "version": "1.0.0",
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "googleServicesFile": "./ios/GoogleService-Info.plist"
+    },
+    "plugins": ["@react-native-firebase/app"]
+  }
 }

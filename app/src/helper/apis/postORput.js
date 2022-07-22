@@ -2,6 +2,7 @@ import urls from "../../constants/env/urls";
 import { getLocalStorage } from "../../utils/Cache/TempStorage";
 import { methodType } from "./methodType";
 import Setting from "./Setting";
+// import { useToast } from "native-base";
 
 let body = {
 	actionCode: "",
@@ -9,7 +10,7 @@ let body = {
 	sid: "",
 	payload: {},
 };
-
+// const toast = useToast();
 let postApiCall = (url, actionCode, payload, method, header) => {
 	const setting = new Setting();
 	let promise = new Promise(async (resolve, reject) => {
@@ -68,6 +69,7 @@ let postApiCall = (url, actionCode, payload, method, header) => {
  * method: PUT / POST / GET / DELETE
  * header : true if api does not require token else false
  */
+<<<<<<< HEAD
 let executePost = (url, actionCode, payload, method, header) => {
 	let promise = new Promise((resolve, reject) => {
 		postApiCall(url, actionCode, payload, method, header)
@@ -87,11 +89,39 @@ let executePost = (url, actionCode, payload, method, header) => {
 				} else {
 					//-------------------------------------- this is for normal api call -------------------------
 
+=======
+
+let executePost = (url, actionCode, payload, method, header) => {
+	let promise = new Promise((resolve, reject) => {
+		postApiCall(url, actionCode, payload, method, header)
+			.then((response) => {
+				//----------------------- this thing is for login oauth url------------------------------------
+				let urlArray = url.split("/");
+				if (
+					urlArray[urlArray.length - 1] === "token" &&
+					urlArray[urlArray.length - 2] === "oauth"
+				) {
+					let { status, data } = response;
+					if (status === 200) {
+						resolve(data);
+					} else if (status === 500) {
+						console.warn(" network error....................");
+					} else {
+						reject(data);
+					}
+				} else {
+					//-------------------------------------- this is for normal api call -------------------------
+
+>>>>>>> 32c64e3f027082e6e610255d55f171b1a17b5d4f
 					let { statusCode, status, data } = response.data;
 					if (statusCode === 0 || statusCode === 200 || status === 200) {
 						resolve(data);
 					} else {
+<<<<<<< HEAD
 						console.warn(response.data, "...............");
+=======
+						// toast.show({ description: "No internet connection" });
+>>>>>>> 32c64e3f027082e6e610255d55f171b1a17b5d4f
 						reject(response.data);
 					}
 				}

@@ -2,6 +2,7 @@ import { getLocalStorage } from "../../utils/Cache/TempStorage";
 import { methodType } from "./methodType";
 import Setting from "./Setting";
 import urls from "../../constants/env/urls";
+// import { useToast } from "native-base";
 
 let httpRequest = (url, actionCode, payload, method, header) => {
 	const setting = new Setting();
@@ -33,7 +34,10 @@ let httpRequest = (url, actionCode, payload, method, header) => {
 				2
 			)}`
 		);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 32c64e3f027082e6e610255d55f171b1a17b5d4f
 		methodType(method)(url, { headers: modifiedHeader })
 			.then((response) => {
 				resolve(response);
@@ -48,6 +52,8 @@ let httpRequest = (url, actionCode, payload, method, header) => {
 	});
 	return promise;
 };
+// const toast = useToast();
+
 let executeGet = (url, actionCode, payload, method, header) => {
 	let promise = new Promise((resolve, reject) => {
 		httpRequest(url, actionCode, payload, method, header)
@@ -55,11 +61,20 @@ let executeGet = (url, actionCode, payload, method, header) => {
 				let { statusCode, data, status } = response.data;
 				if (statusCode === 0 || statusCode === 200 || status === 200) {
 					resolve(data);
+<<<<<<< HEAD
+=======
+				} else if (statusCode === 500) {
+					console.warn(" network error....................");
+>>>>>>> 32c64e3f027082e6e610255d55f171b1a17b5d4f
 				} else {
 					reject(response.data);
 				}
 			})
 			.catch((err) => {
+<<<<<<< HEAD
+=======
+				// toast.show({ description: "No internet connection " });
+>>>>>>> 32c64e3f027082e6e610255d55f171b1a17b5d4f
 				reject(err);
 			});
 	});
