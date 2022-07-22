@@ -1,4 +1,4 @@
-package com.banjeev2.newarchitecture.components;
+package com.banjee.customer.newarchitecture.components;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;

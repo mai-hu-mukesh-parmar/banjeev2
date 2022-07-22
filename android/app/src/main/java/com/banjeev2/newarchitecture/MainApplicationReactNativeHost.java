@@ -1,4 +1,4 @@
-package com.banjeev2.newarchitecture;
+package com.banjee.customer.newarchitecture;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
@@ -19,9 +19,9 @@ import com.facebook.react.fabric.CoreComponentsRegistry;
 import com.facebook.react.fabric.EmptyReactNativeConfig;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.banjeev2.BuildConfig;
-import com.banjeev2.newarchitecture.components.MainComponentsRegistry;
-import com.banjeev2.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
+import com.banjee.customer.BuildConfig;
+import com.banjee.customer.newarchitecture.components.MainComponentsRegistry;
+import com.banjee.customer.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
 import java.util.ArrayList;
 import java.util.List;
 

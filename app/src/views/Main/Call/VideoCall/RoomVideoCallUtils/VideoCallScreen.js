@@ -18,7 +18,7 @@ function VideoCallScreen(props) {
 		emojiTimer,
 		raisHandTimer,
 	} = props;
-	const socket = React.useContext(SocketContext);
+	const socket = useSelector((state) => state.socket);
 
 	const [userPreview, setUserPreview] = React.useState(false);
 

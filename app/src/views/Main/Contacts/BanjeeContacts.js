@@ -14,10 +14,12 @@ import { getProfile } from "../../../redux/store/action/Profile/userPendingConne
 function BanjeeContacts(props) {
 	const { item } = props;
 	const { navigate } = useNavigation();
-
+	const { systemUserId, currentUser, avtarUrl, name } = useSelector(
+		(state) => state.registry
+	);
 	const onlineStatus = useSelector((state) => state.onlineStatus);
 	// console.log(onlineStatus);
-	const socket = React.useContext(SocketContext);
+	const socket = useSelector((state) => state.socket);
 
 	// const [onlineStatus, setOnlineStatus] = React.useState();
 
@@ -97,6 +99,9 @@ function BanjeeContacts(props) {
 
 	const dispatch = useDispatch();
 
+	const makeVideoCallFunc = () => {
+		navigate("MakeVideoCall", { ...item, callType: "Video" });
+	};
 	return (
 		<View
 			style={{
@@ -179,9 +184,7 @@ function BanjeeContacts(props) {
 
 						<View style={styles.icons}>
 							<AppFabButton
-								onPress={() => {
-									navigate("MakeVideoCall", { ...item, callType: "Video" });
-								}}
+								onPress={makeVideoCallFunc}
 								size={20}
 								icon={
 									<FastImage

@@ -3,7 +3,7 @@ import React, { Fragment } from "react";
 import { View, StyleSheet, FlatList, ScrollView } from "react-native";
 import color from "../../../../constants/env/color";
 import { useNavigation } from "@react-navigation/native";
-import { useSelector } from "react-redux";
+import { shallowEqual, useSelector } from "react-redux";
 import { getAllUser } from "../../../../helper/services/WelcomeService";
 import AddFriendItem from "./AddFriendItem";
 import LiveRoom from "../LiveRooms/LiveRoom";
@@ -11,11 +11,25 @@ import AddFriendLoader from "./AddFriendLoader";
 
 function AddFriends(props) {
 	const [data, setData] = React.useState([]);
-
 	const { navigate } = useNavigation();
-	const {
-		currentLocation: { lat, lon },
-	} = useSelector((state) => state.registry);
+	const { registry } = useSelector((state) => state, shallowEqual);
+
+	React.useEffect(() => {
+		if (registry?.currentLocation) {
+			const { currentLocation } = registry;
+			getAllUser({
+				cards: true,
+				distance: "50",
+				point: { lat: currentLocation?.lat, lon: currentLocation?.lon },
+				page: 0,
+				pageSize: 20,
+			})
+				.then((res) => {
+					setData(res.content);
+				})
+				.catch((err) => console.log("add friend ", err));
+		}
+	}, [registry]);
 
 	React.useEffect(() => {
 		getAllUser({

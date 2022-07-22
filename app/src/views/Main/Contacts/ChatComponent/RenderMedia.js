@@ -20,6 +20,7 @@ import { SocketContext } from "../../../../Context/Socket";
 import ReactionDrawer from "./ReactionDrawer";
 
 import color from "../../../../constants/env/color";
+import { useSelector } from "react-redux";
 
 export default function RenderMedia({
 	chatContent,
@@ -36,7 +37,7 @@ export default function RenderMedia({
 
 	const [reactionDrawer, setReactionDrawer] = React.useState({ open: false });
 
-	const socket = React.useContext(SocketContext);
+	const socket = useSelector((state) => state.socket);
 	const {
 		isSender,
 		content,

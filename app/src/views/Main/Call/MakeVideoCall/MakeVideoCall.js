@@ -5,9 +5,9 @@ import { Text } from "native-base";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import io from "socket.io-client";
 import {
-  checkGender,
-  listProfileUrl,
-  profileUrl,
+	checkGender,
+	listProfileUrl,
+	profileUrl,
 } from "../../../../utils/util-func/constantExport";
 import AppFabButton from "../../../../constants/components/ui-component/AppFabButton";
 import { useSelector } from "react-redux";
@@ -15,28 +15,28 @@ import { SocketContext } from "../../../../Context/Socket";
 // import { AuthSocket } from "../../../../Socket/Socket";
 
 export default function MakeVideoCall() {
-  const { systemUserId, currentUser, avtarUrl, name } = useSelector(
-    (state) => state.registry
-  );
-  const [imageError, setImageError] = React.useState();
-  const { params } = useRoute();
-  const { goBack } = useNavigation();
-  const socket = React.useContext(SocketContext);
-  // const socket = io
-  //   .connect("wss://message.banjee.org/", {
-  //     upgrade: false,
-  //     transports: ["websocket"],
-  //     origins: "*",
-  //     forceNew: true,
-  //     reconnection: true,
-  //     reconnectionDelay: 200,
-  //     reconnectionDelayMax: 500,
-  //     reconnectionAttempts: Infinity,
-  //   })
-  //   .connect();
+	const { systemUserId, currentUser, avtarUrl, name } = useSelector(
+		(state) => state.registry
+	);
+	const [imageError, setImageError] = React.useState();
+	const { params } = useRoute();
+	const { goBack } = useNavigation();
+	const socket = useSelector((state) => state.socket);
+	// const socket = io
+	//   .connect("wss://message.banjee.org/", {
+	//     upgrade: false,
+	//     transports: ["websocket"],
+	//     origins: "*",
+	//     forceNew: true,
+	//     reconnection: true,
+	//     reconnectionDelay: 200,
+	//     reconnectionDelayMax: 500,
+	//     reconnectionAttempts: Infinity,
+	//   })
+	//   .connect();
 
-  console.log(params);
-  /**
+	console.log(params);
+	/**
 	 * PARAMS
 	 * 
 	 *  {
@@ -89,134 +89,135 @@ export default function MakeVideoCall() {
 	  }
 	 */
 
-  useEffect(() => {
-    // socket.on("connect", () => {
-    // 	socket.on("AUTH", async (sessionId) => {
-    // 		const token = await getLocalStorage("token");
-    // 		socket.emit("LOGIN", { token: token, sessionId });
-    // 		socket.emit("ONLINE_RECEIVE", systemUserId);
-    if (params.callType === "Video") {
-      socket.emit("SIGNALLING_SERVER", {
-        roomId: params.chatroomId,
-        fromUserId: systemUserId,
-        initiator: {
-          ...currentUser,
-          avtarImageUrl: avtarUrl,
-          firstName: name,
-        },
-        targetUser: { ...params, avtarImageUrl: params?.avtarUrl },
-        toUserId: params.id,
-        eventType: "JOIN",
-        iceCandidate: null,
-        offer: null,
-        answer: null,
-        mediaStream: null,
-        responseMessage: "Room Joined",
-        callDuration: "00",
-        callType: "Video",
-        groupName: null,
-        toAvatarSrc: null,
-        groupMemberCounts: 0,
-        groupCreatorId: null,
-        addToCall: false,
-      });
-    } else {
-      socket.emit("SIGNALLING_SERVER", {
-        roomId: params.chatroomId,
-        fromUserId: systemUserId,
-        initiator: {
-          ...currentUser,
-          avtarImageUrl: avtarUrl,
-          firstName: name,
-        },
-        targetUser: { ...params, avtarImageUrl: params?.avtarUrl },
-        toUserId: params.id,
-        eventType: "JOIN",
-        iceCandidate: null,
-        offer: null,
-        answer: null,
-        mediaStream: null,
-        responseMessage: "Room Joined",
-        callDuration: "00",
-        callType: "Voice",
-        groupName: null,
-        toAvatarSrc: null,
-        groupMemberCounts: 0,
-        groupCreatorId: null,
-        addToCall: false,
-      });
-    }
-    // 	});
-    // });
-  }, []);
+	useEffect(() => {
+		// socket.on("connect", () => {
+		// 	socket.on("AUTH", async (sessionId) => {
+		// 		const token = await getLocalStorage("token");
+		// 		socket.emit("LOGIN", { token: token, sessionId });
+		// 		socket.emit("ONLINE_RECEIVE", systemUserId);
+		if (params.callType === "Video") {
+			socket.emit("SIGNALLING_SERVER", {
+				roomId: params.chatroomId,
+				fromUserId: systemUserId,
+				initiator: {
+					...currentUser,
+					avtarImageUrl: avtarUrl,
+					firstName: name,
+				},
+				targetUser: { ...params, avtarImageUrl: params?.avtarUrl },
+				toUserId: params.id,
+				eventType: "JOIN",
+				iceCandidate: null,
+				offer: null,
+				answer: null,
+				mediaStream: null,
+				responseMessage: "Room Joined",
+				callDuration: "00",
+				callType: "Video",
+				groupName: null,
+				toAvatarSrc: null,
+				groupMemberCounts: 0,
+				groupCreatorId: null,
+				addToCall: false,
+			});
+		} else {
+			socket.emit("SIGNALLING_SERVER", {
+				roomId: params.chatroomId,
+				fromUserId: systemUserId,
+				initiator: {
+					...currentUser,
+					avtarImageUrl: avtarUrl,
+					firstName: name,
+				},
+				targetUser: { ...params, avtarImageUrl: params?.avtarUrl },
+				toUserId: params.id,
+				eventType: "JOIN",
+				iceCandidate: null,
+				offer: null,
+				answer: null,
+				mediaStream: null,
+				responseMessage: "Room Joined",
+				callDuration: "00",
+				callType: "Voice",
+				groupName: null,
+				toAvatarSrc: null,
+				groupMemberCounts: 0,
+				groupCreatorId: null,
+				addToCall: false,
+			});
+		}
+		// 	});
+		// });
+	}, []);
 
-  return (
-    <>
-      <ImageBackground
-        onError={({ nativeEvent: { error } }) => setImageError(error)}
-        resizeMode="cover"
-        source={
-          imageError
-            ? checkGender(params.gender)
-            : { uri: listProfileUrl(params?.id) }
-        }
-        blurRadius={2}
-        style={{ height: "100%", width: "100%" }}
-      >
-        <View style={styles.subView}>
-          <View>
-            <Text style={styles.name}>
-              {params?.userName ? params.userName : params?.firstName}
-            </Text>
+	return (
+		<View style={{ flex: 1 }}>
+			<ImageBackground
+				onError={({ nativeEvent: { error } }) => setImageError(error)}
+				resizeMode="cover"
+				source={
+					imageError
+						? checkGender(params.gender)
+						: { uri: listProfileUrl(params?.id) }
+				}
+				blurRadius={2}
+				style={{ height: "100%", width: "100%" }}
+			>
+				<View style={styles.subView}>
+					<View>
+						<Text style={styles.name}>
+							{params?.userName ? params.userName : params?.firstName} Make
+							video call
+						</Text>
 
-            <Text style={styles.subText}>Calling....</Text>
-          </View>
+						<Text style={styles.subText}>Calling....</Text>
+					</View>
 
-          <AppFabButton
-            style={{ borderRadius: 50, backgroundColor: "red" }}
-            onPress={goBack}
-            icon={
-              <FastImage
-                source={require("../../../../../assets/EditDrawerIcon/ic_call.png")}
-                style={[styles.callImg, { transform: [{ rotate: "130deg" }] }]}
-              />
-            }
-          />
-        </View>
-      </ImageBackground>
-    </>
-  );
+					<AppFabButton
+						style={{ borderRadius: 50, backgroundColor: "red" }}
+						onPress={goBack}
+						icon={
+							<FastImage
+								source={require("../../../../../assets/EditDrawerIcon/ic_call.png")}
+								style={[styles.callImg, { transform: [{ rotate: "130deg" }] }]}
+							/>
+						}
+					/>
+				</View>
+			</ImageBackground>
+		</View>
+	);
 }
 
 const styles = StyleSheet.create({
-  subView: {
-    display: "flex",
-    flex: 1,
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 50,
-    marginBottom: 30,
-  },
-  name: { fontSize: 30, alignSelf: "center", color: "white" },
-  subText: {
-    fontSize: 16,
-    alignSelf: "center",
-    color: "white",
-    marginTop: 10,
-  },
-  callBackground: {
-    height: 50,
-    width: 50,
-    borderRadius: 25,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  reciveCall: {
-    flexDirection: "row",
-    alignSelf: "center",
-    justifyContent: "center",
-    position: "absolute",
-    bottom: 30,
-  },
-  callImg: { height: 24, width: 24 },
+	subView: {
+		display: "flex",
+		flex: 1,
+		justifyContent: "space-between",
+		alignItems: "center",
+		paddingTop: 30,
+		marginBottom: 30,
+	},
+	name: { fontSize: 20, alignSelf: "center", color: "white" },
+	subText: {
+		fontSize: 16,
+		alignSelf: "center",
+		color: "white",
+		marginTop: 10,
+	},
+	callBackground: {
+		height: 50,
+		width: 50,
+		borderRadius: 25,
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	reciveCall: {
+		flexDirection: "row",
+		alignSelf: "center",
+		justifyContent: "center",
+		position: "absolute",
+		bottom: 30,
+	},
+	callImg: { height: 24, width: 24 },
 });

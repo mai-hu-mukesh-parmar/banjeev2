@@ -1,4 +1,4 @@
-package com.banjeev2;
+package com.banjee.customer;
 
 import android.os.Build;
 import android.os.Bundle;

@@ -2,51 +2,67 @@ import { useNavigation } from "@react-navigation/native";
 import jwtDecode from "jwt-decode";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
+import {
+	connect,
+	shallowEqual,
+	useDispatch,
+	useSelector,
+	createSelectorHook,
+} from "react-redux";
 import { SocketContext } from "../Context/Socket";
 import InCallManager from "react-native-incall-manager";
 import { getLocalStorage } from "../utils/Cache/TempStorage";
+import _ from "underscore";
+import { getUserRegistry } from "../redux/store/action/useActions";
 
 function SocketEvent({ children }) {
-  const socket = React.useContext(SocketContext);
-  const dispatch = useDispatch();
-  const { systemUserId } = useSelector((state) => state.registry);
+	const dispatch = useDispatch();
+	const { systemUserId } = useSelector((state) => state.registry);
+	const socket = useSelector((state) => state.socket);
 
-  const { navigate } = useNavigation();
+	const { navigate } = useNavigation();
 
-  const getUsername = React.useCallback(async () => {
-    const gToken = await getLocalStorage("token");
-    const { user_name } = jwtDecode(gToken);
-    return user_name;
-  });
+	const manageSocket = React.useCallback(() => {
+		if (systemUserId) {
+			socket.emit("ONLINE_STATUS_RECEIVER", systemUserId);
+			socket.on("ON_JOIN", (data) => {
+				if (data?.callType) {
+					socket.emit("SIGNALLING_SERVER", {
+						...data,
+						eventType: "JOIN",
+					});
+				} else {
+					socket.emit("SIGNALLING_SERVER", {
+						...data,
+						eventType: "JOIN",
+					});
+				}
+				if (systemUserId !== data?.initiator?.id) {
+					InCallManager.startRingtone("_BUNDLE_");
+					navigate("AcceptCall", { ...data });
+				}
+			});
+			socket.on("RINGING", (data) => {
+				if (systemUserId === data?.initiator?.id) {
+					if (data?.callType === "Video") {
+						navigate("VideoCall", { ...data });
+					} else {
+						navigate("VoiceCall", { ...data });
+					}
+				}
+			});
+		}
+	}, [socket, systemUserId]);
 
-  const user_name = getUsername();
+	React.useEffect(() => {
+		const data = dispatch(getUserRegistry());
+		console.log(data);
+	}, [dispatch]);
 
-  React.useEffect(() => {
-    socket.emit("ONLINE_STATUS_RECEIVER", user_name);
-    socket.on("ON_JOIN", (data) => {
-      console.log(user_name);
-      getUsername().then((user_name) => {
-        console.log("user_name", user_name);
-        console.log("call data ----->>", data);
-
-        if (data?.initiator?.id !== user_name) {
-          navigate("AcceptCall", { ...data });
-          InCallManager.startRingtone("_BUNDLE_");
-        } else if (data?.initiator?.id === user_name) {
-          if (data?.callType === "Video") {
-            navigate("VideoCall", { ...data });
-          } else {
-            navigate("VoiceCall", { ...data });
-          }
-        }
-      });
-    });
-  }, [socket]);
-
-  return <React.Fragment>{children}</React.Fragment>;
+	return <React.Fragment>{children}</React.Fragment>;
 }
 
-export default SocketEvent;
+export default React.memo(SocketEvent);
 
 // import { useNavigation } from "@react-navigation/native";
 // import jwtDecode from "jwt-decode";
@@ -62,7 +78,7 @@ export default SocketEvent;
 // import { getLocalStorage } from "../utils/Cache/TempStorage";
 
 // function SocketEvent({ children }) {
-// 	const socket = React.useContext(SocketContext);
+// 	const socket = useSelector((state) => state.socket);
 // 	const dispatch = useDispatch();
 // 	const { systemUserId } = useSelector((state) => state.registry);
 
