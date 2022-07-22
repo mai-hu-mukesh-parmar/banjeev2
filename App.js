@@ -21,16 +21,16 @@ const App = () => {
 	return (
 		<Provider store={store}>
 			<AuthSocket>
-				{/* <Firebase />
-				<GetNotification> */}
-				<NavigationContainer>
-					{/* <SocketEvents> */}
-					<NativeBaseProvider>
-						<NavigationView />
-					</NativeBaseProvider>
-					{/* </SocketEvents> */}
-				</NavigationContainer>
-				{/* </GetNotification> */}
+				<Firebase />
+				<GetNotification>
+					<NavigationContainer>
+						<SocketEvents>
+							<NativeBaseProvider>
+								<NavigationView />
+							</NativeBaseProvider>
+						</SocketEvents>
+					</NavigationContainer>
+				</GetNotification>
 			</AuthSocket>
 		</Provider>
 	);

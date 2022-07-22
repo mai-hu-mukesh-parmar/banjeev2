@@ -1,7 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import jwtDecode from "jwt-decode";
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
 import {
 	connect,
 	shallowEqual,

@@ -115,8 +115,8 @@ export default function AuthSocket({ children }) {
 		// });
 	}, []);
 
-	// if (state) {
-	return <React.Fragment>{children}</React.Fragment>;
-	// }
-	// return null;
+	if (state) {
+		return <React.Fragment>{children}</React.Fragment>;
+	}
+	return null;
 }
