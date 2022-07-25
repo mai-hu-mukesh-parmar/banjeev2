@@ -28,14 +28,14 @@ import FeedFooter from "./FeedSkeleton/FeedFooter";
 import AppLoading from "../../../constants/components/ui-component/AppLoading";
 import AddFriends from "./AddFriends/AddFriends";
 import { LinearGradient } from "expo-linear-gradient";
-// import { SocketContext } from "../../../Context/Socket";
+import { SocketContext } from "../../../Context/Socket";
 
 export default function FeedScreen() {
 	const isFocused = useIsFocused();
 	const dispatch = useDispatch();
-	// const socket = React.useContext(SocketContext);
+	const socket = React.useContext(SocketContext);
 
-	const { socket } = useSelector((state) => state, shallowEqual);
+	// const { socket } = useSelector((state) => state, shallowEqual);
 	const { setOptions, navigate } = useNavigation();
 	const [notify, setNotify] = React.useState();
 
@@ -83,7 +83,7 @@ export default function FeedScreen() {
 			pageName: null,
 			percentage: 0,
 			reactions: null,
-			page,
+			page: page,
 			pageSize: 20,
 			reactionsCount: null,
 			recentComments: null,

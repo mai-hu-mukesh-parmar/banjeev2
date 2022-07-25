@@ -78,6 +78,10 @@ function SinglePost() {
 				.then((res) => {
 					setLoading(false);
 					setItem(res);
+					console.warn(
+						res,
+						"-------------------------------------------------"
+					);
 				})
 				.catch((err) => {
 					if (err.statusCode) {
@@ -118,7 +122,7 @@ function SinglePost() {
 								</View>
 							</View>
 							<FeedContent item={item} />
-							<FeedFooter item={item} />
+							<FeedFooter item={item} singlePost={true} />
 
 							<TouchableWithoutFeedback
 								onPress={() => navigate("Comment", { postId: item?.id })}

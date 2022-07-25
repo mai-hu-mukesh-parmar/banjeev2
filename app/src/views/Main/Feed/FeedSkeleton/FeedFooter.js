@@ -15,7 +15,7 @@ import {
 } from "../../../../utils/util-func/constantExport";
 import LikedBy from "../Like/LikedBy";
 
-export default function FeedFooter({ item }) {
+export default function FeedFooter({ item, singlePost }) {
 	const { navigate } = useNavigation();
 	const {
 		registry: { systemUserId },
@@ -96,7 +96,7 @@ export default function FeedFooter({ item }) {
 				</View>
 			</View>
 
-			<LikedBy item={item} increementLike={increementLike} />
+			{!singlePost && <LikedBy item={item} increementLike={increementLike} />}
 		</Fragment>
 	);
 }
