@@ -4,6 +4,7 @@ import {
 	StyleSheet,
 	Animated,
 	Easing,
+	ScrollView,
 	TouchableOpacity,
 } from "react-native";
 import FastImage from "react-native-fast-image";
@@ -42,14 +43,26 @@ function BottomView({
 		avtarUrl,
 		currentUser: { mobile, email, username, userName, firstName },
 	} = useSelector((state) => state.registry);
-	const socket = useSelector((state) => state.socket);
+	const socket = React.useContext(SocketContext);
 	const refRBSheet = React.useRef(null);
 	const [audio, setAudio] = React.useState("");
 	const [audioTime, setAudioTime] = React.useState(0);
 	const [icons, setIcons] = React.useState("play");
 	const [distMess, setDistMess] = React.useState(false);
 	const [player] = React.useState(new Audio.Sound());
-
+	const [open, setOpen] = React.useState(false);
+	const sheetRef = React.useRef(null);
+	const renderContent = () => (
+		<View
+			style={{
+				backgroundColor: "white",
+				padding: 16,
+				height: 450,
+			}}
+		>
+			<AppText>Swipe down to close</AppText>
+		</View>
+	);
 	const loadSound = async () => {
 		await Audio.setAudioModeAsync({
 			allowsRecordingIOS: false,
@@ -111,15 +124,15 @@ function BottomView({
 			}
 		}
 	}
-	// async function playAudio() {
-	// 	console.log("loading sound");
-	// 	const result = await player.getStatusAsync();
-	// 	if (!result.isLoaded) {
-	// 		await loadSound();
-	// 	} else {
-	// 		await playSoundFunc();
-	// 	}
-	// }
+	async function playAudio() {
+		console.log("loading sound");
+		const result = await player.getStatusAsync();
+		if (!result.isLoaded) {
+			await loadSound();
+		} else {
+			await playSoundFunc();
+		}
+	}
 	const animation = React.useRef(new Animated.Value(0)).current;
 	const up = () => {
 		Animated.spring(animation, {
@@ -155,7 +168,6 @@ function BottomView({
 			listener.remove();
 		};
 	}, [audio]);
-
 	const sendInChat = React.useCallback(
 		(data, fileName, mimeType, selfDestructive) => {
 			setLoading(true);
@@ -239,7 +251,6 @@ function BottomView({
 		sendInChat(data, fileName, "image/jpg", selfDestructive);
 		hideModal();
 	};
-
 	return (
 		<React.Fragment>
 			{audio ? (
@@ -358,7 +369,8 @@ function BottomView({
 						<AppFabButton
 							size={25}
 							onPress={() => {
-								GiphyDialog.show();
+								setOpen(true);
+								sheetRef?.current?.open();
 							}}
 							icon={
 								<MaterialCommunityIcons
@@ -478,6 +490,7 @@ function BottomView({
 					)}
 				</OverlayDrawer>
 			)}
+			{open && <GifComponent sendInChat={sendInChat} refRBSheet={sheetRef} />}
 		</React.Fragment>
 	);
 }

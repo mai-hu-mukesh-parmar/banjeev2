@@ -7,8 +7,9 @@ import { listProfileUrl } from "../../../../utils/util-func/constantExport";
 function LikedBy({ item, increementLike }) {
 	const { systemUserId } = useSelector((state) => state.registry);
 
-	let ourId = item.reactions.filter((ele) => ele.userId === systemUserId)[0]
-		?.userId;
+	let ourId = item?.reactions?.filter(
+		(ele) => ele?.userId === systemUserId
+	)?.[0]?.userId;
 
 	// let ourId = ourData[0]?.userId;
 	return (
@@ -17,12 +18,12 @@ function LikedBy({ item, increementLike }) {
 				<View style={[styles.container, { marginTop: 5 }]}>
 					<Avatar
 						size={"xs"}
-						source={{ uri: listProfileUrl(item.reactions[0].userId) }}
+						source={{ uri: listProfileUrl(item?.reactions?.[0]?.userId) }}
 						style={{
 							borderRadius: 50,
 						}}
 					>
-						<Text>{item.reactions[0].user.username}</Text>
+						<Text>{item?.reactions?.[0]?.user?.username}</Text>
 					</Avatar>
 					<Text style={{ fontSize: 14, marginLeft: 8 }}>
 						Liked by{" "}
@@ -30,7 +31,7 @@ function LikedBy({ item, increementLike }) {
 							{" "}
 							{ourId === systemUserId
 								? "you"
-								: item?.reactions[0].user.username}{" "}
+								: item?.reactions?.[0]?.user?.username}{" "}
 						</Text>
 					</Text>
 				</View>
@@ -45,7 +46,7 @@ function LikedBy({ item, increementLike }) {
 							max={3}
 							style={styles.grp}
 						>
-							{item?.reactions.map((img, i) => {
+							{item?.reactions?.map((img, i) => {
 								return (
 									<Avatar
 										key={i}
@@ -54,7 +55,7 @@ function LikedBy({ item, increementLike }) {
 											borderWidth: 1,
 										}}
 									>
-										<Text>{img.user.username.charAt(0).toUpperCase()}</Text>
+										<Text>{img?.user?.username?.charAt(0).toUpperCase()}</Text>
 									</Avatar>
 								);
 							})}
@@ -66,12 +67,12 @@ function LikedBy({ item, increementLike }) {
 								{" "}
 								{increementLike !== 0
 									? "You"
-									: item?.reactions[0].user.username}
+									: item?.reactions?.[0]?.user?.username}
 							</Text>{" "}
 							&{" "}
 							{increementLike !== 0
-								? item?.reactions.length
-								: item?.reactions.length - 1}{" "}
+								? item?.reactions?.length
+								: item?.reactions?.length - 1}{" "}
 							other.
 						</Text>
 					</View>

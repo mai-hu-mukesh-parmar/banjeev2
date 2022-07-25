@@ -6,8 +6,86 @@ import AppMenu from "../../../../constants/components/ui-component/AppMenu";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FastImage from "react-native-fast-image";
 import color from "../../../../constants/env/color";
+import { useSelector } from "react-redux";
 
 function Tabs(props) {
+	const {
+		mutualFriend,
+		loading,
+		pendingId,
+		showReqestedFriend,
+		connectionId,
+		apiCall,
+		profileId,
+	} = useSelector((state) => state.viewProfile);
+
+	const frndReqData = [
+		{
+			label: "Intro",
+			onPress: () => playAudio(),
+		},
+		{
+			img: require("../../../../../assets/EditDrawerIcon/ic_delivered.png"),
+			label: "Accept",
+			onPress: () => setAcceptFrndReq(true),
+			tintColor: "white",
+		},
+		{
+			img: require("../../../../../assets/EditDrawerIcon/wrong.png"),
+			label: "Reject",
+			onPress: () => setRejectFrndReq(true),
+			tintColor: "white",
+		},
+	];
+
+	const data = [
+		{
+			label: "Intro",
+			onPress: () => playAudio(),
+		},
+		{
+			img: require("../../../../../assets/EditDrawerIcon/ic_video_call_white.png"),
+			label: "Video",
+			onPress: () => searchBanjee(profileId, "video"),
+		},
+		{
+			img: require("../../../../../assets/EditDrawerIcon/ic_call.png"),
+			label: "Call",
+			onPress: () => searchBanjee(profileId, "voice"),
+		},
+		{
+			img: require("../../../../../assets/EditDrawerIcon/ic_voice_record.png"),
+			label: "Voice",
+			onPress: () => searchBanjee(profileId, "chat"),
+		},
+	];
+
+	const unMutual = [
+		{
+			label: "Intro",
+			onPress: () => playAudio(),
+		},
+		{
+			label:
+				pendingId?.filter((ele) => ele === systemUserId).length > 0
+					? "Request Sent"
+					: "Connect",
+			img: require("../../../../../assets/EditDrawerIcon/ic_add_contact.png"),
+			tintColor:
+				pendingId?.filter((ele) => ele === systemUserId).length > 0
+					? "grey"
+					: "white",
+			borderColor:
+				pendingId?.filter((ele) => ele === systemUserId).length > 0
+					? "grey"
+					: "white",
+			onPress:
+				pendingId?.filter((ele) => ele === systemUserId).length > 0
+					? console.log("hiii")
+					: saveIntro,
+		},
+	];
+
 	const userType = showReqestedFriend
 		? frndReqData
 		: mutualFriend

@@ -9,7 +9,7 @@ function GetSocketNot({ children }) {
 	const { systemUserId } = useSelector((state) => state.registry);
 	console.warn("systemUserId from get notificarion", systemUserId);
 
-	const socket = useSelector((state) => state.socket);
+	const socket = React.useContext(SocketContext)
 
 	const sendNotification = (message) => {
 		PushNotification.localNotification({

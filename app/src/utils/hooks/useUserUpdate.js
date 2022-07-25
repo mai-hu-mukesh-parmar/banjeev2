@@ -55,6 +55,7 @@ export const useUserUpdate = (token, screen) => {
 
   const userHandler = React.useCallback(
     (data) => {
+      console.log("Updating user");
       updateUser(data, "PUT")
         .then((res) => {
           dispatch(saveUserRegistry(res));
@@ -69,14 +70,20 @@ export const useUserUpdate = (token, screen) => {
     [getUserProfileData, getLocation]
   );
 
-  const getUser = React.useCallback((origin, id) => {}, [userHandler]);
-
-  const handleApi = useCallback(
-    async (jwtToken) => {
-      try {
+  const manageLoc = useCallback(async () => {
+    if (token) {
+      const jwtToken = jwtDecode(token);
+      dispatch(saveUserData({ ...jwtToken, token: token }));
+      // const granted = await PermissionsAndroid.check(
+      //   "android.permission.ACCESS_FINE_LOCATION"
+      // );
+      let result = await checkPermission("LOCATION");
+      if (result === "granted") {
         let locationAsync = await Location.getCurrentPositionAsync();
         const { longitude, latitude } = locationAsync.coords;
 
+        console.log("Permission granted");
+        console.log("Registry called");
         getUserRegistryData(jwtToken.user_name)
           .then((res) => {
             if (res) {
@@ -97,31 +104,15 @@ export const useUserUpdate = (token, screen) => {
           .catch((err) => {
             console.warn("Get user ----> ", err);
           });
-      } catch (err) {
-        console.log("err", err);
-      }
-    },
-    [getUser]
-  );
-
-  const manageLoc = useCallback(async () => {
-    if (token) {
-      const jwtToken = jwtDecode(token);
-      dispatch(saveUserData({ ...jwtToken, token: token }));
-      // const granted = await PermissionsAndroid.check(
-      //   "android.permission.ACCESS_FINE_LOCATION"
-      // );
-      let result = await checkPermission("LOCATION");
-      if (result === "granted") {
-        await handleApi(jwtToken);
       } else {
         BackHandler.exitApp();
       }
     }
-  }, [handleApi, token]);
+  }, [token]);
 
   React.useEffect(() => {
     if (token) {
+      console.log("Got token");
       manageLoc();
     }
   }, [manageLoc, token]);

@@ -36,7 +36,7 @@ export default function FeedProfile({ item }) {
 					<Avatar
 						bgColor={color.primary}
 						style={{ height: 40, width: 40, borderRadius: 20 }}
-						source={{ uri: listProfileUrl(item.authorId) }}
+						source={{ uri: listProfileUrl(item?.authorId) }}
 					>
 						{item?.author?.username?.charAt(0).toUpperCase() || ""}
 					</Avatar>

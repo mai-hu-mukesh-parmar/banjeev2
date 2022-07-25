@@ -61,6 +61,7 @@ function BanjeeProfile() {
 		showReqestedFriend,
 		connectionId,
 		apiCall,
+		profileId,
 	} = useSelector((state) => state.viewProfile);
 
 	const [banjee, setBanjee] = React.useState(true);
@@ -111,8 +112,6 @@ function BanjeeProfile() {
 	];
 
 	const { navigate, goBack } = useNavigation();
-
-	const { profileId } = useSelector((state) => state.viewProfile);
 
 	const getRegistryData = React.useCallback(() => {
 		getUserRegistryData(profileId)
@@ -438,8 +437,6 @@ function BanjeeProfile() {
 						source={require("../../../../../assets/EditDrawerIcon/rectangle.png")}
 						style={styles.blackBox}
 					>
-						{/* ---------------------------- APPMENU */}
-
 						<View
 							style={{
 								position: "absolute",
@@ -483,11 +480,9 @@ function BanjeeProfile() {
 								}
 							/>
 						</View>
-
 						<Text style={styles.name} numberOfLines={1}>
 							{ourProfile?.name}
 						</Text>
-
 						<View style={styles.iconImg}>
 							{userType.map((ele, i) => (
 								<View
@@ -536,16 +531,8 @@ function BanjeeProfile() {
 						</View>
 					</ImageBackground>
 
+					{/* <Tabs showReqestedFriend /> */}
 					{/* ````````````````````````````` TAB NAVIGATOR */}
-
-					{/* <Tabs
-						setBanjee={setBanjee}
-						setRoom={setRoom}
-						setPost={setPost}
-						banjee
-						room
-						post
-					/> */}
 
 					<LinearGradient
 						style={{ flex: 1, zIndex: 1 }}
