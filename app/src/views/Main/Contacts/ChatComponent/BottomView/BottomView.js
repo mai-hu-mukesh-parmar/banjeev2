@@ -4,25 +4,30 @@ import {
 	StyleSheet,
 	Animated,
 	Easing,
-	ScrollView,
 	TouchableOpacity,
 } from "react-native";
 import FastImage from "react-native-fast-image";
 import AppFabButton from "../../../../../constants/components/ui-component/AppFabButton";
-import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import color from "../../../../../constants/env/color";
 import { Audio } from "expo-av";
 import BottomAudioButton from "./BottomAudioButton";
 import * as FileSystem from "expo-file-system";
 import OverlayDrawer from "../../../../../constants/components/ui-component/OverlayDrawer";
 import ShowImage from "../../../../../constants/components/ShowImage";
-import GifComponent from "./GifComponent";
 import { useSelector } from "react-redux";
-import { SocketContext } from "../../../../../Context/Socket";
 import RBSheet from "react-native-raw-bottom-sheet";
 import voiceChangerArray from "./voiceChangerArray";
 import { Text } from "native-base";
+import {
+	GiphySDK,
+	GiphyDialog,
+	GiphyDialogEvent,
+} from "@giphy/react-native-sdk";
 
+GiphySDK.configure({
+	apiKey: "BjrzaTUXMRi27xIRU0xZIGRrNztyuNT8", // iOS SDK key
+});
 // import BottomSheet from "react-native-bottomsheet-reanimated";
 function BottomView({
 	setImageModal,
@@ -44,19 +49,7 @@ function BottomView({
 	const [icons, setIcons] = React.useState("play");
 	const [distMess, setDistMess] = React.useState(false);
 	const [player] = React.useState(new Audio.Sound());
-	const [open, setOpen] = React.useState(false);
-	const sheetRef = React.useRef(null);
-	const renderContent = () => (
-		<View
-			style={{
-				backgroundColor: "white",
-				padding: 16,
-				height: 450,
-			}}
-		>
-			<AppText>Swipe down to close</AppText>
-		</View>
-	);
+
 	const loadSound = async () => {
 		await Audio.setAudioModeAsync({
 			allowsRecordingIOS: false,
@@ -118,15 +111,15 @@ function BottomView({
 			}
 		}
 	}
-	async function playAudio() {
-		console.log("loading sound");
-		const result = await player.getStatusAsync();
-		if (!result.isLoaded) {
-			await loadSound();
-		} else {
-			await playSoundFunc();
-		}
-	}
+	// async function playAudio() {
+	// 	console.log("loading sound");
+	// 	const result = await player.getStatusAsync();
+	// 	if (!result.isLoaded) {
+	// 		await loadSound();
+	// 	} else {
+	// 		await playSoundFunc();
+	// 	}
+	// }
 	const animation = React.useRef(new Animated.Value(0)).current;
 	const up = () => {
 		Animated.spring(animation, {
@@ -150,7 +143,19 @@ function BottomView({
 		} else {
 			down();
 		}
+		const handler = (e) => {
+			GiphyDialog.hide();
+			sendInChat(e.url.substring(31, 49), e.url.substring(31, 49), "image/gif");
+		};
+		const listener = GiphyDialog.addListener(
+			GiphyDialogEvent.MediaSelected,
+			handler
+		);
+		return () => {
+			listener.remove();
+		};
 	}, [audio]);
+
 	const sendInChat = React.useCallback(
 		(data, fileName, mimeType, selfDestructive) => {
 			setLoading(true);
@@ -234,6 +239,7 @@ function BottomView({
 		sendInChat(data, fileName, "image/jpg", selfDestructive);
 		hideModal();
 	};
+
 	return (
 		<React.Fragment>
 			{audio ? (
@@ -352,8 +358,7 @@ function BottomView({
 						<AppFabButton
 							size={25}
 							onPress={() => {
-								setOpen(true);
-								sheetRef?.current?.open();
+								GiphyDialog.show();
 							}}
 							icon={
 								<MaterialCommunityIcons
@@ -473,7 +478,6 @@ function BottomView({
 					)}
 				</OverlayDrawer>
 			)}
-			{open && <GifComponent sendInChat={sendInChat} refRBSheet={sheetRef} />}
 		</React.Fragment>
 	);
 }
