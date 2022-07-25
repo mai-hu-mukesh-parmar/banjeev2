@@ -31,20 +31,6 @@ function AddFriends(props) {
 		}
 	}, [registry]);
 
-	React.useEffect(() => {
-		getAllUser({
-			cards: true,
-			distance: "50",
-			point: { lat: lat, lon: lon },
-			page: 0,
-			pageSize: 20,
-		})
-			.then((res) => {
-				setData(res.content);
-			})
-			.catch((err) => console.log("add friend ", err));
-	}, [lat, lon]);
-
 	const renderItem = ({ item, index }) => {
 		return <AddFriendItem item={item} index={index} />;
 	};

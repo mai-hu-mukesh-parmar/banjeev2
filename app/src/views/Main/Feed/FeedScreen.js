@@ -8,7 +8,7 @@ import {
 import React, { Fragment, useCallback, useEffect } from "react";
 import FastImage from "react-native-fast-image";
 import { getFeed } from "../../../helper/services/PostFeed";
-import { useDispatch, useSelector } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import {
 	saveFeed,
 	saveFeedAction,
@@ -28,12 +28,14 @@ import FeedFooter from "./FeedSkeleton/FeedFooter";
 import AppLoading from "../../../constants/components/ui-component/AppLoading";
 import AddFriends from "./AddFriends/AddFriends";
 import { LinearGradient } from "expo-linear-gradient";
-import { SocketContext } from "../../../Context/Socket";
+// import { SocketContext } from "../../../Context/Socket";
 
 export default function FeedScreen() {
 	const isFocused = useIsFocused();
 	const dispatch = useDispatch();
-	const socket = React.useContext(SocketContext);
+	// const socket = React.useContext(SocketContext);
+
+	const { socket } = useSelector((state) => state, shallowEqual);
 	const { setOptions, navigate } = useNavigation();
 	const [notify, setNotify] = React.useState();
 
