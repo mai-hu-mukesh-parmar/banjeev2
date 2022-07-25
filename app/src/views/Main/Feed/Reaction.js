@@ -12,10 +12,10 @@ import { useSelector } from "react-redux";
 
 function Reaction({
   likeComment,
-  setLikeCount,
   postId,
   size,
   ourLike,
+  setIncreementLike,
   marginLeft,
 }) {
   const [showReaction, setShowReaction] = React.useState(false); //fr reaction
@@ -23,6 +23,8 @@ function Reaction({
   const { systemUserId } = useSelector((state) => state.registry);
 
   // console.warn("----------->`", ourLike?.[0]?.reactionType);
+  let y = ourLike?.[0]?.reactionType;
+
   const submitReaction = (action) => {
     postReaction({
       nodeId: postId,
@@ -31,11 +33,11 @@ function Reaction({
       userId: systemUserId,
     })
       .then(async (res) => {
-        setLikeCount((prev) => prev + 1);
         let notificationRingtone = require("../../../../assets/ringtones/reaction.mp3");
         let { sound } = await Audio.Sound.createAsync(notificationRingtone);
         await sound.playAsync();
         setShowReaction(false);
+        y ? setIncreementLike(0) : setIncreementLike(action);
       })
       .catch((err) => {
         console.warn("Post Reaction ", err);
@@ -100,8 +102,6 @@ function Reaction({
 
   // let x = !selectedReaction && ourLike?.[0]?.reactionType === undefined;
 
-  let y = ourLike?.[0]?.reactionType;
-
   return (
     <View style={styles.container}>
       <View
@@ -112,7 +112,7 @@ function Reaction({
       >
         <Menu
           visible={showReaction}
-          style={{ borderRadius: 50, flex: 1 }}
+          style={{ borderRadius: 50 }}
           anchor={
             <View>
               {selectedReaction ? (

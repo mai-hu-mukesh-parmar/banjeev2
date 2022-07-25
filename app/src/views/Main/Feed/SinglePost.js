@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import FastImage from "react-native-fast-image";
 
-import { Text } from "native-base";
+import { Avatar, Text } from "native-base";
 import { useNavigation, useRoute } from "@react-navigation/native";
 
 import * as Sharing from "expo-sharing";
@@ -20,7 +20,10 @@ import FeedContent from "./FeedSkeleton/FeedContent";
 import FeedProfile from "./FeedSkeleton/FeedProfile";
 import FeedHeader from "./FeedSkeleton/FeedHeader";
 import FeedFooter from "./FeedSkeleton/FeedFooter";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { showToast } from "../../../redux/store/action/toastAction";
+import { listProfileUrl } from "../../../utils/util-func/constantExport";
+import LikedBy from "./Like/LikedBy";
 
 function SinglePost() {
 	const { params } = useRoute();
@@ -31,7 +34,8 @@ function SinglePost() {
 	const [error, setError] = useState(false);
 
 	const refRBSheet = useRef(null);
-	const { navigate } = useNavigation();
+	const { navigate, goBack } = useNavigation();
+	const dispatch = useDispatch();
 
 	const onShare = async (url) => {
 		var date = new Date();
@@ -77,126 +81,105 @@ function SinglePost() {
 				})
 				.catch((err) => {
 					if (err.statusCode) {
-						setError(true);
+						dispatch(
+							showToast({
+								open: true,
+								description: "Requested feed no longer available",
+							})
+						);
+
+						goBack();
 					} else {
 						console.warn(err);
 					}
 				});
 		}
+		return () => {
+			dispatch(showToast({ open: false }));
+		};
 	}, [params]);
 
 	return (
 		<React.Fragment>
-			{error ? (
-				<View
-					style={{
-						alignItems: "center",
-						height: "100%",
-						width: "100%",
-						justifyContent: "center",
-					}}
-				>
-					<Text style={{ fontSize: 20 }}>
-						Requested feed no longer available
-					</Text>
-				</View>
-			) : (
-				<React.Fragment>
-					{loading ? (
-						<AppLoading visible={loading} height={"100%"} />
-					) : (
-						<SafeAreaView>
-							<View style={styles.mainView}>
-								<View style={styles.grid}>
-									<FeedProfile item={item} />
-									<View style={styles.header}>
-										<FeedHeader
-											item={item}
-											setDeletePostModal={() => {}}
-											setPostId={() => {}}
-										/>
-									</View>
+			<React.Fragment>
+				{loading ? (
+					<AppLoading visible={loading} height={"100%"} />
+				) : (
+					<SafeAreaView>
+						<View style={styles.mainView}>
+							<View style={styles.grid}>
+								<FeedProfile item={item} />
+								<View style={styles.header}>
+									<FeedHeader
+										item={item}
+										setDeletePostModal={() => {}}
+										setPostId={() => {}}
+									/>
 								</View>
-								<FeedContent item={item} />
-								<FeedFooter item={item} />
-
-								<TouchableWithoutFeedback
-									onPress={() => navigate("Comment", { postId: item?.id })}
-								>
-									<View
-										style={{
-											backgroundColor: color.lightGrey,
-											justifyContent: "center",
-											width: "95%",
-											alignSelf: "center",
-											height: 40,
-											position: "absolute",
-											bottom: 20,
-											borderRadius: 10,
-										}}
-									>
-										<Text
-											style={{
-												paddingLeft: 10,
-												fontSize: 18,
-												color: color.greyText,
-											}}
-											onPress={() => navigate("Comment", { postId: item?.id })}
-										>
-											Type your comment here...
-										</Text>
-									</View>
-								</TouchableWithoutFeedback>
-								{/* LIKE VIEW */}
-								{/* 
-									<View
-										style={{
-										paddingLeft: "5%",
-
-										flexDirection: "row",
-										width: "95%",
-										alignItems: "center",
-										marginTop: 8,
-										}}
-									>
-										<FastImage
-										source={item.profile}
-										style={{ height: 30, width: 30, borderRadius: 15 }}
-										/>
-										<Text style={{ fontSize: 14, marginLeft: 8 }}>
-										Liked by Shivaram & 123.234 Others
-										</Text>
-									</View> */}
 							</View>
-						</SafeAreaView>
-					)}
-					{/* <View style={{ position: "absolute", height: "100%", width: "100%" }}> */}
-					{open && (
-						<MenuModalBottomSheet
-							setOpen={setOpen}
-							refRBSheet={refRBSheet}
-							modalItem={[
-								{
-									label: "report",
-									icon: "plus",
-									onPress: () => console.log("report pressed"),
-								},
-								{
-									label: "report",
-									icon: "plus",
-									onPress: () => console.log("report pressed"),
-								},
-								{
-									label: "report",
-									icon: "plus",
-									onPress: () => console.log("report pressed"),
-								},
-							]}
-						/>
-					)}
-					{/* </View> */}
-				</React.Fragment>
-			)}
+							<FeedContent item={item} />
+							<FeedFooter item={item} />
+
+							<TouchableWithoutFeedback
+								onPress={() => navigate("Comment", { postId: item?.id })}
+							>
+								<View
+									style={{
+										backgroundColor: color.lightGrey,
+										justifyContent: "center",
+										width: "95%",
+										alignSelf: "center",
+										height: 40,
+										position: "absolute",
+										bottom: 20,
+										borderRadius: 10,
+									}}
+								>
+									<Text
+										style={{
+											paddingLeft: 10,
+											fontSize: 18,
+											color: color.greyText,
+										}}
+										onPress={() => navigate("Comment", { postId: item?.id })}
+									>
+										Type your comment here...
+									</Text>
+								</View>
+							</TouchableWithoutFeedback>
+							{/* LIKE VIEW */}
+
+							{/* <LikedBy item={params.newItem} /> */}
+						</View>
+					</SafeAreaView>
+				)}
+
+				{open && (
+					<MenuModalBottomSheet
+						setOpen={setOpen}
+						refRBSheet={refRBSheet}
+						modalItem={[
+							{
+								label: "report",
+								icon: "plus",
+								onPress: () => console.log("report pressed"),
+							},
+							{
+								label: "report",
+								icon: "plus",
+								onPress: () => console.log("report pressed"),
+							},
+							{
+								label: "report",
+								icon: "plus",
+								onPress: () => console.log("report pressed"),
+							},
+						]}
+					/>
+				)}
+				{/* </View> */}
+			</React.Fragment>
+			{/* )} */}
 		</React.Fragment>
 	);
 }

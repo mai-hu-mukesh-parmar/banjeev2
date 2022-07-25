@@ -1,13 +1,10 @@
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
-import { Text } from "native-base";
+import { Image, Text } from "native-base";
 import React from "react";
 import {
 	View,
 	StyleSheet,
-	SafeAreaView,
-	ScrollView,
-	TouchableWithoutFeedback,
 	ImageBackground,
 	VirtualizedList,
 } from "react-native";
@@ -20,7 +17,6 @@ import { MyPostFeed } from "../../../helper/services/MyPostService";
 import {
 	checkGender,
 	listProfileUrl,
-	profileUrl,
 } from "../../../utils/util-func/constantExport";
 import ConfirmModal from "../../Others/ConfirmModal";
 import SettingBottomSheet from "./SettingBottomSheet";
@@ -184,7 +180,8 @@ function Profile(props) {
 
 	const profile = (
 		<React.Fragment>
-			<FastImage
+			<Image
+				loadingIndicatorSource={require("../../../../assets/EditDrawerIcon/male_placeholder.png")}
 				onError={({ nativeEvent: { error } }) => {
 					setImageError(error);
 				}}

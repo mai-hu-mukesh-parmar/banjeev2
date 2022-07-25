@@ -159,7 +159,7 @@ function OtherBanjee(props) {
 								style={styles.img}
 								source={{ uri: listProfileUrl(item?.id) }}
 							>
-								{item.name.charAt(0).toUpperCase()}
+								{item?.name?.charAt(0).toUpperCase()}
 								{/* <FastImage source={checkGender(item.gender)} style={styles.img} /> */}
 							</Avatar>
 

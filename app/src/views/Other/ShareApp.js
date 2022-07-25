@@ -27,8 +27,11 @@ export const onShare = () => {
 
 export const sharePost = async (url, mimeType, text, FeedId, postId) => {
 	let newUrl = `https://res.cloudinary.com/banjee/video/upload/${postId}.jpg`;
+
 	switch (mimeType) {
 		case "video":
+			console.warn("video", mimeType);
+
 			FileSystem.downloadAsync(newUrl, FileSystem.cacheDirectory + "image.png")
 				.then(async ({ uri }) => {
 					await RNShare.default.open({
@@ -41,25 +44,30 @@ export const sharePost = async (url, mimeType, text, FeedId, postId) => {
 				.catch((error) => {
 					console.error(error);
 				});
+			break;
+			9;
 
 		case "image":
+			console.warn("image", mimeType);
+
 			FileSystem.downloadAsync(url, FileSystem.cacheDirectory + "image.png")
 				.then(async ({ uri }) => {
-					await RNShare.default.open({
-						url: uri,
-						message: text + `${"\n"}https://www.banjee.org/feed/${FeedId}`,
-					});
+					console.warn(uri);
+					{
+						uri &&
+							(await RNShare.default.open({
+								url: uri,
+								message: text + `${"\n"}https://www.banjee.org/feed/${FeedId}`,
+							}));
+					}
 				})
 				.catch((error) => {
 					console.error(error);
 				});
+			break;
 
 		case "audio":
-			RNShare.default.open({
-				message: text + `${"\n"}https://www.banjee.org/feed/${FeedId}`,
-			});
-
-		default:
+			console.warn("audio", mimeType);
 			RNShare.default.open({
 				message: text + `${"\n"}https://www.banjee.org/feed/${FeedId}`,
 			});
