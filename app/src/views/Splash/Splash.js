@@ -17,6 +17,7 @@ export default function Splash() {
   useUserUpdate(token, "Bottom");
 
   useEffect(() => {
+    console.log("i m in splash");
     async function prepare() {
       try {
         let tokenData = await getLocalStorage("token");
