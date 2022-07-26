@@ -469,7 +469,7 @@ const styles = StyleSheet.create({
 	},
 	radio: {
 		flexDirection: "row",
-		width: "60%",
+		width: "70%",
 		justifyContent: "space-between",
 	},
 	postView: {

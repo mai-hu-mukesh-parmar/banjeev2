@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { View, StyleSheet, Dimensions, SafeAreaView } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { AutocompleteDropdown } from "react-native-autocomplete-dropdown";
@@ -21,7 +21,8 @@ function SearchLocation(props) {
 	React.useEffect(
 		() =>
 			setOptions({
-				headerStyle: { height: 0 },
+				headerShown: false,
+				// headerStyle: { height: 0 },
 				headerLeft: () => {},
 			}),
 		[]
@@ -65,6 +66,17 @@ function SearchLocation(props) {
 				start={{ x: 1, y: 0 }}
 				end={{ x: 0, y: 0 }}
 				colors={["#ED475C", "#A93294"]}
+			/>
+			<View
+				style={{
+					position: "absolute",
+					justifyContent: "center",
+					marginTop: 60,
+					flex: 1,
+					alignSelf: "center",
+
+					flexDirection: "row",
+				}}
 			>
 				<AppFabButton
 					onPress={() => goBack()}
@@ -79,11 +91,12 @@ function SearchLocation(props) {
 				/>
 				{/* <AppTextInput autoComplete={true} onChangeText={handleChange} /> */}
 
-				<View>
+				<Fragment>
 					<AutocompleteDropdown
 						// suggestionsListMaxHeight={Dimensions.get("screen").height * 0.5}
 						containerStyle={{
 							// display: "flex",
+
 							width: Dimensions.get("screen").width - 70,
 							alignItems: "flex-start",
 							backgroundColor: "transparent",
@@ -91,6 +104,7 @@ function SearchLocation(props) {
 						suggestionsListContainerStyle={{
 							position: "absolute",
 							bottom: -Dimensions.get("screen").height * 0.3,
+							zIndex: 99,
 						}}
 						dataSet={suggestionsList}
 						textInputProps={{
@@ -100,7 +114,6 @@ function SearchLocation(props) {
 							style: {
 								borderRadius: 25,
 								color: "black",
-								borderWidth: 1,
 								paddingLeft: 18,
 							},
 						}}
@@ -117,15 +130,15 @@ function SearchLocation(props) {
 							<View style={{}}>
 								<Text
 									style={{ color: "black", padding: 15 }}
-									// onPress={() => selectedItem(item)}
+									onPress={() => selectedItem(item)}
 								>
 									{item.title}
 								</Text>
 							</View>
 						)}
 					/>
-				</View>
-			</LinearGradient>
+				</Fragment>
+			</View>
 		</SafeAreaView>
 	);
 }
@@ -137,6 +150,8 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		alignItems: "center",
 		height: 70,
+
+		zIndex: 0,
 	},
 });
 
