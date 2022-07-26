@@ -20,7 +20,7 @@ export default function RenderMarker() {
 
 	return (
 		<Fragment>
-			{banjeeUsers.length > 0 &&
+			{banjeeUsers?.length > 0 &&
 				banjeeUsers.map((user, i) => {
 					const {
 						id: banjeeId,

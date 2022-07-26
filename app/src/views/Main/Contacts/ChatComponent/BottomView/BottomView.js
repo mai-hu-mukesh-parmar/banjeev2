@@ -25,6 +25,7 @@ import {
 	GiphyDialog,
 	GiphyDialogEvent,
 } from "@giphy/react-native-sdk";
+import { SocketContext } from "../../../../../Context/Socket";
 
 GiphySDK.configure({
 	apiKey: "BjrzaTUXMRi27xIRU0xZIGRrNztyuNT8", // iOS SDK key
@@ -158,7 +159,12 @@ function BottomView({
 		}
 		const handler = (e) => {
 			GiphyDialog.hide();
-			sendInChat(e.url.substring(31, 49), e.url.substring(31, 49), "image/gif");
+			console.log("----", e);
+			sendInChat(
+				e.media.url.substring(31, 49),
+				e.media.url.substring(31, 49),
+				"image/gif"
+			);
 		};
 		const listener = GiphyDialog.addListener(
 			GiphyDialogEvent.MediaSelected,
@@ -369,8 +375,7 @@ function BottomView({
 						<AppFabButton
 							size={25}
 							onPress={() => {
-								setOpen(true);
-								sheetRef?.current?.open();
+								GiphyDialog.show();
 							}}
 							icon={
 								<MaterialCommunityIcons
@@ -490,7 +495,7 @@ function BottomView({
 					)}
 				</OverlayDrawer>
 			)}
-			{open && <GifComponent sendInChat={sendInChat} refRBSheet={sheetRef} />}
+			{/* {open && <GifComponent sendInChat={sendInChat} refRBSheet={sheetRef} />} */}
 		</React.Fragment>
 	);
 }
