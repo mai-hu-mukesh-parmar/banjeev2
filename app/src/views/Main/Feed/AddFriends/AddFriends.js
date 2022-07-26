@@ -1,6 +1,12 @@
 import { Image, Skeleton, Text } from "native-base";
 import React, { Fragment } from "react";
-import { View, StyleSheet, FlatList, ScrollView } from "react-native";
+import {
+	View,
+	StyleSheet,
+	FlatList,
+	ScrollView,
+	TouchableWithoutFeedback,
+} from "react-native";
 import color from "../../../../constants/env/color";
 import { useNavigation } from "@react-navigation/native";
 import { shallowEqual, useSelector } from "react-redux";
@@ -36,7 +42,7 @@ function AddFriends(props) {
 	};
 
 	return (
-		<Fragment>
+		<View style={{ flex: 1 }}>
 			<View style={styles.container}>
 				<View style={styles.header}>
 					<Text
@@ -45,9 +51,18 @@ function AddFriends(props) {
 					>
 						Add Friends
 					</Text>
-					<Text onPress={() => navigate("Map")} style={styles.viewMap}>
-						View in Maps
-					</Text>
+					<TouchableWithoutFeedback onPress={() => navigate("Map")}>
+						<View style={styles.viewMap}>
+							<Text
+								style={{
+									color: color.primary,
+									fontWeight: "300",
+								}}
+							>
+								View in Maps
+							</Text>
+						</View>
+					</TouchableWithoutFeedback>
 				</View>
 
 				<View
@@ -68,8 +83,8 @@ function AddFriends(props) {
 					/>
 				</View>
 			</View>
-			{/* <LiveRoom /> */}
-		</Fragment>
+			<LiveRoom />
+		</View>
 	);
 }
 
@@ -97,14 +112,13 @@ const styles = StyleSheet.create({
 	},
 	viewMap: {
 		height: 34,
-		textAlignVertical: "center",
 		borderWidth: 1,
 		width: 118,
-		textAlign: "center",
-		color: color.primary,
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "center",
 		borderColor: color.primary,
 		borderRadius: 17,
-		fontWeight: "300",
 		marginRight: "2%",
 	},
 });
