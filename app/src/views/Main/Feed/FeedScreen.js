@@ -60,6 +60,7 @@ export default function FeedScreen() {
 		useNativeDriver: true,
 		outputRange: [0, 70],
 	});
+
 	const allFeed = useCallback(async () => {
 		if (page === 0) {
 			dispatch(saveFeedAction({ refreshingData: true }));

@@ -41,6 +41,7 @@ function LikedBy({ item, increementLike }) {
 						style={[styles.container, { marginBottom: -15, marginTop: -5 }]}
 					>
 						<Avatar.Group
+							key={Math.random()}
 							_avatar={{ size: "xs" }}
 							h={"12"}
 							max={3}
@@ -55,7 +56,9 @@ function LikedBy({ item, increementLike }) {
 											borderWidth: 1,
 										}}
 									>
-										<Text>{img?.user?.username?.charAt(0).toUpperCase()}</Text>
+										<Text key={i}>
+											{img?.user?.username?.charAt(0).toUpperCase()}
+										</Text>
 									</Avatar>
 								);
 							})}

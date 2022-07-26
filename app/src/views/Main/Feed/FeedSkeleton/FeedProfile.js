@@ -21,12 +21,17 @@ export default function FeedProfile({ item }) {
 	const { navigate } = useNavigation();
 
 	const navigateToPage = () => {
-		if (systemUserId === item.authorId) {
-			navigate("Profile");
-		} else {
-			dispatch(getProfile({ profileId: item.authorId }));
-			navigate("BanjeeProfile");
+		{
+			systemUserId === item.authorId
+				? navigate("Profile")
+				: navigate("BanjeeProfile", { id: item.authorId });
 		}
+		// if (systemUserId === item.authorId) {
+		// 	navigate("Profile");
+		// } else {
+		// 	// dispatch(getProfile({ profileId: item.authorId }));
+		// 	navigate("BanjeeProfile", { id: item.authorId });
+		// }
 	};
 
 	return (

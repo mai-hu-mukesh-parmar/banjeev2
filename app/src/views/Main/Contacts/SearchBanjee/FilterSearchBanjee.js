@@ -3,16 +3,17 @@ import { View, StyleSheet, VirtualizedList } from "react-native";
 import BanjeeContacts from "../BanjeeContacts";
 import color from "../../../../constants/env/color";
 import AuthSocket from "../../../../Socket/Socket";
+import { useSelector } from "react-redux";
 
 function FiltersearchBanjee(props) {
+	const { systemUserId } = useSelector((state) => state.registry);
+
 	function renderItem({ item }) {
-		return (
-			<BanjeeContacts
-				// showStatus={props?.showStatus}
-				item={item}
-				// listUser={listUser}
-			/>
-		);
+		if (systemUserId === item.id) {
+			return null;
+		} else {
+			return <BanjeeContacts item={item} />;
+		}
 	}
 
 	return (
@@ -35,16 +36,11 @@ function FiltersearchBanjee(props) {
 
 const styles = StyleSheet.create({
 	container: {
-		// height: "100%",
-		// width: "100%",
 		flex: 1,
 		flexDirection: "row",
-		alignItems: "center",
 		zIndex: -2,
-		// marginBottom: -150,
 	},
 	img: {
-		// borderColor: color.primary,
 		borderWidth: 1,
 		height: "100%",
 		width: "100%",

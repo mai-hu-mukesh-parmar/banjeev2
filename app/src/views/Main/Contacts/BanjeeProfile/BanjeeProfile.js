@@ -3,24 +3,16 @@ import {
 	View,
 	StyleSheet,
 	ScrollView,
-	ImageBackground,
-	Dimensions,
 	TouchableWithoutFeedback,
-	DevSettings,
-	ActivityIndicator,
 	SafeAreaView,
 } from "react-native";
+
 import FastImage from "react-native-fast-image";
-import { useRoute, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
-import * as Location from "expo-location";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { Audio } from "expo-av";
 import { useDispatch, useSelector } from "react-redux";
 import color from "../../../../constants/env/color";
 import { getUserRegistryData } from "../../../../helper/services/SplashService";
-import usePlayPauseAudio from "../../../../utils/hooks/usePlayPauseAudio";
-import { FriendRequest } from "../../../../helper/services/FriendRequest";
 import { BlockUser } from "../../../../helper/services/Service";
 import { unfriend } from "../../../../helper/services/UnfriendService";
 import {
@@ -30,52 +22,41 @@ import {
 import AppLoading from "../../../../constants/components/ui-component/AppLoading";
 import ReportUser from "../../../../constants/components/Cards/ReportUser";
 import { Text } from "native-base";
-import AppMenu from "../../../../constants/components/ui-component/AppMenu";
-import AppFabButton from "../../../../constants/components/ui-component/AppFabButton";
 import Room from "../../Room/Room";
 import ConfirmModal from "../ChatComponent/ConfirmModal";
-import FeedScreen from "../../Feed/FeedScreen";
-import {
-	checkGender,
-	listProfileUrl,
-} from "../../../../utils/util-func/constantExport";
+import { listProfileUrl } from "../../../../utils/util-func/constantExport";
 import BanjeeProfileFriendList from "./BanjeeProfileFriendList";
 import {
 	getProfile,
-	pendingConnection,
 	removeProfileData,
 } from "../../../../redux/store/action/Profile/userPendingConnection";
-import { otherBanjee_service } from "../../../../helper/services/OtherBanjee";
 import ProfilePost from "./ProfilePost";
-import { showToast } from "../../../../redux/store/action/toastAction";
-import Tabs from "./Tabs";
+import FriendType from "./FriendType";
 
-function BanjeeProfile() {
-	const { systemUserId, currentUser, voiceIntroSrc, ...userData } = useSelector(
-		(state) => state.registry
+function BanjeeProfile({ id }) {
+	const { loading, connectionId, apiCall, profileId } = useSelector(
+		(state) => state.viewProfile
 	);
-	const {
-		mutualFriend,
-		loading,
-		pendingId,
-		showReqestedFriend,
-		connectionId,
-		apiCall,
-		profileId,
-	} = useSelector((state) => state.viewProfile);
 
 	const [banjee, setBanjee] = React.useState(true);
 	const [room, setRoom] = React.useState(false);
 	const [post, setPost] = React.useState(false);
 	const [reportModal, setReportModal] = React.useState(false);
 	const [ourProfile, setOurProfile] = React.useState(null);
-	const [load, setLoad] = React.useState(true);
-	const [imageError, setImageError] = React.useState("");
-	const [unfriendModal, setUnfriendModal] = React.useState(false);
 	const [blockModal, setBlockModal] = React.useState(false);
+	const [unfriendModal, setUnfriendModal] = React.useState(false);
 	const [acceptFrndReq, setAcceptFrndReq] = React.useState(false);
 	const [rejectFrndReq, setRejectFrndReq] = React.useState(false);
+
 	const dispatch = useDispatch();
+
+	React.useEffect(() => {
+		getRegistryData();
+		return () => {
+			removeProfileData({});
+			setOurProfile();
+		};
+	}, [getRegistryData]);
 
 	const navigator = [
 		{
@@ -116,235 +97,11 @@ function BanjeeProfile() {
 	const getRegistryData = React.useCallback(() => {
 		getUserRegistryData(profileId)
 			.then((res) => {
-				setLoad(false);
 				setOurProfile(res);
 				// console.log("res", JSON.stringify(res));
 			})
 			.catch((err) => console.log(err));
 	}, [profileId]);
-
-	React.useEffect(() => {
-		getRegistryData();
-		return () => {
-			setLoad(false);
-			setOurProfile();
-		};
-	}, [getRegistryData]);
-
-	const { icons, playAudio } = usePlayPauseAudio(ourProfile?.voiceIntroSrc);
-
-	const data = [
-		{
-			label: "Intro",
-			onPress: () => playAudio(),
-		},
-		{
-			img: require("../../../../../assets/EditDrawerIcon/ic_video_call_white.png"),
-			label: "Video",
-			onPress: () => searchBanjee(profileId, "video"),
-		},
-		{
-			img: require("../../../../../assets/EditDrawerIcon/ic_call.png"),
-			label: "Call",
-			onPress: () => searchBanjee(profileId, "voice"),
-		},
-		{
-			img: require("../../../../../assets/EditDrawerIcon/ic_voice_record.png"),
-			label: "Voice",
-			onPress: () => searchBanjee(profileId, "chat"),
-		},
-	];
-
-	const frndReqData = [
-		{
-			label: "Intro",
-			onPress: () => playAudio(),
-		},
-		{
-			img: require("../../../../../assets/EditDrawerIcon/ic_delivered.png"),
-			label: "Accept",
-			onPress: () => setAcceptFrndReq(true),
-			tintColor: "white",
-		},
-		{
-			img: require("../../../../../assets/EditDrawerIcon/wrong.png"),
-			label: "Reject",
-			onPress: () => setRejectFrndReq(true),
-			tintColor: "white",
-		},
-	];
-
-	const searchBanjee = React.useCallback(
-		(userId, type) => {
-			otherBanjee_service({
-				blocked: "false",
-				circleId: null,
-				connectedUserId: null,
-				fromUserId: systemUserId,
-				id: null,
-				keyword: null,
-				page: 0,
-				pageSize: 0,
-				toUserId: userId,
-				userId: null,
-			})
-				.then((res) => {
-					res.content.map((ele) => {
-						let x = {
-							age: 0,
-							avtarUrl: ele.connectedUser.avtarUrl,
-							birthDate: ele.connectedUser.birthDate,
-							chatroomId: ele.chatroomId,
-							connectedUserOnline: ele.connectedUserOnline,
-							email: ele.connectedUser.email,
-							firstName: ele.connectedUser.firstName,
-							gender: ele.connectedUser.gender,
-							id: ele.connectedUser.id,
-							mobile: ele.connectedUser.mobile,
-							name: null,
-							realm: null,
-							ssid: null,
-							systemUserId: null,
-							timeZoneId: null,
-							userId: ele.userId,
-							userLastSeen: ele.cuserLastSeen,
-							username: null,
-						};
-
-						switch (type) {
-							case "video":
-								navigate("MakeVideoCall", { ...x, callType: "Video" });
-								break;
-							case "voice":
-								navigate("MakeVideoCall", { ...x, callType: "Voice" });
-								break;
-							case "chat":
-								navigate("BanjeeUserChatScreen", { item: x });
-								break;
-						}
-					});
-				})
-				.catch((err) => console.warn(err));
-		},
-		[systemUserId]
-	);
-
-	const saveIntro = async () => {
-		// console.log("===============>", userItem);
-		const toUser = {
-			avtarUrl: ourProfile.avtarUrl,
-			domain: "208991",
-			email: ourProfile?.user?.email,
-			firstName: ourProfile?.user?.firstName,
-			id: ourProfile?.systemUserId,
-			lastName: ourProfile?.user?.lastName,
-			locale: "eng",
-			mcc: ourProfile?.user?.mcc,
-			mobile: ourProfile?.user?.mobile,
-			realm: "banjee",
-			ssid: null,
-			systemUserId: ourProfile.systemUserId,
-			timeZoneId: "GMT",
-			username: ourProfile?.name,
-		};
-		let d = await Location.getCurrentPositionAsync();
-		const { latitude, longitude } = d.coords;
-
-		let payload = {
-			accepted: null,
-			circleId: null,
-			content: {
-				aspectRatio: null,
-				base64Content: null,
-				caption: null,
-				description: null,
-				height: null,
-				length: null,
-				mediaSource: null,
-				mimeType: "audio/mp3",
-				sequenceNumber: null,
-				sizeInBytes: null,
-				src: null,
-				subTitle: null,
-				tags: null,
-				title: "MediaVoice",
-				type: null,
-				width: null,
-			},
-			currentLocation: {
-				lat: latitude,
-				lon: longitude,
-			},
-			defaultReceiver: toUser.id,
-			domain: "banjee",
-			fromUser: {
-				...currentUser,
-				id: systemUserId,
-				firstName: currentUser.userName,
-			},
-			fromUserId: systemUserId,
-			message: `from ${currentUser.userName} to ${toUser.firstName}`,
-			processedOn: null,
-			rejected: null,
-			toUser: toUser,
-			toUserId: toUser.id,
-			voiceIntroSrc,
-		};
-
-		// console.log("payload ---> ", JSON.stringify(payload, null, 2));
-		delete payload.fromUser.authorities;
-
-		FriendRequest(payload)
-			.then(async (res) => {
-				let notificationRingtone = require("../../../../../assets/ringtones/sendFriendRequestTone.mp3");
-
-				let { sound } = await Audio.Sound.createAsync(notificationRingtone);
-				console.log("playing sound");
-
-				await sound.playAsync();
-				console.log("audio played");
-				dispatch(
-					showToast({
-						open: true,
-						description: "Friend Request Sent Successfully",
-					})
-				);
-			})
-			.catch((err) => {
-				console.warn(err);
-			});
-	};
-	const unMutual = [
-		{
-			label: "Intro",
-			onPress: () => playAudio(),
-		},
-		{
-			label:
-				pendingId?.filter((ele) => ele === systemUserId).length > 0
-					? "Request Sent"
-					: "Connect",
-			img: require("../../../../../assets/EditDrawerIcon/ic_add_contact.png"),
-			tintColor:
-				pendingId?.filter((ele) => ele === systemUserId).length > 0
-					? "grey"
-					: "white",
-			borderColor:
-				pendingId?.filter((ele) => ele === systemUserId).length > 0
-					? "grey"
-					: "white",
-			onPress:
-				pendingId?.filter((ele) => ele === systemUserId).length > 0
-					? console.log("hiii")
-					: saveIntro,
-		},
-	];
-
-	const userType = showReqestedFriend
-		? frndReqData
-		: mutualFriend
-		? data
-		: unMutual;
 
 	const blockUser = () => {
 		BlockUser(ourProfile?.id)
@@ -395,19 +152,11 @@ function BanjeeProfile() {
 						position: "absolute",
 						justifyContent: "center",
 						zIndex: 99999,
-						backgroundColor: "white",
+						// backgroundColor: "white",
 					}}
 				>
-					<AppLoading color={color.primary} />
+					<AppLoading visible={loading} />
 				</View>
-			)}
-
-			{reportModal && (
-				<ReportUser
-					setModalVisible={setReportModal}
-					modalVisible={reportModal}
-					systemUserId={ourProfile?.systemUserId}
-				/>
 			)}
 
 			<SafeAreaView style={styles.container}>
@@ -433,105 +182,17 @@ function BanjeeProfile() {
 						style={{ height: 360, width: "100%", marginBottom: 60 }}
 					/>
 
-					<ImageBackground
-						source={require("../../../../../assets/EditDrawerIcon/rectangle.png")}
-						style={styles.blackBox}
-					>
-						<View
-							style={{
-								position: "absolute",
-								right: 0,
-								marginTop: 20,
-							}}
-						>
-							<AppMenu
-								menuColor={color.white}
-								menuContent={
-									mutualFriend
-										? [
-												{
-													icon: "account-minus",
-													label: "Unfriend",
-													onPress: () => setUnfriendModal(true),
-												},
-												{
-													icon: "block-helper",
-													label: "Block User",
-													onPress: () => setBlockModal(true),
-												},
-												{
-													icon: "flag",
-													label: "Report This User",
-													onPress: () => setReportModal(true),
-												},
-										  ]
-										: [
-												{
-													icon: "block-helper",
-													label: "Block User",
-													onPress: () => setBlockModal(true),
-												},
-												{
-													icon: "flag",
-													label: "Report This User",
-													onPress: () => setReportModal(true),
-												},
-										  ]
-								}
-							/>
-						</View>
-						<Text style={styles.name} numberOfLines={1}>
-							{ourProfile?.name}
-						</Text>
-						<View style={styles.iconImg}>
-							{userType.map((ele, i) => (
-								<View
-									key={i}
-									style={{
-										flexDirection: "column",
-										alignItems: "center",
-									}}
-								>
-									<AppFabButton
-										onPress={() => ele.onPress()}
-										size={22}
-										icon={
-											<View
-												style={[
-													styles.icon,
-													{
-														borderColor: ele?.borderColor
-															? "grey"
-															: color.white,
-													},
-												]}
-											>
-												{i === 0 ? (
-													<MaterialCommunityIcons
-														name={icons}
-														color={color.white}
-														size={24}
-													/>
-												) : (
-													<FastImage
-														source={ele.img}
-														style={{
-															height: 24,
-															width: 24,
-															tintColor: ele?.tintColor,
-														}}
-													/>
-												)}
-											</View>
-										}
-									/>
-									<Text style={styles.label}>{ele.label}</Text>
-								</View>
-							))}
-						</View>
-					</ImageBackground>
+					{/* ------------------------------ TYPE OF FRIEND */}
 
-					{/* <Tabs showReqestedFriend /> */}
+					<FriendType
+						ourProfile={ourProfile}
+						setUnfriendModal={setUnfriendModal}
+						setReportModal={setReportModal}
+						setBlockModal={setBlockModal}
+						setAcceptFrndReq={setAcceptFrndReq}
+						setRejectFrndReq={setRejectFrndReq}
+					/>
+
 					{/* ````````````````````````````` TAB NAVIGATOR */}
 
 					<LinearGradient
@@ -571,9 +232,8 @@ function BanjeeProfile() {
 						{ourProfile?.id && banjee && <BanjeeProfileFriendList />}
 
 						{room && <Room otherUser={profileId} />}
-						{post && <ProfilePost />}
 
-						{/* {post && <FeedScreen otherPostId={profileId} />} */}
+						{post && <ProfilePost />}
 					</View>
 				</ScrollView>
 			</SafeAreaView>
@@ -617,6 +277,14 @@ function BanjeeProfile() {
 					onPress={rejectFriendRequest}
 				/>
 			)}
+
+			{reportModal && (
+				<ReportUser
+					setModalVisible={setReportModal}
+					modalVisible={reportModal}
+					systemUserId={ourProfile?.systemUserId}
+				/>
+			)}
 		</React.Fragment>
 	);
 }
@@ -646,35 +314,7 @@ const styles = StyleSheet.create({
 		borderTopLeftRadius: 10,
 		position: "relative",
 	},
-	name: {
-		fontSize: 20,
-		color: color.white,
-		alignSelf: "center",
-		textAlign: "center",
-		marginTop: 25,
-		width: "70%",
-	},
-	iconImg: {
-		marginTop: 44,
-		flexDirection: "row",
-		justifyContent: "space-around",
-		width: "80%",
-		alignSelf: "center",
-	},
-	icon: {
-		// backgroundColor: "rgba(0,0,0,0.2)",
-		height: 40,
-		width: 40,
-		borderRadius: 50,
-		alignItems: "center",
-		justifyContent: "center",
-		borderWidth: 0.5,
-	},
-	label: {
-		fontSize: 14,
-		color: color.white,
-		marginTop: 5,
-	},
+
 	tabView: {
 		height: 46,
 		// marginTop: -46,
@@ -700,13 +340,6 @@ const styles = StyleSheet.create({
 		height: "100%",
 		fontSize: 14,
 		paddingTop: 15,
-	},
-	blackBox: {
-		height: 170,
-		width: "100%",
-		borderTopLeftRadius: 10,
-		borderTopRightRadius: 10,
-		marginTop: -68,
 	},
 });
 

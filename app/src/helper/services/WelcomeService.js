@@ -6,7 +6,6 @@ export const getAllUser = (requestLoad) => {
 	const method = "POST";
 	const payload = requestLoad;
 	const actionCode = "ACTION_FILTER_REGISTRY";
-
 	return executePost(url, actionCode, payload, method, {});
 };
 export const uploadSessionService = (data) => {

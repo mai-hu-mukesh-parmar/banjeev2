@@ -7,7 +7,7 @@ function AddFriendLoader(props) {
 		<ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
 			{[1, 1, 1, 1, 1].map((ele, i) => {
 				return (
-					<View>
+					<View key={i}>
 						<Skeleton
 							h="144"
 							w="101"

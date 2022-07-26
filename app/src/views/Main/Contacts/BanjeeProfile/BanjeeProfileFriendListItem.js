@@ -165,7 +165,6 @@ function BanjeeProfileFriendListItem({ item }) {
 		};
 
 		delete payload.fromUser.authorities;
-		console.warn("payload ---> ", payload);
 
 		FriendRequest(payload)
 			.then(async (res) => {
@@ -218,7 +217,6 @@ function BanjeeProfileFriendListItem({ item }) {
 
 				// console.warn(systemUserId);
 				// console.warn(pendingId);
-				console.warn(pendingId?.filter((ele) => ele === systemUserId));
 
 				return (
 					<View style={styles.iconView}>

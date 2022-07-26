@@ -68,7 +68,7 @@ function AddFriends(props) {
 					/>
 				</View>
 			</View>
-			<LiveRoom />
+			{/* <LiveRoom /> */}
 		</Fragment>
 	);
 }
