@@ -62,6 +62,7 @@ export default function FeedScreen() {
 	});
 
 	const allFeed = useCallback(async () => {
+		console.warn(page, "page...................");
 		if (page === 0) {
 			dispatch(saveFeedAction({ refreshingData: true }));
 		} else {

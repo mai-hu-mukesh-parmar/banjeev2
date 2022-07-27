@@ -6,6 +6,7 @@ import {
 	Easing,
 	ScrollView,
 	TouchableOpacity,
+	Platform,
 } from "react-native";
 import FastImage from "react-native-fast-image";
 import AppFabButton from "../../../../../constants/components/ui-component/AppFabButton";
@@ -28,7 +29,10 @@ import {
 import { SocketContext } from "../../../../../Context/Socket";
 
 GiphySDK.configure({
-	apiKey: "BjrzaTUXMRi27xIRU0xZIGRrNztyuNT8", // iOS SDK key
+	apiKey:
+		Platform.OS === "android"
+			? "BjrzaTUXMRi27xIRU0xZIGRrNztyuNT8"
+			: "BjrzaTUXMRi27xIRU0xZIGRrNztyuNT8", // iOS SDK key
 });
 // import BottomSheet from "react-native-bottomsheet-reanimated";
 function BottomView({

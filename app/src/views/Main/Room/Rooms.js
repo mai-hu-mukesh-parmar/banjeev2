@@ -50,7 +50,8 @@ function Rooms(props) {
 	});
 
 	const config = {
-		velocityThreshold: 0.3,
+		needVerticalScroll: true,
+		velocityThreshold: 0.5,
 		directionalOffsetThreshold: 80,
 	};
 
